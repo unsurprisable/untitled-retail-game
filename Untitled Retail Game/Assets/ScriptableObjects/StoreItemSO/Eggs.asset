@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: abbf60b2b02906a47882cb4f64897612, type: 3}
-  m_Name: MilkCarton
+  m_Name: Eggs
   m_EditorClassIdentifier: 
-  itemName: Milk Carton
-  icon: {fileID: 21300000, guid: c6221114e5413024793e23fd65707369, type: 3}
+  itemName: Eggs
+  icon: {fileID: 21300000, guid: 75db053829f4ac245bb986f2274b50f3, type: 3}
   prefab: {fileID: 1383913534775882190, guid: 7f28cdc35c74d0b4f8e3eb9a95e1d74c, type: 3}
   containerSize: 20
-  unitPrice: 2.8
-  storageType: 0
-  storageCapacity: {x: 13, y: 1, z: 4}
-  modelDimensions: {x: 0.12, y: 0.18, z: 0.12}
-  storageAmount: 52
+  unitPrice: 3.6
+  storageType: 1
+  storageCapacity: {x: 2, y: 3, z: 5}
+  modelDimensions: {x: 0.4, y: 0.2, z: 0.2}
+  storageAmount: 30

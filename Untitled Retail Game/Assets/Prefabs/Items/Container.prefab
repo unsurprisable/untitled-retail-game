@@ -388,7 +388,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectedVisual: {fileID: 4193003093622792032}
-  heldPositionOffset: {x: 0, y: 0, z: 0}
+  heldPositionOffset: {x: 0, y: -0.2, z: 0.5}
   heldRotationValues: {x: 0, y: 0, z: 0}
   storeItem: {fileID: 0}
   iconObjects:
@@ -396,6 +396,7 @@ MonoBehaviour:
   - {fileID: 7048673533473764239}
   - {fileID: 3541241902154288827}
   - {fileID: 7458199318867207739}
+  itemAmount: 0
 --- !u!65 &695749501944128980
 BoxCollider:
   m_ObjectHideFlags: 0

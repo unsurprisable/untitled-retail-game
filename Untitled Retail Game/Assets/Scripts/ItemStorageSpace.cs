@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class ItemStorageSpace : InteractableObject
 {
-    public enum StorageType { SHELF, CLOSED_FRIDGE, OPEN_FRIDGE, FREEZER, PRODUCE_BIN, WARMER }
+    public enum StorageType { ITEM_RACK, CLOSED_FRIDGE, OPEN_FRIDGE, FREEZER, PRODUCE_BIN, WARMER }
 
     [Space]
     [Header("Item Storage Space")]
@@ -45,6 +45,10 @@ public class ItemStorageSpace : InteractableObject
         if (player.GetHeldItem() != null && player.GetHeldItem() is Container container) {
             if (container.IsEmpty()) {
                 Debug.Log("that container is empty, silly!");
+                return;
+            }
+            if (container.GetStoreItemSO().storageType != storageType) {
+                Debug.Log("oh you silly billy! this isn't a " + container.GetStoreItemSO().storageType.ToString() + "!");
                 return;
             }
             if (storeItem == null || itemAmount == 0) {
