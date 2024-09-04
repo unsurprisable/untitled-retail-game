@@ -6,7 +6,6 @@ public class InteractableItem : MonoBehaviour
 {
     [SerializeField] private GameObject selectedVisual;
 
-
     public virtual void OnInteract(PlayerController player) {}
 
     public void OnHovered()

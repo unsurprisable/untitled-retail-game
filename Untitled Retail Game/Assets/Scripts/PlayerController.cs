@@ -12,12 +12,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float runSpeed;
     [SerializeField] private float drag;
     [SerializeField] private float jumpForce;
+    [SerializeField] private LayerMask groundLayerMask;
+    [SerializeField] private float collisionWidth;
+    [SerializeField] private float maxGroundDistance;
 
     [Header("Interaction")]
     [SerializeField] private LayerMask itemLayerMask;
     [SerializeField] private Transform cameraAnchor;
     [SerializeField] private float interactionDistance;
-    [SerializeField] private InteractableItem lastHoveredItem;
+    [SerializeField] private InteractableItem hoveredItem;
     [SerializeField] private Transform itemAnchor;
     private HoldableItem heldItem;
 
@@ -30,34 +33,60 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         #region Events
+
         GameInput.Instance.OnJump += (sender, args) => {
-            rb.AddForce(Vector3.up * jumpForce);
+            // should switch to BoxCast or something similar; right now its just a single, centered ray, which is bad for edges
+            if (Physics.Raycast(transform.position + Vector3.up*maxGroundDistance, Vector3.down, 2*maxGroundDistance, groundLayerMask)) {
+                rb.AddForce(Vector3.up * jumpForce);
+            }
         };
 
         GameInput.Instance.OnInteract += (sender, args) => {
-            if (lastHoveredItem == null) return;
-            lastHoveredItem.OnInteract(this);
+            if (hoveredItem == null) return; 
+            if (heldItem == null && hoveredItem is HoldableItem item) {
+                PickupItem(item);
+            } else {
+                hoveredItem.OnInteract(this);
+            }
         };
 
         GameInput.Instance.OnDrop += (sender, args) => {
             if (heldItem == null) return;
-            heldItem.OnDrop();
+            DropHeldItem();
         };
+
+        GameInput.Instance.OnUse += (sender, args) => {
+            if (heldItem == null) return;
+            heldItem.OnUse(this);
+        };
+
         #endregion
     }
 
     private void Update()
     {
+        HandleItemHovering();
+    }
+
+    private void FixedUpdate()
+    {
+        HandleMovement();
+    }
+
+
+
+    private void HandleItemHovering()
+    {
         if (Physics.Raycast(cameraAnchor.position, orientation.forward, out RaycastHit hit, interactionDistance, itemLayerMask)) {
-            if (hit.transform.TryGetComponent<InteractableItem>(out InteractableItem hoveredItem))
+            if (hit.transform.TryGetComponent<InteractableItem>(out InteractableItem item))
             {
                 // player is looking at an item
-                if (lastHoveredItem != hoveredItem) {
-                    hoveredItem.OnHovered();
-                    if (lastHoveredItem != null) {
-                        lastHoveredItem.OnUnhovered();
+                if (hoveredItem != item) {
+                    item.OnHovered();
+                    if (hoveredItem != null) {
+                        hoveredItem.OnUnhovered();
                     }
-                    lastHoveredItem = hoveredItem;
+                    hoveredItem = item;
                 }
             } else {
                 Debug.LogError("player interacted with an object on the Item layermask without an InteractableItem component!");
@@ -66,16 +95,11 @@ public class PlayerController : MonoBehaviour
         else
         {
             // player is not looking at an item
-            if (lastHoveredItem != null) {
-                lastHoveredItem.OnUnhovered();
+            if (hoveredItem != null) {
+                hoveredItem.OnUnhovered();
             }
-            lastHoveredItem = null;
+            hoveredItem = null;
         }
-    }
-
-    private void FixedUpdate()
-    {
-        HandleMovement();
     }
 
     private void HandleMovement()
@@ -101,24 +125,28 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(moveDir);
     }
 
-    // always called on interaction, even if the player already has an item
-    public bool TryPickupItem(HoldableItem item)
+
+    public void PickupItem(HoldableItem item)
     {
-        if (heldItem != null) {
-            Debug.Log("already holding an item.");
-            return false;
-        }
-        heldItem = item;
-        heldItem.GetComponent<Rigidbody>().isKinematic = true;
-        item.transform.position = itemAnchor.position;
+        item.GetComponent<Rigidbody>().isKinematic = true;
+        item.GetComponent<MeshCollider>().enabled = false;
         item.transform.SetParent(itemAnchor);
-        return true;
+        item.transform.localPosition = item.heldPositionOffset;
+        item.transform.localRotation = Quaternion.Euler(item.heldRotationValues);
+
+        item.OnPickup(this);
+
+        heldItem = item;
     }
 
     public void DropHeldItem()
     {
         heldItem.GetComponent<Rigidbody>().isKinematic = false;
+        heldItem.GetComponent<MeshCollider>().enabled = true;
         heldItem.transform.SetParent(null);
-    }
+        
+        heldItem.OnDrop();
 
+        heldItem = null;
+    }
 }
