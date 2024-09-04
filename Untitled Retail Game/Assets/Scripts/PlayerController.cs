@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask itemLayerMask;
     [SerializeField] private Transform cameraAnchor;
     [SerializeField] private float interactionDistance;
-    [SerializeField] private InteractableItem hoveredItem;
+    [SerializeField] private InteractableObject hoveredItem;
     [SerializeField] private Transform itemAnchor;
     private HoldableItem heldItem;
 
@@ -78,25 +78,25 @@ public class PlayerController : MonoBehaviour
     private void HandleItemHovering()
     {
         if (Physics.Raycast(cameraAnchor.position, orientation.forward, out RaycastHit hit, interactionDistance, itemLayerMask)) {
-            if (hit.transform.TryGetComponent<InteractableItem>(out InteractableItem item))
+            if (hit.transform.TryGetComponent<InteractableObject>(out InteractableObject item))
             {
                 // player is looking at an item
                 if (hoveredItem != item) {
-                    item.OnHovered();
+                    item.Hover();
                     if (hoveredItem != null) {
-                        hoveredItem.OnUnhovered();
+                        hoveredItem.Unhover();
                     }
                     hoveredItem = item;
                 }
             } else {
-                Debug.LogError("player interacted with an object on the Item layermask without an InteractableItem component!");
+                Debug.LogError("Item is missing 'InteractableItem' component! (make sure the only collider is on the parent object with the component)");
             }
         }
         else
         {
             // player is not looking at an item
             if (hoveredItem != null) {
-                hoveredItem.OnUnhovered();
+                hoveredItem.Unhover();
             }
             hoveredItem = null;
         }
@@ -129,7 +129,7 @@ public class PlayerController : MonoBehaviour
     public void PickupItem(HoldableItem item)
     {
         item.GetComponent<Rigidbody>().isKinematic = true;
-        item.GetComponent<MeshCollider>().enabled = false;
+        item.GetComponent<Collider>().enabled = false;
         item.transform.SetParent(itemAnchor);
         item.transform.localPosition = item.heldPositionOffset;
         item.transform.localRotation = Quaternion.Euler(item.heldRotationValues);
@@ -142,11 +142,15 @@ public class PlayerController : MonoBehaviour
     public void DropHeldItem()
     {
         heldItem.GetComponent<Rigidbody>().isKinematic = false;
-        heldItem.GetComponent<MeshCollider>().enabled = true;
+        heldItem.GetComponent<Collider>().enabled = true;
         heldItem.transform.SetParent(null);
         
         heldItem.OnDrop();
 
         heldItem = null;
+    }
+
+    public HoldableItem GetHeldItem() {
+        return heldItem;
     }
 }

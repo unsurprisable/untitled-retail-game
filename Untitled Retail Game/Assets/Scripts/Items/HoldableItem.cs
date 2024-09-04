@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HoldableItem : InteractableItem
+public class HoldableItem : InteractableObject
 {
     public Vector3 heldPositionOffset;
     public Vector3 heldRotationValues;
