@@ -50,6 +50,11 @@ public class PlayerController : MonoBehaviour
             }
         };
 
+        GameInput.Instance.OnInteractAlternate += (sender, args) => {
+            if (hoveredItem == null) return; 
+            hoveredItem.OnInteractAlternate(this);
+        };
+
         GameInput.Instance.OnDrop += (sender, args) => {
             if (heldItem == null) return;
             DropHeldItem();
@@ -130,7 +135,7 @@ public class PlayerController : MonoBehaviour
     {
         item.GetComponent<Rigidbody>().isKinematic = true;
         item.GetComponent<Collider>().enabled = false;
-        item.transform.SetParent(itemAnchor);
+        item.transform.SetParent(itemAnchor, false);
         item.transform.localPosition = item.heldPositionOffset;
         item.transform.localRotation = Quaternion.Euler(item.heldRotationValues);
 
