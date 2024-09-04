@@ -21,6 +21,11 @@ public class FirstPersonCamera : MonoBehaviour
         Cursor.visible = false;
     }
 
+    private void Start()
+    {
+        xRotation = orientation.rotation.eulerAngles.x;
+        yRotation = orientation.rotation.eulerAngles.y;
+    }
 
     private void LateUpdate()
     {
@@ -32,8 +37,8 @@ public class FirstPersonCamera : MonoBehaviour
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -maxLookAngle, maxLookAngle);
 
-        transform.rotation = Quaternion.Euler(xRotation, yRotation, 0f);
-        orientation.rotation = Quaternion.Euler(0f, yRotation, 0f);
+        orientation.rotation = Quaternion.Euler(xRotation, yRotation, 0f);
+        transform.rotation = orientation.rotation;
         transform.position = cameraAnchor.position;
     }
 }
