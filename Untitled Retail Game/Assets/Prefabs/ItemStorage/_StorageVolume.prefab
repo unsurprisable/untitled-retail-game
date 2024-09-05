@@ -51,7 +51,6 @@ MonoBehaviour:
   selectedVisual: {fileID: 0}
   storageType: 0
   displayOrigin: {fileID: 5560462395215634780}
-  itemDisplayParent: {fileID: 0}
   storeItem: {fileID: 0}
   itemAmount: 0
 --- !u!65 &770972197909041956
@@ -69,7 +68,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -94,8 +93,7 @@ MeshRenderer:
   m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: e4cd5d4d2dc11724b8b6eac8b04a2159, type: 2}
+  m_Materials: []
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

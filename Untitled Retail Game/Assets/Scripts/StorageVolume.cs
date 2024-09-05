@@ -32,13 +32,14 @@ public class StorageVolume : InteractableObject
 
     public override void OnHovered()
     {
-        // eventually, display a UI element with info about this storage space
-        string itemName = storeItem != null ? storeItem.itemName : "null";
-        Debug.Log("Storage Space of: " + itemName + ", amount: " + itemAmount);
+        if (storeItem != null) {
+            StorageVolumeUI.Instance.UpdateInfo(storeItem, itemAmount);
+            StorageVolumeUI.Instance.Show();
+        }
     }
     public override void OnUnhovered()
     {
-        // hide that UI element
+        StorageVolumeUI.Instance.Hide();
     }
 
     public override void OnInteract(PlayerController player)
@@ -68,6 +69,8 @@ public class StorageVolume : InteractableObject
             // place the item in storage
             AddItem();
             container.RemoveItem();
+            StorageVolumeUI.Instance.UpdateInfo(storeItem, itemAmount);
+            StorageVolumeUI.Instance.Show();
         }
     }
 
@@ -77,6 +80,8 @@ public class StorageVolume : InteractableObject
             if (container.IsFull() || container.GetStoreItemSO() != storeItem) return;
             RemoveItem();
             container.AddItem();
+            StorageVolumeUI.Instance.UpdateInfo(storeItem, itemAmount);
+            StorageVolumeUI.Instance.Show();
         }
     }
 
