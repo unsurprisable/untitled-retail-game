@@ -18,11 +18,11 @@ public class StoreItemSO : ScriptableObject
     
     [Header("Order Data")]
     [Tooltip("Amount of this item that a container can hold.")]
-    public int containerSize;
+    public int containerAmount;
     [Tooltip("Price per unit (not per stack).")]
     public float unitPrice;
     [Tooltip("The type of storage this item requires.")]
-    public ItemStorageSpace.StorageType storageType;
+    public StorageVolume.StorageType storageType;
 
     [Space]
 

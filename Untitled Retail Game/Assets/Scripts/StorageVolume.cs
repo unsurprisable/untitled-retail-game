@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemStorageSpace : InteractableObject
+public class StorageVolume : InteractableObject
 {
     public enum StorageType { ITEM_RACK, CLOSED_FRIDGE, OPEN_FRIDGE, FREEZER, PRODUCE_BIN, WARMER }
 
@@ -17,9 +17,10 @@ public class ItemStorageSpace : InteractableObject
 
     private Stack<Transform> itemDisplayStack = new Stack<Transform>();
 
+
     // FOR TESTING ONLY:
     // auto-fills the drawer if it is pre-set with a StoreItemSO
-    private void Start()
+    private void Awake()
     {
         if (storeItem != null) {
             Debug.Log("a testing drawer was activated and filled.");
@@ -65,14 +66,17 @@ public class ItemStorageSpace : InteractableObject
             }
 
             // place the item in storage
-            AddItem(container);
+            AddItem();
+            container.RemoveItem();
         }
     }
 
-    public override void OnInteractAlternate(PlayerController player)
+    public override void OnInteractSecondary(PlayerController player)
     {
-        if (itemAmount > 0) {
+        if (itemAmount > 0 && player.GetHeldItem() is Container container) {
+            if (container.IsFull() || container.GetStoreItemSO() != storeItem) return;
             RemoveItem();
+            container.AddItem();
         }
     }
 
@@ -115,9 +119,8 @@ public class ItemStorageSpace : InteractableObject
         Destroy(itemDisplayStack.Pop().gameObject);
     }
 
-    private void AddItem(Container container = null) 
+    private void AddItem() 
     {
-        if (container != null) container.TakeItem();
         AddItemToDisplay();
         itemAmount++;
     }
@@ -126,5 +129,8 @@ public class ItemStorageSpace : InteractableObject
     {
         RemoveItemFromDisplay();
         itemAmount--;
+        if (itemAmount < 0) {
+            Debug.LogError("Storage volume is storing a negative amount of items..?");
+        }
     }
 }

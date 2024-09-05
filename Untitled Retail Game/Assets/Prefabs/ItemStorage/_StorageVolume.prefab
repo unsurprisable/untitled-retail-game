@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 324427093974457111}
   - component: {fileID: 8735998195758086445}
   m_Layer: 6
-  m_Name: _StorageSpace
+  m_Name: _StorageVolume
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -51,6 +51,7 @@ MonoBehaviour:
   selectedVisual: {fileID: 0}
   storageType: 0
   displayOrigin: {fileID: 5560462395215634780}
+  itemDisplayParent: {fileID: 0}
   storeItem: {fileID: 0}
   itemAmount: 0
 --- !u!65 &770972197909041956

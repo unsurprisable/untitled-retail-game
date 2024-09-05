@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float interactionDistance;
     [SerializeField] private InteractableObject hoveredItem;
     [SerializeField] private Transform itemAnchor;
+    [SerializeField] private float throwForce;
     private HoldableItem heldItem;
 
 
@@ -41,28 +42,25 @@ public class PlayerController : MonoBehaviour
             }
         };
 
-        GameInput.Instance.OnInteract += (sender, args) => {
-            if (hoveredItem == null) return; 
-            if (heldItem == null && hoveredItem is HoldableItem item) {
+        GameInput.Instance.MainAction += (sender, args) => {
+            if (hoveredItem == null) return;
+            if (heldItem != null && heldItem.hasUse) {
+                heldItem.OnUse(this);
+            } else if (heldItem == null && hoveredItem is HoldableItem item) {
                 PickupItem(item);
             } else {
                 hoveredItem.OnInteract(this);
             }
         };
 
-        GameInput.Instance.OnInteractAlternate += (sender, args) => {
+        GameInput.Instance.SecondaryAction += (sender, args) => {
             if (hoveredItem == null) return; 
-            hoveredItem.OnInteractAlternate(this);
+            hoveredItem.OnInteractSecondary(this);
         };
 
         GameInput.Instance.OnDrop += (sender, args) => {
             if (heldItem == null) return;
             DropHeldItem();
-        };
-
-        GameInput.Instance.OnUse += (sender, args) => {
-            if (heldItem == null) return;
-            heldItem.OnUse(this);
         };
 
         #endregion
@@ -149,6 +147,8 @@ public class PlayerController : MonoBehaviour
         heldItem.GetComponent<Rigidbody>().isKinematic = false;
         heldItem.GetComponent<Collider>().enabled = true;
         heldItem.transform.SetParent(null);
+
+        heldItem.GetComponent<Rigidbody>().AddForce(orientation.forward * throwForce);
         
         heldItem.OnDrop();
 
