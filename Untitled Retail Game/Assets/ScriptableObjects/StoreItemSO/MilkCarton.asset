@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abbf60b2b02906a47882cb4f64897612, type: 3}
   m_Name: MilkCarton
   m_EditorClassIdentifier: 
-  itemName: Milk Carton
+  name: Milk Carton
   icon: {fileID: 21300000, guid: c6221114e5413024793e23fd65707369, type: 3}
   prefab: {fileID: 1383913534775882190, guid: 7f28cdc35c74d0b4f8e3eb9a95e1d74c, type: 3}
   containerAmount: 20

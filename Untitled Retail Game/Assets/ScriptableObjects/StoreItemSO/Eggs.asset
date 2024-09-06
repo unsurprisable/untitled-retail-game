@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abbf60b2b02906a47882cb4f64897612, type: 3}
   m_Name: Eggs
   m_EditorClassIdentifier: 
-  itemName: Eggs
+  name: Eggs
   icon: {fileID: 21300000, guid: ab9be3bb09935f84cb0005a0a4eb9db5, type: 3}
   prefab: {fileID: 1383913534775882190, guid: 7f28cdc35c74d0b4f8e3eb9a95e1d74c, type: 3}
   containerAmount: 20

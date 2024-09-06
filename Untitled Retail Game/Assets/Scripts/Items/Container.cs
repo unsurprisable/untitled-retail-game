@@ -22,7 +22,7 @@ public class Container : HoldableItem
     {
         storeItem = storeItemSO;
 
-        transform.name = "Container (" + storeItem.itemName + ")";
+        transform.name = "Container (" + storeItem.name + ")";
         foreach(SpriteRenderer r in iconObjects) {
             r.sprite = storeItem.icon;
         }
@@ -44,7 +44,7 @@ public class Container : HoldableItem
     public void RemoveItem() {
         itemAmount--;
         if (itemAmount < 0) {
-            Debug.LogError(storeItem.itemName + " container is storing a negative amount of items..?");
+            Debug.LogError(storeItem.name + " container is storing a negative amount of items..?");
         }
     }
     public void AddItem() {

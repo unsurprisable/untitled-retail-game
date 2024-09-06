@@ -89,6 +89,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""BuildMenu"",
+                    ""type"": ""Button"",
+                    ""id"": ""367ca659-b375-4b95-883d-487eb7a2f9c6"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -212,6 +221,17 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""SecondaryAction"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f4e283b3-ecf2-4491-8d2a-4b825a74b285"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""BuildMenu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -227,6 +247,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_MainAction = m_Player.FindAction("MainAction", throwIfNotFound: true);
         m_Player_SecondaryAction = m_Player.FindAction("SecondaryAction", throwIfNotFound: true);
         m_Player_Drop = m_Player.FindAction("Drop", throwIfNotFound: true);
+        m_Player_BuildMenu = m_Player.FindAction("BuildMenu", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -295,6 +316,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_MainAction;
     private readonly InputAction m_Player_SecondaryAction;
     private readonly InputAction m_Player_Drop;
+    private readonly InputAction m_Player_BuildMenu;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -306,6 +328,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @MainAction => m_Wrapper.m_Player_MainAction;
         public InputAction @SecondaryAction => m_Wrapper.m_Player_SecondaryAction;
         public InputAction @Drop => m_Wrapper.m_Player_Drop;
+        public InputAction @BuildMenu => m_Wrapper.m_Player_BuildMenu;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -336,6 +359,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Drop.started += instance.OnDrop;
             @Drop.performed += instance.OnDrop;
             @Drop.canceled += instance.OnDrop;
+            @BuildMenu.started += instance.OnBuildMenu;
+            @BuildMenu.performed += instance.OnBuildMenu;
+            @BuildMenu.canceled += instance.OnBuildMenu;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -361,6 +387,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Drop.started -= instance.OnDrop;
             @Drop.performed -= instance.OnDrop;
             @Drop.canceled -= instance.OnDrop;
+            @BuildMenu.started -= instance.OnBuildMenu;
+            @BuildMenu.performed -= instance.OnBuildMenu;
+            @BuildMenu.canceled -= instance.OnBuildMenu;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -387,5 +416,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnMainAction(InputAction.CallbackContext context);
         void OnSecondaryAction(InputAction.CallbackContext context);
         void OnDrop(InputAction.CallbackContext context);
+        void OnBuildMenu(InputAction.CallbackContext context);
     }
 }

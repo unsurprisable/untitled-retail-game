@@ -8,7 +8,7 @@ public class StoreItemSO : ScriptableObject
 
     [Header("Metadata")]
     [Tooltip("The item's display name.")]
-    public string itemName;
+    public new string name;
     [Tooltip("The item's icon (make sure it's 128x128).")]
     public Sprite icon; // 128x128 for consistent sizing!!!
     [Tooltip("The item's in-game model.")]

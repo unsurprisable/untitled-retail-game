@@ -20,7 +20,7 @@ public class StorageVolumeUI : MonoBehaviour
     public void UpdateInfo(StoreItemSO storeItem, int amount)
     {
         icon.sprite = storeItem.icon;
-        itemName.text = storeItem.itemName;
+        itemName.text = storeItem.name;
         itemAmount.text = "x" + amount.ToString();
     }
 

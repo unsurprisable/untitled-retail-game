@@ -4,9 +4,12 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
 
+    public static PlayerController Instance { get; private set; }
+
     private Rigidbody rb;
 
     [Header("Movement")]
+    [SerializeField] private FirstPersonCamera fpCamera;
     [SerializeField] private Transform orientation;
     [SerializeField] private float walkSpeed;
     [SerializeField] private float runSpeed;
@@ -28,7 +31,11 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
+        Instance = this;
+
         rb = GetComponent<Rigidbody>();
+        
+        fpCamera.Enable();
     }
 
     private void Start()
@@ -157,5 +164,9 @@ public class PlayerController : MonoBehaviour
 
     public HoldableItem GetHeldItem() {
         return heldItem;
+    }
+
+    public FirstPersonCamera GetFirstPersonCamera() {
+        return fpCamera;
     }
 }

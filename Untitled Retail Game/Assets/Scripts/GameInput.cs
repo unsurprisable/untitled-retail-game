@@ -10,6 +10,7 @@ public class GameInput : MonoBehaviour
     public event EventHandler MainAction;
     public event EventHandler SecondaryAction;
     public event EventHandler OnDrop;
+    public event EventHandler OnBuildMenu;
 
     private PlayerInputActions playerInputActions;
 
@@ -24,6 +25,7 @@ public class GameInput : MonoBehaviour
         playerInputActions.Player.MainAction.performed       += (context) => {MainAction?.Invoke(this, EventArgs.Empty);};
         playerInputActions.Player.SecondaryAction.performed  += (context) => {SecondaryAction.Invoke(this, EventArgs.Empty);};
         playerInputActions.Player.Drop.performed             += (context) => {OnDrop?.Invoke(this, EventArgs.Empty);};
+        playerInputActions.Player.BuildMenu.performed        += (context) => {OnBuildMenu?.Invoke(this, EventArgs.Empty);};
     }
 
     public Vector2 GetMovementVectorNormalized() {
