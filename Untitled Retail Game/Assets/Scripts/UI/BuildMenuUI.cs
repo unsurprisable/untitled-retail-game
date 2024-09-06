@@ -17,7 +17,7 @@ public class BuildMenuUI : MonoBehaviour
     private HashSet<GameObject> activeBuildButtons;
     private Dictionary<BuildCategory, List<BuildObjectSO>> categoryDict;
 
-    private bool isEnabled = true;
+    private bool isEnabled = false;
 
     private void Awake()
     {
@@ -57,13 +57,16 @@ public class BuildMenuUI : MonoBehaviour
 
     private void ShowCategory(BuildCategory category) 
     {
-        Debug.Log(category.ToString());
-
         if (activeBuildButtons.Count != 0) {
             foreach (GameObject buildButton in activeBuildButtons) {
                 Destroy(buildButton);
             }
             activeBuildButtons.Clear();
+        }
+
+        if (!categoryDict.ContainsKey(category)) {
+            Debug.LogWarning("That category does not contain any items!");
+            return;
         }
 
         List<BuildObjectSO> buildObjects = categoryDict[category];
