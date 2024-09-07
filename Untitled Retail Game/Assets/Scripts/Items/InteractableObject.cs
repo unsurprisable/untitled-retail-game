@@ -9,7 +9,7 @@ public class InteractableObject : MonoBehaviour
     [SerializeField] private GameObject selectedVisual;
 
     public virtual void OnInteract(PlayerController player) {}
-    public virtual void OnInteractAlternate(PlayerController player) {}
+    public virtual void OnInteractSecondary(PlayerController player) {}
     public virtual void OnHovered() {}
     public virtual void OnUnhovered() {}
 

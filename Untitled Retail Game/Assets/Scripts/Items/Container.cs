@@ -18,28 +18,36 @@ public class Container : HoldableItem
     }
 
     // make sure to set this instantly whenever instantiating a new container
-    public void SetStoreItemSO(StoreItemSO storeItemSO)
+    public void SetStoreItemSO(StoreItemSO storeItemSO, bool startEmpty = false)
     {
         storeItem = storeItemSO;
-        foreach(SpriteRenderer r in iconObjects)
-        {
+
+        transform.name = "Container (" + storeItem.name + ")";
+        foreach(SpriteRenderer r in iconObjects) {
             r.sprite = storeItem.icon;
         }
-        transform.name = "Container (" + storeItem.itemName + ")";
+
+        itemAmount = storeItem.containerAmount;
     }
 
     public bool IsEmpty() {
-        return itemAmount <= 0;
+        return itemAmount == 0;
+    }
+    public bool IsFull() {
+        return itemAmount == storeItem.containerAmount;
     }
 
     public StoreItemSO GetStoreItemSO() {
         return storeItem;
     }
 
-    public void TakeItem() {
+    public void RemoveItem() {
         itemAmount--;
         if (itemAmount < 0) {
-            Debug.LogError(storeItem.itemName + " container is storing a negative amount of items..?");
+            Debug.LogError(storeItem.name + " container is storing a negative amount of items..?");
         }
+    }
+    public void AddItem() {
+        itemAmount++;
     }
 }

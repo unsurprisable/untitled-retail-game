@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemStorageSpace : InteractableObject
+public class StorageVolume : InteractableObject
 {
-    public enum StorageType { SHELF, CLOSED_FRIDGE, OPEN_FRIDGE, FREEZER, PRODUCE_BIN, WARMER }
+    public enum StorageType { ITEM_RACK, CLOSED_FRIDGE, OPEN_FRIDGE, FREEZER, PRODUCE_BIN, WARMER }
 
     [Space]
     [Header("Item Storage Space")]
@@ -17,9 +17,10 @@ public class ItemStorageSpace : InteractableObject
 
     private Stack<Transform> itemDisplayStack = new Stack<Transform>();
 
+
     // FOR TESTING ONLY:
     // auto-fills the drawer if it is pre-set with a StoreItemSO
-    private void Start()
+    private void Awake()
     {
         if (storeItem != null) {
             Debug.Log("a testing drawer was activated and filled.");
@@ -31,13 +32,14 @@ public class ItemStorageSpace : InteractableObject
 
     public override void OnHovered()
     {
-        // eventually, display a UI element with info about this storage space
-        string itemName = storeItem != null ? storeItem.itemName : "null";
-        Debug.Log("Storage Space of: " + itemName + ", amount: " + itemAmount);
+        if (storeItem != null) {
+            StorageVolumeUI.Instance.UpdateInfo(storeItem, itemAmount);
+            StorageVolumeUI.Instance.Show();
+        }
     }
     public override void OnUnhovered()
     {
-        // hide that UI element
+        StorageVolumeUI.Instance.Hide();
     }
 
     public override void OnInteract(PlayerController player)
@@ -45,6 +47,10 @@ public class ItemStorageSpace : InteractableObject
         if (player.GetHeldItem() != null && player.GetHeldItem() is Container container) {
             if (container.IsEmpty()) {
                 Debug.Log("that container is empty, silly!");
+                return;
+            }
+            if (container.GetStoreItemSO().storageType != storageType) {
+                Debug.Log("oh you silly billy! this isn't a " + container.GetStoreItemSO().storageType.ToString() + "!");
                 return;
             }
             if (storeItem == null || itemAmount == 0) {
@@ -61,14 +67,21 @@ public class ItemStorageSpace : InteractableObject
             }
 
             // place the item in storage
-            AddItem(container);
+            AddItem();
+            container.RemoveItem();
+            StorageVolumeUI.Instance.UpdateInfo(storeItem, itemAmount);
+            StorageVolumeUI.Instance.Show();
         }
     }
 
-    public override void OnInteractAlternate(PlayerController player)
+    public override void OnInteractSecondary(PlayerController player)
     {
-        if (itemAmount > 0) {
+        if (itemAmount > 0 && player.GetHeldItem() is Container container) {
+            if (container.IsFull() || container.GetStoreItemSO() != storeItem) return;
             RemoveItem();
+            container.AddItem();
+            StorageVolumeUI.Instance.UpdateInfo(storeItem, itemAmount);
+            StorageVolumeUI.Instance.Show();
         }
     }
 
@@ -111,9 +124,8 @@ public class ItemStorageSpace : InteractableObject
         Destroy(itemDisplayStack.Pop().gameObject);
     }
 
-    private void AddItem(Container container = null) 
+    private void AddItem() 
     {
-        if (container != null) container.TakeItem();
         AddItemToDisplay();
         itemAmount++;
     }
@@ -122,5 +134,8 @@ public class ItemStorageSpace : InteractableObject
     {
         RemoveItemFromDisplay();
         itemAmount--;
+        if (itemAmount < 0) {
+            Debug.LogError("Storage volume is storing a negative amount of items..?");
+        }
     }
 }

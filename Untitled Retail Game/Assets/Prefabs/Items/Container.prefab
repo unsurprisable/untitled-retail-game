@@ -388,14 +388,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectedVisual: {fileID: 4193003093622792032}
-  heldPositionOffset: {x: 0, y: 0, z: 0}
+  heldPositionOffset: {x: 0, y: -0.2, z: 0.5}
   heldRotationValues: {x: 0, y: 0, z: 0}
+  hasUse: 0
   storeItem: {fileID: 0}
   iconObjects:
   - {fileID: 2672591804161551158}
   - {fileID: 7048673533473764239}
   - {fileID: 3541241902154288827}
   - {fileID: 7458199318867207739}
+  itemAmount: 0
 --- !u!65 &695749501944128980
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -427,7 +429,7 @@ Rigidbody:
   serializedVersion: 4
   m_Mass: 1
   m_Drag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 0.01
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -456,7 +458,7 @@ GameObject:
   - component: {fileID: 7899053072022964486}
   - component: {fileID: 5852578416232881485}
   m_Layer: 6
-  m_Name: Mesh
+  m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

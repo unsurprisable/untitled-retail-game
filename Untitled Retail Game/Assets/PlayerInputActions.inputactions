@@ -42,7 +42,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Interact",
+                    "name": "MainAction",
                     "type": "Button",
                     "id": "d3518c30-5bea-48a1-9aad-2e0fa49671cd",
                     "expectedControlType": "Button",
@@ -51,7 +51,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "InteractAlternate",
+                    "name": "SecondaryAction",
                     "type": "Button",
                     "id": "669410e3-421f-48b2-9137-7621dfb2bcc0",
                     "expectedControlType": "Button",
@@ -69,9 +69,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Use",
+                    "name": "BuildMenu",
                     "type": "Button",
-                    "id": "ac714797-95a3-4848-b30f-df82b8cb2bed",
+                    "id": "367ca659-b375-4b95-883d-487eb7a2f9c6",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "CloseMenu",
+                    "type": "Button",
+                    "id": "bfb7f4e2-b67c-40ce-8846-eeb02e4c01ce",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -170,11 +179,11 @@
                 {
                     "name": "",
                     "id": "a616a6a1-6085-4921-a338-b93f21d2b390",
-                    "path": "<Keyboard>/e",
+                    "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Interact",
+                    "action": "MainAction",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -191,23 +200,34 @@
                 },
                 {
                     "name": "",
-                    "id": "4505353b-0514-4842-bbe0-ddc77a786b1f",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Use",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "1a3bb069-6404-4955-9145-4ee13675e481",
                     "path": "<Mouse>/rightButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "InteractAlternate",
+                    "action": "SecondaryAction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f4e283b3-ecf2-4491-8d2a-4b825a74b285",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "BuildMenu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "452a4f98-bb05-4e4d-9c3d-c9de3209e44c",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CloseMenu",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

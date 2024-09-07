@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abbf60b2b02906a47882cb4f64897612, type: 3}
+  m_Name: Eggs
+  m_EditorClassIdentifier: 
+  name: Eggs
+  icon: {fileID: 21300000, guid: ab9be3bb09935f84cb0005a0a4eb9db5, type: 3}
+  prefab: {fileID: 1383913534775882190, guid: 7f28cdc35c74d0b4f8e3eb9a95e1d74c, type: 3}
+  containerAmount: 20
+  unitPrice: 3.6
+  storageType: 1
+  storageCapacity: {x: 2, y: 3, z: 5}
+  modelDimensions: {x: 0.4, y: 0.2, z: 0.2}
+  storageAmount: 30

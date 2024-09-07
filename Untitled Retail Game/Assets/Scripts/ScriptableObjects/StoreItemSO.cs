@@ -8,7 +8,7 @@ public class StoreItemSO : ScriptableObject
 
     [Header("Metadata")]
     [Tooltip("The item's display name.")]
-    public string itemName;
+    public new string name;
     [Tooltip("The item's icon (make sure it's 128x128).")]
     public Sprite icon; // 128x128 for consistent sizing!!!
     [Tooltip("The item's in-game model.")]
@@ -18,11 +18,13 @@ public class StoreItemSO : ScriptableObject
     
     [Header("Order Data")]
     [Tooltip("Amount of this item that a container can hold.")]
-    public int containerSize;
+    public int containerAmount;
     [Tooltip("Price per unit (not per stack).")]
     public float unitPrice;
     [Tooltip("The type of storage this item requires.")]
-    public ItemStorageSpace.StorageType storageType;
+    public StorageVolume.StorageType storageType;
+    [Tooltip("The shop category this item will appear in.")]
+    public ProductShopUI.ProductCategory category;
 
     [Space]
 
