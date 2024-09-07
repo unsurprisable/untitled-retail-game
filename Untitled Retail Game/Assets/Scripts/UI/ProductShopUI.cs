@@ -17,6 +17,10 @@ public class ProductShopUI : MonoBehaviour
 
     private HashSet<GameObject> activeProductButtons;
     private Dictionary<ProductCategory, List<StoreItemSO>> categoryDict;
+    
+    [SerializeField] private Transform containerPrefab;
+    [SerializeField] private Transform containerSpawnLocation;
+    private List<StoreItemSO> currentOrder;
 
     private bool isEnabled;
 
@@ -25,6 +29,7 @@ public class ProductShopUI : MonoBehaviour
     {
         Instance = this;
 
+        currentOrder = new List<StoreItemSO>();
         activeProductButtons = new HashSet<GameObject>();
         categoryDict = new Dictionary<ProductCategory, List<StoreItemSO>>();
         foreach (StoreItemSO storeItemSO in itemList.list)
@@ -52,7 +57,12 @@ public class ProductShopUI : MonoBehaviour
 
     private void PlaceOrder()
     {
-        Debug.Log("placed order");
+        foreach (StoreItemSO storeItemSO in currentOrder)
+        {
+            Transform container = Instantiate(containerPrefab, containerSpawnLocation.position, Quaternion.identity);
+            container.GetComponent<Container>().SetStoreItemSO(storeItemSO);
+        }
+        currentOrder.Clear();
     }
 
     private void ShowCategory(ProductCategory category)
@@ -84,7 +94,7 @@ public class ProductShopUI : MonoBehaviour
 
     public void AddItemToOrder(StoreItemSO storeItemSO)
     {
-        Debug.Log("added " + storeItemSO.name + " to order.");
+        currentOrder.Add(storeItemSO);
     }
 
     public void Show()

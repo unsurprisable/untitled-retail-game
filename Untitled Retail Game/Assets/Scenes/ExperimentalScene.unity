@@ -2554,6 +2554,37 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -4552961407312753236, guid: 71709d4646d40c9498a26c60eb8fa4d0, type: 3}
+--- !u!1 &980416428
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 980416429}
+  m_Layer: 0
+  m_Name: ContainerSpawnLocation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &980416429
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 980416428}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1.77, y: 2.45, z: -8.4}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1001247093
 GameObject:
   m_ObjectHideFlags: 0
@@ -4698,6 +4729,9 @@ MonoBehaviour:
   productButtonTemplate: {fileID: 4208477333675677627, guid: f1319954cf277d04592ec105fe68669b,
     type: 3}
   productButtonParent: {fileID: 1735819061}
+  containerPrefab: {fileID: 672060980614443742, guid: c5079756ff58a1046863a26b54bd883a,
+    type: 3}
+  containerSpawnLocation: {fileID: 980416429}
 --- !u!1 &1786097275
 GameObject:
   m_ObjectHideFlags: 0
@@ -5776,6 +5810,7 @@ SceneRoots:
   - {fileID: 1886692916}
   - {fileID: 1964602098}
   - {fileID: 1332840867}
+  - {fileID: 980416429}
   - {fileID: 1403205109}
   - {fileID: 904927137}
   - {fileID: 5757432826030490060}
