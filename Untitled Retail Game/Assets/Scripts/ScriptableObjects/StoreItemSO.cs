@@ -23,6 +23,8 @@ public class StoreItemSO : ScriptableObject
     public float unitPrice;
     [Tooltip("The type of storage this item requires.")]
     public StorageVolume.StorageType storageType;
+    [Tooltip("The shop category this item will appear in.")]
+    public ProductShopUI.ProductCategory category;
 
     [Space]
 

@@ -11,6 +11,9 @@ public class BuildButtonSingleUI : MonoBehaviour
     {
         this.buildObjectSO = buildObjectSO;
         preview.sprite = buildObjectSO.preview;
-        button.onClick.AddListener(() => { Debug.Log(buildObjectSO.name); });
+        button.onClick.AddListener(() => {
+            Debug.Log("enter build mode overlay");
+            BuildMenuUI.Instance.Hide();
+        });
     }
 }

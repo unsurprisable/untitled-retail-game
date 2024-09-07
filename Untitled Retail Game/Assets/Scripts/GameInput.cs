@@ -11,6 +11,7 @@ public class GameInput : MonoBehaviour
     public event EventHandler SecondaryAction;
     public event EventHandler OnDrop;
     public event EventHandler OnBuildMenu;
+    public event EventHandler OnCloseMenu;
 
     private PlayerInputActions playerInputActions;
 
@@ -26,6 +27,7 @@ public class GameInput : MonoBehaviour
         playerInputActions.Player.SecondaryAction.performed  += (context) => {SecondaryAction.Invoke(this, EventArgs.Empty);};
         playerInputActions.Player.Drop.performed             += (context) => {OnDrop?.Invoke(this, EventArgs.Empty);};
         playerInputActions.Player.BuildMenu.performed        += (context) => {OnBuildMenu?.Invoke(this, EventArgs.Empty);};
+        playerInputActions.Player.CloseMenu.performed        += (context) => {OnCloseMenu?.Invoke(this, EventArgs.Empty);};
     }
 
     public Vector2 GetMovementVectorNormalized() {

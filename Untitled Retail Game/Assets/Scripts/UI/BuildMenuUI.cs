@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,7 +18,7 @@ public class BuildMenuUI : MonoBehaviour
     private HashSet<GameObject> activeBuildButtons;
     private Dictionary<BuildCategory, List<BuildObjectSO>> categoryDict;
 
-    private bool isEnabled = false;
+    private bool isEnabled;
 
     private void Awake()
     {
@@ -25,25 +26,25 @@ public class BuildMenuUI : MonoBehaviour
 
         activeBuildButtons = new HashSet<GameObject>();
         categoryDict = new Dictionary<BuildCategory, List<BuildObjectSO>>();
-        foreach (BuildObjectSO buildObject in objectList.list)
+        foreach (BuildObjectSO buildObjectSO in objectList.list)
         {
-            if (buildObject.isImportant) {
+            if (buildObjectSO.isImportant) {
                 if (!categoryDict.ContainsKey(BuildCategory.IMPORTANT_DO_NOT_ASSIGN)) {
                     categoryDict[BuildCategory.IMPORTANT_DO_NOT_ASSIGN] = new List<BuildObjectSO>();
                 }
-                categoryDict[BuildCategory.IMPORTANT_DO_NOT_ASSIGN].Add(buildObject);
+                categoryDict[BuildCategory.IMPORTANT_DO_NOT_ASSIGN].Add(buildObjectSO);
             }
-            if (!categoryDict.ContainsKey(buildObject.category)) {
-                categoryDict[buildObject.category] = new List<BuildObjectSO>();
+            if (!categoryDict.ContainsKey(buildObjectSO.category)) {
+                categoryDict[buildObjectSO.category] = new List<BuildObjectSO>();
             }
-            categoryDict[buildObject.category].Add(buildObject);
+            categoryDict[buildObjectSO.category].Add(buildObjectSO);
         }
 
         // manual assignment for now (it's not too inconvenient, so this will probably stay)
-        categoryButtons[0].GetComponent<Button>().onClick.AddListener(()=>{ShowCategory(BuildCategory.IMPORTANT_DO_NOT_ASSIGN);});
-        categoryButtons[1].GetComponent<Button>().onClick.AddListener(()=>{ShowCategory(BuildCategory.ITEM_DISPLAYS);});
-        categoryButtons[2].GetComponent<Button>().onClick.AddListener(()=>{ShowCategory(BuildCategory.CUSTOMERS);});
-        categoryButtons[3].GetComponent<Button>().onClick.AddListener(()=>{ShowCategory(BuildCategory.DECORATION);});
+        categoryButtons[0].GetComponent<Button>().onClick.AddListener(()=>{ ShowCategory(BuildCategory.IMPORTANT_DO_NOT_ASSIGN); });
+        categoryButtons[1].GetComponent<Button>().onClick.AddListener(()=>{ ShowCategory(BuildCategory.ITEM_DISPLAYS) ;});
+        categoryButtons[2].GetComponent<Button>().onClick.AddListener(()=>{ ShowCategory(BuildCategory.CUSTOMERS); });
+        categoryButtons[3].GetComponent<Button>().onClick.AddListener(()=>{ ShowCategory(BuildCategory.DECORATION); });
     }
 
     private void Start()
@@ -51,6 +52,9 @@ public class BuildMenuUI : MonoBehaviour
         GameInput.Instance.OnBuildMenu += (sender, args) => {
             if (isEnabled) Hide();
             else Show();
+        };
+        GameInput.Instance.OnCloseMenu += (sender, args) => {
+            if (isEnabled) Hide();
         };
     }
 
@@ -77,9 +81,8 @@ public class BuildMenuUI : MonoBehaviour
 
     private GameObject CreateBuildButton(BuildObjectSO buildObjectSO)
     {
-        Transform buildButton = Instantiate(buildButtonTemplate);
+        Transform buildButton = Instantiate(buildButtonTemplate, buildButtonParent);
         buildButton.GetComponent<BuildButtonSingleUI>().SetBuildObjectSO(buildObjectSO);
-        buildButton.SetParent(buildButtonParent);
         return buildButton.gameObject;
     }
 
@@ -87,12 +90,12 @@ public class BuildMenuUI : MonoBehaviour
     {
         visual.SetActive(true);
         isEnabled = true;
-        PlayerController.Instance.GetFirstPersonCamera().Disable();
+        PlayerController.Instance.OnMenuOpened();
     }
     public void Hide()
     {
         visual.SetActive(false);
         isEnabled = false;
-        PlayerController.Instance.GetFirstPersonCamera().Enable();
+        PlayerController.Instance.OnMenuClosed();
     }
 }

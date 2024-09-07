@@ -28,6 +28,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float throwForce;
     private HoldableItem heldItem;
 
+    [SerializeField] private bool inMenu;
+
 
     private void Awake()
     {
@@ -43,6 +45,7 @@ public class PlayerController : MonoBehaviour
         #region Events
 
         GameInput.Instance.OnJump += (sender, args) => {
+            if (inMenu) return;
             // should switch to BoxCast or something similar; right now its just a single, centered ray, which is bad for edges
             if (Physics.Raycast(transform.position + Vector3.up*maxGroundDistance, Vector3.down, 2*maxGroundDistance, groundLayerMask)) {
                 rb.AddForce(Vector3.up * jumpForce);
@@ -50,6 +53,7 @@ public class PlayerController : MonoBehaviour
         };
 
         GameInput.Instance.MainAction += (sender, args) => {
+            if (inMenu) return;
             if (hoveredItem == null) return;
             if (heldItem != null && heldItem.hasUse) {
                 heldItem.OnUse(this);
@@ -61,11 +65,13 @@ public class PlayerController : MonoBehaviour
         };
 
         GameInput.Instance.SecondaryAction += (sender, args) => {
+            if (inMenu) return;
             if (hoveredItem == null) return; 
             hoveredItem.OnInteractSecondary(this);
         };
 
         GameInput.Instance.OnDrop += (sender, args) => {
+            if (inMenu) return;
             if (heldItem == null) return;
             DropHeldItem();
         };
@@ -75,6 +81,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (inMenu) return;
         HandleItemHovering();
     }
 
@@ -119,6 +126,8 @@ public class PlayerController : MonoBehaviour
         dragVelocity.y = 0;
         rb.AddForce(drag * dragVelocity);
 
+        if (inMenu) return;
+        
         Vector2 inputVector = GameInput.Instance.GetMovementVectorNormalized();
 
         // movement relative to camera direction
@@ -168,5 +177,16 @@ public class PlayerController : MonoBehaviour
 
     public FirstPersonCamera GetFirstPersonCamera() {
         return fpCamera;
+    }
+
+    public void OnMenuOpened()
+    {
+        inMenu = true;
+        fpCamera.Disable();
+    }
+    public void OnMenuClosed()
+    {
+        inMenu = false;
+        fpCamera.Enable();
     }
 }
