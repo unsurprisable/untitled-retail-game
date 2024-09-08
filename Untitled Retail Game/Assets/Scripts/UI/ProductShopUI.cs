@@ -10,17 +10,24 @@ public class ProductShopUI : MonoBehaviour
 
     [SerializeField] private StoreItemListSO itemList;
     [SerializeField] private GameObject visual;
-    [SerializeField] private GameObject[] categoryButtons;
     [SerializeField] private Button placeOrderButton;
+    [SerializeField] private GameObject[] categoryButtons;
+    [Space]
     [SerializeField] private Transform productButtonTemplate;
     [SerializeField] private Transform productButtonParent;
+    [SerializeField] private Transform productOrderTemplate;
+    [SerializeField] private Transform productOrderParent;
+    [SerializeField] private int maxOrders;
+
+    private Dictionary<StoreItemSO, List<GameObject>> currentOrder;
+    private int orderAmount;
 
     private HashSet<GameObject> activeProductButtons;
     private Dictionary<ProductCategory, List<StoreItemSO>> categoryDict;
     
+    [Space]
     [SerializeField] private Transform containerPrefab;
     [SerializeField] private Transform containerSpawnLocation;
-    private List<StoreItemSO> currentOrder;
 
     private bool isEnabled;
 
@@ -29,7 +36,7 @@ public class ProductShopUI : MonoBehaviour
     {
         Instance = this;
 
-        currentOrder = new List<StoreItemSO>();
+        currentOrder = new Dictionary<StoreItemSO, List<GameObject>>();
         activeProductButtons = new HashSet<GameObject>();
         categoryDict = new Dictionary<ProductCategory, List<StoreItemSO>>();
         foreach (StoreItemSO storeItemSO in itemList.list)
@@ -42,10 +49,7 @@ public class ProductShopUI : MonoBehaviour
 
         categoryButtons[0].GetComponent<Button>().onClick.AddListener(()=>{ ShowCategory(ProductCategory.BASIC_PRODUCTS); });
 
-        placeOrderButton.onClick.AddListener(()=>{
-            PlaceOrder();
-            Hide();
-         });
+        placeOrderButton.onClick.AddListener(PlaceOrder);
     }
 
     private void Start()
@@ -57,12 +61,19 @@ public class ProductShopUI : MonoBehaviour
 
     private void PlaceOrder()
     {
-        foreach (StoreItemSO storeItemSO in currentOrder)
+        foreach (StoreItemSO storeItemSO in currentOrder.Keys)
         {
-            Transform container = Instantiate(containerPrefab, containerSpawnLocation.position, Quaternion.identity);
-            container.GetComponent<Container>().SetStoreItemSO(storeItemSO);
+            List<GameObject> activeOrderButtons = currentOrder[storeItemSO];
+            // account for ordering multiple of the same item
+            foreach (GameObject orderButton in activeOrderButtons) {
+                Transform container = Instantiate(containerPrefab, containerSpawnLocation.position, Quaternion.identity);
+                container.GetComponent<Container>().SetStoreItemSO(storeItemSO);
+                Destroy(orderButton);
+            }
         }
         currentOrder.Clear();
+        
+        Hide();
     }
 
     private void ShowCategory(ProductCategory category)
@@ -94,7 +105,29 @@ public class ProductShopUI : MonoBehaviour
 
     public void AddItemToOrder(StoreItemSO storeItemSO)
     {
-        currentOrder.Add(storeItemSO);
+        if (orderAmount == maxOrders) {
+            Debug.Log("Cannot add another order (order list is full)!");
+            return;
+        }
+        if (!currentOrder.ContainsKey(storeItemSO)) {
+            currentOrder.Add(storeItemSO, new List<GameObject>());
+        } 
+        currentOrder[storeItemSO].Add(CreateOrderButton(storeItemSO));
+        orderAmount++;
+    }
+
+    private GameObject CreateOrderButton(StoreItemSO storeItemSO)
+    {
+        Transform orderButton = Instantiate(productOrderTemplate, productOrderParent);
+        orderButton.GetComponent<ProductOrderSingleUI>().SetStoreItemSO(storeItemSO);
+        return orderButton.gameObject;
+    }
+
+    public void RemoveItemFromOrder(ProductOrderSingleUI order)
+    {
+        Destroy(order.gameObject);
+        currentOrder[order.storeItemSO].Remove(order.gameObject);
+        orderAmount--;
     }
 
     public void Show()

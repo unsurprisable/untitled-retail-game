@@ -17,4 +17,4 @@ MonoBehaviour:
   prefab: {fileID: 514645589362473807, guid: 7d4945890651f464daa5182735ba9d67, type: 3}
   preview: {fileID: 0}
   category: 1
-  isImportant: 0
+  isImportant: 1

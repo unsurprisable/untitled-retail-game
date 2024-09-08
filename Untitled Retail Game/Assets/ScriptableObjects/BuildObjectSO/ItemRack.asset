@@ -15,6 +15,6 @@ MonoBehaviour:
   name: Item Rack
   price: 250
   prefab: {fileID: 6906291854759542065, guid: 9587f4f9543ce2643b6be6b99b2607cd, type: 3}
-  preview: {fileID: 21300000, guid: 75db053829f4ac245bb986f2274b50f3, type: 3}
+  preview: {fileID: 0}
   category: 0
   isImportant: 1
