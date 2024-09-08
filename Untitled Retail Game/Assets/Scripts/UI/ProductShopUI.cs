@@ -10,7 +10,6 @@ public class ProductShopUI : MonoBehaviour
 
     [SerializeField] private StoreItemListSO itemList;
     [SerializeField] private GameObject visual;
-    [SerializeField] private Button placeOrderButton;
     [SerializeField] private GameObject[] categoryButtons;
     [Space]
     [SerializeField] private Transform productButtonTemplate;
@@ -18,14 +17,22 @@ public class ProductShopUI : MonoBehaviour
     [SerializeField] private Transform productOrderTemplate;
     [SerializeField] private Transform productOrderParent;
     [SerializeField] private int maxOrders;
+    private float orderTotalPrice;
+
+    [Space]
+    [SerializeField] private Button placeOrderButton;
+    [SerializeField] private TMPro.TextMeshProUGUI orderTotalText;
+    [SerializeField] private Color orderButtonEnabledColor;
+    [SerializeField] private Color orderButtonDisabledColor;
 
     private Dictionary<StoreItemSO, List<GameObject>> currentOrder;
-    private int orderAmount;
+    private int queuedOrderCount;
 
     private HashSet<GameObject> activeProductButtons;
     private Dictionary<ProductCategory, List<StoreItemSO>> categoryDict;
     
     [Space]
+
     [SerializeField] private Transform containerPrefab;
     [SerializeField] private Transform containerSpawnLocation;
 
@@ -48,6 +55,7 @@ public class ProductShopUI : MonoBehaviour
         }
 
         categoryButtons[0].GetComponent<Button>().onClick.AddListener(()=>{ ShowCategory(ProductCategory.BASIC_PRODUCTS); });
+        categoryButtons[1].GetComponent<Button>().onClick.AddListener(()=>{ ShowCategory(ProductCategory.DAIRY_PRODUCTS); });
 
         placeOrderButton.onClick.AddListener(PlaceOrder);
     }
@@ -57,10 +65,18 @@ public class ProductShopUI : MonoBehaviour
         GameInput.Instance.OnCloseMenu += (sender, args) => {
             if (isEnabled) Hide();
         };
+        GameManager.Instance.OnBalanceChanged += (sender, args) => {
+            UpdateOrderButtonState();
+        };
+        UpdateOrderButtonState();
     }
 
     private void PlaceOrder()
     {
+        if (!GameManager.Instance.CanAfford(orderTotalPrice)) return;
+
+        GameManager.Instance.RemoveFromBalance(orderTotalPrice);
+
         foreach (StoreItemSO storeItemSO in currentOrder.Keys)
         {
             List<GameObject> activeOrderButtons = currentOrder[storeItemSO];
@@ -72,6 +88,10 @@ public class ProductShopUI : MonoBehaviour
             }
         }
         currentOrder.Clear();
+        queuedOrderCount = 0;
+        orderTotalPrice = 0f;
+        UpdateOrderTotalText();
+        UpdateOrderButtonState();
         
         Hide();
     }
@@ -105,7 +125,7 @@ public class ProductShopUI : MonoBehaviour
 
     public void AddItemToOrder(StoreItemSO storeItemSO)
     {
-        if (orderAmount == maxOrders) {
+        if (queuedOrderCount == maxOrders) {
             Debug.Log("Cannot add another order (order list is full)!");
             return;
         }
@@ -113,7 +133,10 @@ public class ProductShopUI : MonoBehaviour
             currentOrder.Add(storeItemSO, new List<GameObject>());
         } 
         currentOrder[storeItemSO].Add(CreateOrderButton(storeItemSO));
-        orderAmount++;
+        orderTotalPrice += storeItemSO.unitPrice * storeItemSO.containerAmount;
+        UpdateOrderTotalText();
+        queuedOrderCount++;
+        UpdateOrderButtonState();
     }
 
     private GameObject CreateOrderButton(StoreItemSO storeItemSO)
@@ -127,7 +150,22 @@ public class ProductShopUI : MonoBehaviour
     {
         Destroy(order.gameObject);
         currentOrder[order.storeItemSO].Remove(order.gameObject);
-        orderAmount--;
+        orderTotalPrice -= order.storeItemSO.unitPrice * order.storeItemSO.containerAmount;
+        UpdateOrderTotalText();
+        queuedOrderCount--;
+        UpdateOrderButtonState();
+    }
+
+    private void UpdateOrderTotalText()
+    {
+        orderTotalText.text = "Order Total: $" + orderTotalPrice.ToString("0.00");
+    }
+
+    private void UpdateOrderButtonState()
+    {
+        bool canOrder = queuedOrderCount != 0 && GameManager.Instance.CanAfford(orderTotalPrice);
+        placeOrderButton.gameObject.GetComponent<Image>().color = canOrder ? orderButtonEnabledColor : orderButtonDisabledColor;
+        placeOrderButton.enabled = canOrder;
     }
 
     public void Show()

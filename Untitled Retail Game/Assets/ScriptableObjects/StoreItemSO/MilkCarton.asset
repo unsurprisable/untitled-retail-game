@@ -15,9 +15,10 @@ MonoBehaviour:
   name: Milk Carton
   icon: {fileID: 21300000, guid: c6221114e5413024793e23fd65707369, type: 3}
   prefab: {fileID: 1383913534775882190, guid: 7f28cdc35c74d0b4f8e3eb9a95e1d74c, type: 3}
-  containerAmount: 20
+  containerAmount: 30
   unitPrice: 2.8
   storageType: 0
+  category: 1
   storageCapacity: {x: 13, y: 1, z: 4}
   modelDimensions: {x: 0.12, y: 0.18, z: 0.12}
   storageAmount: 52
