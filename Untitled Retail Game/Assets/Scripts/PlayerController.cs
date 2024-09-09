@@ -26,10 +26,12 @@ public class PlayerController : MonoBehaviour
 
     [Header("Interaction")]
     [SerializeField] private LayerMask itemLayerMask;
+    [SerializeField] private Transform itemAnchor;
     [SerializeField] private Transform cameraAnchor;
+    [SerializeField] private Transform playerModelTransform;
+    [SerializeField] private float playerRotateSpeed;
     [SerializeField] private float interactionDistance;
     [SerializeField] private InteractableObject hoveredItem;
-    [SerializeField] private Transform itemAnchor;
     [SerializeField] private float throwForce;
     private HoldableItem heldItem;
 
@@ -83,6 +85,7 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         if (inMenu) return;
+
         HandleItemHovering();
     }
 
@@ -91,8 +94,26 @@ public class PlayerController : MonoBehaviour
         HandleMovement();
     }
 
+    private void LateUpdate()
+    {
+        HandlePlayerVisual();
+    }
+
     private bool IsGrounded() {
         return Physics.OverlapBox(transform.position + Vector3.down * maxGroundDistance, new Vector3(collisionWidth/2, maxGroundDistance/2, collisionWidth/2) - collisionReduction, Quaternion.identity, groundLayerMask).Length != 0;
+    }
+
+    private void HandlePlayerVisual()
+    {
+        playerModelTransform.transform.rotation = Quaternion.Slerp(
+            playerModelTransform.transform.rotation, 
+            Quaternion.Euler(Vector3.up * orientation.rotation.eulerAngles.y),
+            Time.deltaTime * playerRotateSpeed);
+
+        if (heldItem != null) {
+            // TODO: add heldItem.heldPositionValues to item position (but it needs to be adjusted for the angle using trig)
+            heldItem.transform.SetPositionAndRotation(itemAnchor.position + Vector3.up * heldItem.heldPositionOffset.y, Quaternion.Euler(playerModelTransform.rotation.eulerAngles + heldItem.heldRotationValues));
+        }
     }
 
     private void HandleItemHovering()
@@ -159,7 +180,6 @@ public class PlayerController : MonoBehaviour
     {
         item.GetComponent<Rigidbody>().isKinematic = true;
         item.GetComponent<Collider>().enabled = false;
-        item.transform.SetParent(itemAnchor, false);
         item.transform.localPosition = item.heldPositionOffset;
         item.transform.localRotation = Quaternion.Euler(item.heldRotationValues);
 
@@ -172,7 +192,6 @@ public class PlayerController : MonoBehaviour
     {
         heldItem.GetComponent<Rigidbody>().isKinematic = false;
         heldItem.GetComponent<Collider>().enabled = true;
-        heldItem.transform.SetParent(null);
 
         heldItem.GetComponent<Rigidbody>().AddForce(orientation.forward * throwForce);
         

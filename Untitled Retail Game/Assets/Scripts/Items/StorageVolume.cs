@@ -32,9 +32,13 @@ public class StorageVolume : InteractableObject
 
     public override void OnHovered()
     {
-        if (storeItem != null) {
-            StorageVolumeUI.Instance.UpdateInfo(storeItem, itemAmount);
-            StorageVolumeUI.Instance.Show();
+        if (storeItem == null) return;
+
+        StorageVolumeUI.Instance.UpdateInfo(storeItem, itemAmount);
+        StorageVolumeUI.Instance.Show();
+
+        if (PlayerController.Instance.GetHeldItem() is ItemScannerItem scanner) {
+            Debug.Log("woah woah woah, is that a scanner? " + GameManager.Instance.GetStoreItemPrice(storeItem));
         }
     }
     public override void OnUnhovered()
