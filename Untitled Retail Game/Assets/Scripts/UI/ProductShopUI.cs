@@ -11,16 +11,30 @@ public class ProductShopUI : MonoBehaviour
     [SerializeField] private StoreItemListSO itemList;
     [SerializeField] private GameObject visual;
     [SerializeField] private GameObject[] categoryButtons;
-    [SerializeField] private Button placeOrderButton;
+    [Space]
     [SerializeField] private Transform productButtonTemplate;
     [SerializeField] private Transform productButtonParent;
+    [SerializeField] private Transform productOrderTemplate;
+    [SerializeField] private Transform productOrderParent;
+    [SerializeField] private int maxOrders;
+    private float orderTotalPrice;
+
+    [Space]
+    [SerializeField] private Button placeOrderButton;
+    [SerializeField] private TMPro.TextMeshProUGUI orderTotalText;
+    [SerializeField] private Color orderButtonEnabledColor;
+    [SerializeField] private Color orderButtonDisabledColor;
+
+    private Dictionary<StoreItemSO, List<GameObject>> currentOrder;
+    private int queuedOrderCount;
 
     private HashSet<GameObject> activeProductButtons;
     private Dictionary<ProductCategory, List<StoreItemSO>> categoryDict;
     
+    [Space]
+
     [SerializeField] private Transform containerPrefab;
     [SerializeField] private Transform containerSpawnLocation;
-    private List<StoreItemSO> currentOrder;
 
     private bool isEnabled;
 
@@ -29,7 +43,7 @@ public class ProductShopUI : MonoBehaviour
     {
         Instance = this;
 
-        currentOrder = new List<StoreItemSO>();
+        currentOrder = new Dictionary<StoreItemSO, List<GameObject>>();
         activeProductButtons = new HashSet<GameObject>();
         categoryDict = new Dictionary<ProductCategory, List<StoreItemSO>>();
         foreach (StoreItemSO storeItemSO in itemList.list)
@@ -41,11 +55,9 @@ public class ProductShopUI : MonoBehaviour
         }
 
         categoryButtons[0].GetComponent<Button>().onClick.AddListener(()=>{ ShowCategory(ProductCategory.BASIC_PRODUCTS); });
+        categoryButtons[1].GetComponent<Button>().onClick.AddListener(()=>{ ShowCategory(ProductCategory.DAIRY_PRODUCTS); });
 
-        placeOrderButton.onClick.AddListener(()=>{
-            PlaceOrder();
-            Hide();
-         });
+        placeOrderButton.onClick.AddListener(PlaceOrder);
     }
 
     private void Start()
@@ -53,16 +65,35 @@ public class ProductShopUI : MonoBehaviour
         GameInput.Instance.OnCloseMenu += (sender, args) => {
             if (isEnabled) Hide();
         };
+        GameManager.Instance.OnBalanceChanged += (sender, args) => {
+            UpdateOrderButtonState();
+        };
+        UpdateOrderButtonState();
     }
 
     private void PlaceOrder()
     {
-        foreach (StoreItemSO storeItemSO in currentOrder)
+        if (!GameManager.Instance.CanAfford(orderTotalPrice)) return;
+
+        GameManager.Instance.RemoveFromBalance(orderTotalPrice);
+
+        foreach (StoreItemSO storeItemSO in currentOrder.Keys)
         {
-            Transform container = Instantiate(containerPrefab, containerSpawnLocation.position, Quaternion.identity);
-            container.GetComponent<Container>().SetStoreItemSO(storeItemSO);
+            List<GameObject> activeOrderButtons = currentOrder[storeItemSO];
+            // account for ordering multiple of the same item
+            foreach (GameObject orderButton in activeOrderButtons) {
+                Transform container = Instantiate(containerPrefab, containerSpawnLocation.position, Quaternion.identity);
+                container.GetComponent<Container>().SetStoreItemSO(storeItemSO);
+                Destroy(orderButton);
+            }
         }
         currentOrder.Clear();
+        queuedOrderCount = 0;
+        orderTotalPrice = 0f;
+        UpdateOrderTotalText();
+        UpdateOrderButtonState();
+        
+        Hide();
     }
 
     private void ShowCategory(ProductCategory category)
@@ -94,7 +125,47 @@ public class ProductShopUI : MonoBehaviour
 
     public void AddItemToOrder(StoreItemSO storeItemSO)
     {
-        currentOrder.Add(storeItemSO);
+        if (queuedOrderCount == maxOrders) {
+            Debug.Log("Cannot add another order (order list is full)!");
+            return;
+        }
+        if (!currentOrder.ContainsKey(storeItemSO)) {
+            currentOrder.Add(storeItemSO, new List<GameObject>());
+        } 
+        currentOrder[storeItemSO].Add(CreateOrderButton(storeItemSO));
+        orderTotalPrice += storeItemSO.unitPrice * storeItemSO.containerAmount;
+        UpdateOrderTotalText();
+        queuedOrderCount++;
+        UpdateOrderButtonState();
+    }
+
+    private GameObject CreateOrderButton(StoreItemSO storeItemSO)
+    {
+        Transform orderButton = Instantiate(productOrderTemplate, productOrderParent);
+        orderButton.GetComponent<ProductOrderSingleUI>().SetStoreItemSO(storeItemSO);
+        return orderButton.gameObject;
+    }
+
+    public void RemoveItemFromOrder(ProductOrderSingleUI order)
+    {
+        Destroy(order.gameObject);
+        currentOrder[order.storeItemSO].Remove(order.gameObject);
+        orderTotalPrice -= order.storeItemSO.unitPrice * order.storeItemSO.containerAmount;
+        UpdateOrderTotalText();
+        queuedOrderCount--;
+        UpdateOrderButtonState();
+    }
+
+    private void UpdateOrderTotalText()
+    {
+        orderTotalText.text = "Order Total: $" + orderTotalPrice.ToString("0.00");
+    }
+
+    private void UpdateOrderButtonState()
+    {
+        bool canOrder = queuedOrderCount != 0 && GameManager.Instance.CanAfford(orderTotalPrice);
+        placeOrderButton.gameObject.GetComponent<Image>().color = canOrder ? orderButtonEnabledColor : orderButtonDisabledColor;
+        placeOrderButton.enabled = canOrder;
     }
 
     public void Show()

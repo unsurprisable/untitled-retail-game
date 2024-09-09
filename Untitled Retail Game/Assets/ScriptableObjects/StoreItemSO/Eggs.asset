@@ -15,9 +15,10 @@ MonoBehaviour:
   name: Eggs
   icon: {fileID: 21300000, guid: ab9be3bb09935f84cb0005a0a4eb9db5, type: 3}
   prefab: {fileID: 1383913534775882190, guid: 7f28cdc35c74d0b4f8e3eb9a95e1d74c, type: 3}
-  containerAmount: 20
+  containerAmount: 12
   unitPrice: 3.6
   storageType: 1
+  category: 1
   storageCapacity: {x: 2, y: 3, z: 5}
   modelDimensions: {x: 0.4, y: 0.2, z: 0.2}
   storageAmount: 30

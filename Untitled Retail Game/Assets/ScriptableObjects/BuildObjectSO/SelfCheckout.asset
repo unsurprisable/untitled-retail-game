@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 269af5b68b8c4ed4d8298345df3e58b3, type: 3}
-  m_Name: ItemRack
+  m_Name: SelfCheckout
   m_EditorClassIdentifier: 
-  name: Item Rack
-  price: 250
-  prefab: {fileID: 6906291854759542065, guid: 9587f4f9543ce2643b6be6b99b2607cd, type: 3}
+  name: Self Checkout
+  price: 5000
+  prefab: {fileID: 514645589362473807, guid: 7d4945890651f464daa5182735ba9d67, type: 3}
   preview: {fileID: 0}
-  category: 0
+  category: 1
   isImportant: 1

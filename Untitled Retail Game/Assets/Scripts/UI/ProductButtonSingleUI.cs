@@ -8,7 +8,6 @@ public class ProductButtonSingleUI : MonoBehaviour
     [SerializeField] private TMPro.TextMeshProUGUI amount;
     [SerializeField] private TMPro.TextMeshProUGUI price;
     [SerializeField] private Button addButton;
-    [SerializeField] private Button removeButton;
 
     private StoreItemSO storeItemSO;
 
