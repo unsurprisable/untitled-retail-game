@@ -14,10 +14,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float walkSpeed;
     [SerializeField] private float runSpeed;
     [SerializeField] private float drag;
+
+    [Header("Jumping")]
     [SerializeField] private float jumpForce;
     [SerializeField] private LayerMask groundLayerMask;
     [SerializeField] private float collisionWidth;
     [SerializeField] private float maxGroundDistance;
+    [SerializeField] private Vector3 collisionReduction;
+    [SerializeField] private float jumpInputBuffer;
+    private float jumpInputBufferLeft;
 
     [Header("Interaction")]
     [SerializeField] private LayerMask itemLayerMask;
@@ -45,11 +50,7 @@ public class PlayerController : MonoBehaviour
         #region Events
 
         GameInput.Instance.OnJump += (sender, args) => {
-            if (inMenu) return;
-            // should switch to BoxCast or something similar; right now its just a single, centered ray, which is bad for edges
-            if (Physics.Raycast(transform.position + Vector3.up*maxGroundDistance, Vector3.down, 2*maxGroundDistance, groundLayerMask)) {
-                rb.AddForce(Vector3.up * jumpForce);
-            }
+            jumpInputBufferLeft = jumpInputBuffer;
         };
 
         GameInput.Instance.MainAction += (sender, args) => {
@@ -90,7 +91,9 @@ public class PlayerController : MonoBehaviour
         HandleMovement();
     }
 
-
+    private bool IsGrounded() {
+        return Physics.OverlapBox(transform.position + Vector3.down * maxGroundDistance, new Vector3(collisionWidth/2, maxGroundDistance/2, collisionWidth/2) - collisionReduction, Quaternion.identity, groundLayerMask).Length != 0;
+    }
 
     private void HandleItemHovering()
     {
@@ -142,6 +145,13 @@ public class PlayerController : MonoBehaviour
         Vector3 moveDir = new Vector3(relMoveDir.x, 0f, relMoveDir.y) * moveSpeed;
 
         rb.AddForce(moveDir);
+        
+        jumpInputBufferLeft -= Time.fixedDeltaTime;
+        if (jumpInputBufferLeft > 0 && IsGrounded()) {
+            rb.velocity -= Vector3.up * rb.velocity.y; // cancel current velocity
+            rb.AddForce(Vector3.up * jumpForce);
+            jumpInputBufferLeft = 0f;
+        }
     }
 
 

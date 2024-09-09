@@ -1317,7 +1317,7 @@ GameObject:
   - component: {fileID: 364440683}
   - component: {fileID: 364440686}
   - component: {fileID: 364440685}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2309,7 +2309,7 @@ GameObject:
   - component: {fileID: 850623549}
   - component: {fileID: 850623548}
   - component: {fileID: 850623547}
-  - component: {fileID: 850623546}
+  - component: {fileID: 850623550}
   m_Layer: 0
   m_Name: Floor
   m_TagString: Untagged
@@ -2317,28 +2317,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!64 &850623546
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 850623545}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &850623547
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2404,6 +2382,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1964602098}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &850623550
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 850623545}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: -5, z: 0}
 --- !u!1 &902060703
 GameObject:
   m_ObjectHideFlags: 0
@@ -2549,10 +2548,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 904927137}
-  - component: {fileID: 904927139}
   - component: {fileID: 904927138}
+  - component: {fileID: 904927139}
   - component: {fileID: 904927140}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2568,7 +2567,7 @@ Transform:
   m_GameObject: {fileID: 904927135}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 5.82, y: 1.78, z: -0.97}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2598,9 +2597,11 @@ MonoBehaviour:
   jumpForce: 800
   groundLayerMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 119
   collisionWidth: 0.75
-  maxGroundDistance: 0.05
+  maxGroundDistance: 0.01
+  collisionReduction: {x: 0.05, y: 0, z: 0.05}
+  jumpInputBuffer: 0.05
   itemLayerMask:
     serializedVersion: 2
     m_Bits: 64
@@ -4205,13 +4206,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1314671374}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: -0, y: 0.41411272, z: -0, w: 0.9102257}
   m_LocalPosition: {x: 6.55, y: 2.12, z: -9.45}
   m_LocalScale: {x: 3.6428, y: 3.6428, z: 3.6428}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1964602098}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 48.927, z: 0}
 --- !u!1 &1332840863
 GameObject:
   m_ObjectHideFlags: 0
@@ -5520,7 +5521,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1786097276}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: CameraAnchor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5847,7 +5848,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1903030090}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Orientation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6206,7 +6207,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2067036653}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: ItemAnchor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
