@@ -20,7 +20,7 @@ public class ProductButtonSingleUI : MonoBehaviour
         price.text = "$" + (storeItemSO.unitPrice * storeItemSO.containerAmount).ToString("0.00");
 
         addButton.onClick.AddListener(() => {
-            ProductShopUI.Instance.AddItemToOrder(storeItemSO);
+            OrderMenuUI.Instance.AddItemToOrder(storeItemSO);
         });
     }
 }

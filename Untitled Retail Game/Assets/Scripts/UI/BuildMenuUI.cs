@@ -3,22 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BuildMenuUI : MonoBehaviour
+public class BuildMenuUI : Menu
 {
     public static BuildMenuUI Instance { get; private set; }
 
     public enum BuildCategory { ITEM_DISPLAYS, CUSTOMERS, DECORATION, IMPORTANT_DO_NOT_ASSIGN }
 
     [SerializeField] private BuildObjectListSO objectList;
-    [SerializeField] private GameObject visual;
     [SerializeField] private GameObject[] categoryButtons;
     [SerializeField] private Transform buildButtonTemplate;
     [SerializeField] private Transform buildButtonParent;
 
     private HashSet<GameObject> activeBuildButtons;
     private Dictionary<BuildCategory, List<BuildObjectSO>> categoryDict;
-
-    private bool isEnabled;
 
     private void Awake()
     {
@@ -50,11 +47,10 @@ public class BuildMenuUI : MonoBehaviour
     private void Start()
     {
         GameInput.Instance.OnBuildMenu += (sender, args) => {
-            if (isEnabled) Hide();
-            else Show();
-        };
-        GameInput.Instance.OnCloseMenu += (sender, args) => {
-            if (isEnabled) Hide();
+            if (isEnabled) 
+                Hide();
+            else if (!MenuManager.Instance.IsInMenu()) 
+                Show();
         };
     }
 
@@ -84,18 +80,5 @@ public class BuildMenuUI : MonoBehaviour
         Transform buildButton = Instantiate(buildButtonTemplate, buildButtonParent);
         buildButton.GetComponent<BuildButtonSingleUI>().SetBuildObjectSO(buildObjectSO);
         return buildButton.gameObject;
-    }
-
-    public void Show()
-    {
-        visual.SetActive(true);
-        isEnabled = true;
-        PlayerController.Instance.OnMenuOpened();
-    }
-    public void Hide()
-    {
-        visual.SetActive(false);
-        isEnabled = false;
-        PlayerController.Instance.OnMenuClosed();
     }
 }

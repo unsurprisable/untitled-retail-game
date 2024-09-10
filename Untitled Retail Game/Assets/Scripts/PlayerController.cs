@@ -35,8 +35,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float throwForce;
     private HoldableItem heldItem;
 
-    [SerializeField] private bool inMenu;
-
+    private bool controlsDisabled;
 
     private void Awake()
     {
@@ -56,7 +55,7 @@ public class PlayerController : MonoBehaviour
         };
 
         GameInput.Instance.MainAction += (sender, args) => {
-            if (inMenu) return;
+            if (controlsDisabled) return;
             if (hoveredItem == null) return;
             if (heldItem != null && heldItem.hasUse) {
                 heldItem.OnUse(this);
@@ -68,7 +67,7 @@ public class PlayerController : MonoBehaviour
         };
 
         GameInput.Instance.SecondaryAction += (sender, args) => {
-            if (inMenu) return;
+            if (controlsDisabled) return;
             if (hoveredItem == null) return; 
             if (heldItem != null && heldItem.hasUse) {
                 heldItem.OnUseSecondary(this);
@@ -78,7 +77,7 @@ public class PlayerController : MonoBehaviour
         };
 
         GameInput.Instance.OnDrop += (sender, args) => {
-            if (inMenu) return;
+            if (controlsDisabled) return;
             if (heldItem == null) return;
             DropHeldItem();
         };
@@ -88,7 +87,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (inMenu) return;
+        if (controlsDisabled) return;
 
         HandleItemHovering();
     }
@@ -154,7 +153,7 @@ public class PlayerController : MonoBehaviour
         dragVelocity.y = 0;
         rb.AddForce(drag * dragVelocity);
 
-        if (inMenu) return;
+        if (controlsDisabled) return;
         
         Vector2 inputVector = GameInput.Instance.GetMovementVectorNormalized();
 
@@ -212,14 +211,14 @@ public class PlayerController : MonoBehaviour
         return fpCamera;
     }
 
-    public void OnMenuOpened()
+    public void DisableControls()
     {
-        inMenu = true;
+        controlsDisabled = true;
         fpCamera.Disable();
     }
-    public void OnMenuClosed()
+    public void EnableControls()
     {
-        inMenu = false;
+        controlsDisabled = false;
         fpCamera.Enable();
     }
 }

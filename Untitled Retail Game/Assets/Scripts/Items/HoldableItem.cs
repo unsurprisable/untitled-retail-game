@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class HoldableItem : InteractableObject
@@ -8,7 +6,7 @@ public class HoldableItem : InteractableObject
     public Vector3 heldRotationValues;
     public bool hasUse;
 
-    private bool isPickedUp;
+    protected bool isPickedUp;
 
     public virtual void OnUse(PlayerController player) {}
     public virtual void OnUseSecondary(PlayerController player) {}

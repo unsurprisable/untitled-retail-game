@@ -78,7 +78,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "CloseMenu",
+                    "name": "PauseMenu",
                     "type": "Button",
                     "id": "bfb7f4e2-b67c-40ce-8846-eeb02e4c01ce",
                     "expectedControlType": "Button",
@@ -236,7 +236,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "CloseMenu",
+                    "action": "PauseMenu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b394d04c-8849-4fdc-9c29-c32e18951a69",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PauseMenu",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

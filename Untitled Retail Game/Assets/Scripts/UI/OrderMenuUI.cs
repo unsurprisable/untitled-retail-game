@@ -2,13 +2,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ProductShopUI : MonoBehaviour
+public class OrderMenuUI : Menu
 {
-    public static ProductShopUI Instance { get; private set; }
+    public static OrderMenuUI Instance { get; private set; }
 
     public enum ProductCategory { BASIC_PRODUCTS, DAIRY_PRODUCTS, }
 
-    [SerializeField] private GameObject visual;
     [SerializeField] private GameObject[] categoryButtons;
     [Space]
     [SerializeField] private Transform productButtonTemplate;
@@ -35,8 +34,6 @@ public class ProductShopUI : MonoBehaviour
     [SerializeField] private Transform containerPrefab;
     [SerializeField] private Transform containerSpawnLocation;
 
-    private bool isEnabled;
-
 
     private void Awake()
     {
@@ -61,9 +58,6 @@ public class ProductShopUI : MonoBehaviour
 
     private void Start()
     {
-        GameInput.Instance.OnCloseMenu += (sender, args) => {
-            if (isEnabled) Hide();
-        };
         GameManager.Instance.OnBalanceChanged += (sender, args) => {
             UpdateOrderButtonState();
         };
@@ -165,18 +159,5 @@ public class ProductShopUI : MonoBehaviour
         bool canOrder = queuedOrderCount != 0 && GameManager.Instance.CanAfford(orderTotalPrice);
         placeOrderButton.gameObject.GetComponent<Image>().color = canOrder ? orderButtonEnabledColor : orderButtonDisabledColor;
         placeOrderButton.enabled = canOrder;
-    }
-
-    public void Show()
-    {
-        visual.SetActive(true);
-        isEnabled = true;
-        PlayerController.Instance.OnMenuOpened();
-    }
-    public void Hide()
-    {
-        visual.SetActive(false);
-        isEnabled = false;
-        PlayerController.Instance.OnMenuClosed();
     }
 }

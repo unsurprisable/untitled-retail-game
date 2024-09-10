@@ -100,7 +100,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""CloseMenu"",
+                    ""name"": ""PauseMenu"",
                     ""type"": ""Button"",
                     ""id"": ""bfb7f4e2-b67c-40ce-8846-eeb02e4c01ce"",
                     ""expectedControlType"": ""Button"",
@@ -258,7 +258,18 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""CloseMenu"",
+                    ""action"": ""PauseMenu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b394d04c-8849-4fdc-9c29-c32e18951a69"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PauseMenu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -288,7 +299,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_SecondaryAction = m_Player.FindAction("SecondaryAction", throwIfNotFound: true);
         m_Player_Drop = m_Player.FindAction("Drop", throwIfNotFound: true);
         m_Player_BuildMenu = m_Player.FindAction("BuildMenu", throwIfNotFound: true);
-        m_Player_CloseMenu = m_Player.FindAction("CloseMenu", throwIfNotFound: true);
+        m_Player_PauseMenu = m_Player.FindAction("PauseMenu", throwIfNotFound: true);
         m_Player_Scroll = m_Player.FindAction("Scroll", throwIfNotFound: true);
     }
 
@@ -359,7 +370,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_SecondaryAction;
     private readonly InputAction m_Player_Drop;
     private readonly InputAction m_Player_BuildMenu;
-    private readonly InputAction m_Player_CloseMenu;
+    private readonly InputAction m_Player_PauseMenu;
     private readonly InputAction m_Player_Scroll;
     public struct PlayerActions
     {
@@ -373,7 +384,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @SecondaryAction => m_Wrapper.m_Player_SecondaryAction;
         public InputAction @Drop => m_Wrapper.m_Player_Drop;
         public InputAction @BuildMenu => m_Wrapper.m_Player_BuildMenu;
-        public InputAction @CloseMenu => m_Wrapper.m_Player_CloseMenu;
+        public InputAction @PauseMenu => m_Wrapper.m_Player_PauseMenu;
         public InputAction @Scroll => m_Wrapper.m_Player_Scroll;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
@@ -408,9 +419,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @BuildMenu.started += instance.OnBuildMenu;
             @BuildMenu.performed += instance.OnBuildMenu;
             @BuildMenu.canceled += instance.OnBuildMenu;
-            @CloseMenu.started += instance.OnCloseMenu;
-            @CloseMenu.performed += instance.OnCloseMenu;
-            @CloseMenu.canceled += instance.OnCloseMenu;
+            @PauseMenu.started += instance.OnPauseMenu;
+            @PauseMenu.performed += instance.OnPauseMenu;
+            @PauseMenu.canceled += instance.OnPauseMenu;
             @Scroll.started += instance.OnScroll;
             @Scroll.performed += instance.OnScroll;
             @Scroll.canceled += instance.OnScroll;
@@ -442,9 +453,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @BuildMenu.started -= instance.OnBuildMenu;
             @BuildMenu.performed -= instance.OnBuildMenu;
             @BuildMenu.canceled -= instance.OnBuildMenu;
-            @CloseMenu.started -= instance.OnCloseMenu;
-            @CloseMenu.performed -= instance.OnCloseMenu;
-            @CloseMenu.canceled -= instance.OnCloseMenu;
+            @PauseMenu.started -= instance.OnPauseMenu;
+            @PauseMenu.performed -= instance.OnPauseMenu;
+            @PauseMenu.canceled -= instance.OnPauseMenu;
             @Scroll.started -= instance.OnScroll;
             @Scroll.performed -= instance.OnScroll;
             @Scroll.canceled -= instance.OnScroll;
@@ -475,7 +486,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnSecondaryAction(InputAction.CallbackContext context);
         void OnDrop(InputAction.CallbackContext context);
         void OnBuildMenu(InputAction.CallbackContext context);
-        void OnCloseMenu(InputAction.CallbackContext context);
+        void OnPauseMenu(InputAction.CallbackContext context);
         void OnScroll(InputAction.CallbackContext context);
     }
 }

@@ -16,7 +16,7 @@ public class ProductOrderSingleUI : MonoBehaviour
         price.text = "- $" + (storeItemSO.unitPrice * storeItemSO.containerAmount).ToString("0.00");
 
         removeButton.onClick.AddListener(() => {
-            ProductShopUI.Instance.RemoveItemFromOrder(this);
+            OrderMenuUI.Instance.RemoveItemFromOrder(this);
         });
     }
 }

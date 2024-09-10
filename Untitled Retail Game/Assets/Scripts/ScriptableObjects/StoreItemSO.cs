@@ -24,7 +24,7 @@ public class StoreItemSO : ScriptableObject
     [Tooltip("The type of storage this item requires.")]
     public StorageVolume.StorageType storageType;
     [Tooltip("The shop category this item will appear in.")]
-    public ProductShopUI.ProductCategory category;
+    public OrderMenuUI.ProductCategory category;
 
     [Space]
 
