@@ -70,7 +70,11 @@ public class PlayerController : MonoBehaviour
         GameInput.Instance.SecondaryAction += (sender, args) => {
             if (inMenu) return;
             if (hoveredItem == null) return; 
-            hoveredItem.OnInteractSecondary(this);
+            if (heldItem != null && heldItem.hasUse) {
+                heldItem.OnUseSecondary(this);
+            } else {
+                hoveredItem.OnInteractSecondary(this);
+            }
         };
 
         GameInput.Instance.OnDrop += (sender, args) => {
@@ -123,10 +127,10 @@ public class PlayerController : MonoBehaviour
             {
                 // player is looking at an item
                 if (hoveredItem != item) {
-                    item.Hover();
                     if (hoveredItem != null) {
                         hoveredItem.Unhover();
                     }
+                    item.Hover();
                     hoveredItem = item;
                 }
             } else {
