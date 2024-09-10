@@ -12,7 +12,7 @@ public class StorageVolume : InteractableObject
 
     [Space]
 
-    [SerializeField] private StoreItemSO storeItem;
+    [SerializeField] private StoreItemSO storeItemSO;
     [SerializeField] private int itemAmount;
 
     private Stack<Transform> itemDisplayStack = new Stack<Transform>();
@@ -22,9 +22,9 @@ public class StorageVolume : InteractableObject
     // auto-fills the drawer if it is pre-set with a StoreItemSO
     private void Awake()
     {
-        if (storeItem != null) {
+        if (storeItemSO != null) {
             Debug.Log("a testing drawer was activated and filled.");
-            for (int i = 0; i < storeItem.storageAmount; i++) {
+            for (int i = 0; i < storeItemSO.storageAmount; i++) {
                 AddItem();
             }
         }
@@ -32,14 +32,22 @@ public class StorageVolume : InteractableObject
 
     public override void OnHovered()
     {
-        if (storeItem != null) {
-            StorageVolumeUI.Instance.UpdateInfo(storeItem, itemAmount);
-            StorageVolumeUI.Instance.Show();
+        if (storeItemSO == null) return;
+
+        StorageVolumeUI.Instance.UpdateInfo(storeItemSO, itemAmount);
+        StorageVolumeUI.Instance.Show();
+
+        if (PlayerController.Instance.GetHeldItem() is ItemScannerItem scanner) {
+            scanner.SetStoreItemSO(storeItemSO);
         }
     }
     public override void OnUnhovered()
     {
         StorageVolumeUI.Instance.Hide();
+
+        if (PlayerController.Instance.GetHeldItem() is ItemScannerItem scanner) {
+            scanner.ResetStoreItemSO();
+        }
     }
 
     public override void OnInteract(PlayerController player)
@@ -53,15 +61,15 @@ public class StorageVolume : InteractableObject
                 Debug.Log("oh you silly billy! this isn't a " + container.GetStoreItemSO().storageType.ToString() + "!");
                 return;
             }
-            if (storeItem == null || itemAmount == 0) {
+            if (storeItemSO == null || itemAmount == 0) {
                 // empty storage space; override it
-                storeItem = container.GetStoreItemSO();
+                storeItemSO = container.GetStoreItemSO();
             }
-            if (container.GetStoreItemSO() != storeItem) {
+            if (container.GetStoreItemSO() != storeItemSO) {
                 Debug.Log("wrong storage space, silly! those are different items!");
                 return;
             }
-            if (itemAmount == storeItem.storageAmount) {
+            if (itemAmount == storeItemSO.storageAmount) {
                 Debug.Log("you silly goose, this storage is full!");
                 return;
             }
@@ -69,7 +77,7 @@ public class StorageVolume : InteractableObject
             // place the item in storage
             AddItem();
             container.RemoveItem();
-            StorageVolumeUI.Instance.UpdateInfo(storeItem, itemAmount);
+            StorageVolumeUI.Instance.UpdateInfo(storeItemSO, itemAmount);
             StorageVolumeUI.Instance.Show();
         }
     }
@@ -77,33 +85,33 @@ public class StorageVolume : InteractableObject
     public override void OnInteractSecondary(PlayerController player)
     {
         if (itemAmount > 0 && player.GetHeldItem() is Container container) {
-            if (container.IsFull() || container.GetStoreItemSO() != storeItem) return;
+            if (container.IsFull() || container.GetStoreItemSO() != storeItemSO) return;
             RemoveItem();
             container.AddItem();
-            StorageVolumeUI.Instance.UpdateInfo(storeItem, itemAmount);
+            StorageVolumeUI.Instance.UpdateInfo(storeItemSO, itemAmount);
             StorageVolumeUI.Instance.Show();
         }
     }
 
     private void AddItemToDisplay()
     {
-        Transform itemDisplay = Instantiate(storeItem.prefab);
+        Transform itemDisplay = Instantiate(storeItemSO.prefab);
         itemDisplayStack.Push(itemDisplay);
 
         // move them away from the corner
-        Vector3 addedPosition = new Vector3(storeItem.modelDimensions.x/2, 0f, -storeItem.modelDimensions.z/2);
+        Vector3 addedPosition = new Vector3(storeItemSO.modelDimensions.x/2, 0f, -storeItemSO.modelDimensions.z/2);
 
 
         // shift each object based on existing ones... how fun :)
-        addedPosition.x += storeItem.modelDimensions.x * itemAmount;
+        addedPosition.x += storeItemSO.modelDimensions.x * itemAmount;
 
-        int horizontalWraps = Mathf.FloorToInt(itemAmount / storeItem.storageCapacity.x);
-        addedPosition.x -= horizontalWraps * storeItem.modelDimensions.x * storeItem.storageCapacity.x;
-        addedPosition.z -= horizontalWraps * storeItem.modelDimensions.z;
+        int horizontalWraps = Mathf.FloorToInt(itemAmount / storeItemSO.storageCapacity.x);
+        addedPosition.x -= horizontalWraps * storeItemSO.modelDimensions.x * storeItemSO.storageCapacity.x;
+        addedPosition.z -= horizontalWraps * storeItemSO.modelDimensions.z;
 
-        int verticalWraps = Mathf.FloorToInt(itemAmount / (storeItem.storageCapacity.x * storeItem.storageCapacity.z));
-        addedPosition.z += verticalWraps * storeItem.modelDimensions.z * storeItem.storageCapacity.z;
-        addedPosition.y += verticalWraps * storeItem.modelDimensions.y;
+        int verticalWraps = Mathf.FloorToInt(itemAmount / (storeItemSO.storageCapacity.x * storeItemSO.storageCapacity.z));
+        addedPosition.z += verticalWraps * storeItemSO.modelDimensions.z * storeItemSO.storageCapacity.z;
+        addedPosition.y += verticalWraps * storeItemSO.modelDimensions.y;
 
 
         // rotate the addedPosition relative to the Y axis rotation of the storage object

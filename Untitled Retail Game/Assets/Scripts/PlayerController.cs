@@ -14,17 +14,24 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float walkSpeed;
     [SerializeField] private float runSpeed;
     [SerializeField] private float drag;
+
+    [Header("Jumping")]
     [SerializeField] private float jumpForce;
     [SerializeField] private LayerMask groundLayerMask;
     [SerializeField] private float collisionWidth;
     [SerializeField] private float maxGroundDistance;
+    [SerializeField] private Vector3 collisionReduction;
+    [SerializeField] private float jumpInputBuffer;
+    private float jumpInputBufferLeft;
 
     [Header("Interaction")]
     [SerializeField] private LayerMask itemLayerMask;
+    [SerializeField] private Transform itemAnchor;
     [SerializeField] private Transform cameraAnchor;
+    [SerializeField] private Transform playerModelTransform;
+    [SerializeField] private float playerRotateSpeed;
     [SerializeField] private float interactionDistance;
     [SerializeField] private InteractableObject hoveredItem;
-    [SerializeField] private Transform itemAnchor;
     [SerializeField] private float throwForce;
     private HoldableItem heldItem;
 
@@ -45,11 +52,7 @@ public class PlayerController : MonoBehaviour
         #region Events
 
         GameInput.Instance.OnJump += (sender, args) => {
-            if (inMenu) return;
-            // should switch to BoxCast or something similar; right now its just a single, centered ray, which is bad for edges
-            if (Physics.Raycast(transform.position + Vector3.up*maxGroundDistance, Vector3.down, 2*maxGroundDistance, groundLayerMask)) {
-                rb.AddForce(Vector3.up * jumpForce);
-            }
+            jumpInputBufferLeft = jumpInputBuffer;
         };
 
         GameInput.Instance.MainAction += (sender, args) => {
@@ -67,7 +70,11 @@ public class PlayerController : MonoBehaviour
         GameInput.Instance.SecondaryAction += (sender, args) => {
             if (inMenu) return;
             if (hoveredItem == null) return; 
-            hoveredItem.OnInteractSecondary(this);
+            if (heldItem != null && heldItem.hasUse) {
+                heldItem.OnUseSecondary(this);
+            } else {
+                hoveredItem.OnInteractSecondary(this);
+            }
         };
 
         GameInput.Instance.OnDrop += (sender, args) => {
@@ -82,6 +89,7 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         if (inMenu) return;
+
         HandleItemHovering();
     }
 
@@ -90,7 +98,27 @@ public class PlayerController : MonoBehaviour
         HandleMovement();
     }
 
+    private void LateUpdate()
+    {
+        HandlePlayerVisual();
+    }
 
+    private bool IsGrounded() {
+        return Physics.OverlapBox(transform.position + Vector3.down * maxGroundDistance, new Vector3(collisionWidth/2, maxGroundDistance/2, collisionWidth/2) - collisionReduction, Quaternion.identity, groundLayerMask).Length != 0;
+    }
+
+    private void HandlePlayerVisual()
+    {
+        playerModelTransform.transform.rotation = Quaternion.Slerp(
+            playerModelTransform.transform.rotation, 
+            Quaternion.Euler(Vector3.up * orientation.rotation.eulerAngles.y),
+            Time.deltaTime * playerRotateSpeed);
+
+        if (heldItem != null) {
+            // TODO: add heldItem.heldPositionValues to item position (but it needs to be adjusted for the angle using trig)
+            heldItem.transform.SetPositionAndRotation(itemAnchor.position + Vector3.up * heldItem.heldPositionOffset.y, Quaternion.Euler(playerModelTransform.rotation.eulerAngles + heldItem.heldRotationValues));
+        }
+    }
 
     private void HandleItemHovering()
     {
@@ -99,10 +127,10 @@ public class PlayerController : MonoBehaviour
             {
                 // player is looking at an item
                 if (hoveredItem != item) {
-                    item.Hover();
                     if (hoveredItem != null) {
                         hoveredItem.Unhover();
                     }
+                    item.Hover();
                     hoveredItem = item;
                 }
             } else {
@@ -142,6 +170,13 @@ public class PlayerController : MonoBehaviour
         Vector3 moveDir = new Vector3(relMoveDir.x, 0f, relMoveDir.y) * moveSpeed;
 
         rb.AddForce(moveDir);
+        
+        jumpInputBufferLeft -= Time.fixedDeltaTime;
+        if (jumpInputBufferLeft > 0 && IsGrounded()) {
+            rb.velocity -= Vector3.up * rb.velocity.y; // cancel current velocity
+            rb.AddForce(Vector3.up * jumpForce);
+            jumpInputBufferLeft = 0f;
+        }
     }
 
 
@@ -149,7 +184,6 @@ public class PlayerController : MonoBehaviour
     {
         item.GetComponent<Rigidbody>().isKinematic = true;
         item.GetComponent<Collider>().enabled = false;
-        item.transform.SetParent(itemAnchor, false);
         item.transform.localPosition = item.heldPositionOffset;
         item.transform.localRotation = Quaternion.Euler(item.heldRotationValues);
 
@@ -162,7 +196,6 @@ public class PlayerController : MonoBehaviour
     {
         heldItem.GetComponent<Rigidbody>().isKinematic = false;
         heldItem.GetComponent<Collider>().enabled = true;
-        heldItem.transform.SetParent(null);
 
         heldItem.GetComponent<Rigidbody>().AddForce(orientation.forward * throwForce);
         

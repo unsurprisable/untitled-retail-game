@@ -12,6 +12,7 @@ public class GameInput : MonoBehaviour
     public event EventHandler OnDrop;
     public event EventHandler OnBuildMenu;
     public event EventHandler OnCloseMenu;
+    public event EventHandler OnScroll;
 
     private PlayerInputActions playerInputActions;
 
@@ -28,6 +29,7 @@ public class GameInput : MonoBehaviour
         playerInputActions.Player.Drop.performed             += (context) => {OnDrop?.Invoke(this, EventArgs.Empty);};
         playerInputActions.Player.BuildMenu.performed        += (context) => {OnBuildMenu?.Invoke(this, EventArgs.Empty);};
         playerInputActions.Player.CloseMenu.performed        += (context) => {OnCloseMenu?.Invoke(this, EventArgs.Empty);};
+        playerInputActions.Player.Scroll.performed           += (context) => {OnScroll?.Invoke(this, EventArgs.Empty);};
     }
 
     public Vector2 GetMovementVectorNormalized() {
@@ -40,5 +42,12 @@ public class GameInput : MonoBehaviour
 
     public bool GetIsSprinting() {
         return playerInputActions.Player.Sprint.IsPressed();
+    }
+
+    public int GetScrollDirection() {
+        float scrollRaw = playerInputActions.Player.Scroll.ReadValue<float>();
+        if (scrollRaw < 0) return -1;
+        if (scrollRaw > 0) return 1;
+        return 0;
     }
 }

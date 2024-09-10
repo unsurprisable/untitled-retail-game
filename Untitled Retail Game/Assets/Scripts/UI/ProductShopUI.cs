@@ -8,7 +8,6 @@ public class ProductShopUI : MonoBehaviour
 
     public enum ProductCategory { BASIC_PRODUCTS, DAIRY_PRODUCTS, }
 
-    [SerializeField] private StoreItemListSO itemList;
     [SerializeField] private GameObject visual;
     [SerializeField] private GameObject[] categoryButtons;
     [Space]
@@ -46,7 +45,7 @@ public class ProductShopUI : MonoBehaviour
         currentOrder = new Dictionary<StoreItemSO, List<GameObject>>();
         activeProductButtons = new HashSet<GameObject>();
         categoryDict = new Dictionary<ProductCategory, List<StoreItemSO>>();
-        foreach (StoreItemSO storeItemSO in itemList.list)
+        foreach (StoreItemSO storeItemSO in GameManager.Instance.GetStoreItemSOList())
         {
             if (!categoryDict.ContainsKey(storeItemSO.category)) {
                 categoryDict[storeItemSO.category] = new List<StoreItemSO>();
