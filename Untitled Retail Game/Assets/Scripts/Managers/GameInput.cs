@@ -50,4 +50,15 @@ public class GameInput : MonoBehaviour
         if (scrollRaw > 0) return 1;
         return 0;
     }
+
+    private void OnDestroy()
+    {    
+        OnJump = null;
+        MainAction = null;
+        SecondaryAction = null;
+        OnDrop = null;
+        OnBuildMenu = null;
+        OnPauseMenu = null;
+        OnScroll = null;
+    }
 }

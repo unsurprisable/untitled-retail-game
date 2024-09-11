@@ -23,7 +23,6 @@ public class StorageVolume : InteractableObject
     private void Awake()
     {
         if (storeItemSO != null) {
-            Debug.Log("a testing drawer was activated and filled.");
             for (int i = 0; i < storeItemSO.storageAmount; i++) {
                 AddItem();
             }

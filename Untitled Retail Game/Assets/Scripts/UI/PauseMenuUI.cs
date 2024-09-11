@@ -22,6 +22,8 @@ public class PauseMenuUI : Menu
     }
     public void QuitToMenu()
     {
+        GameLobby.Instance.CurrentLobby?.Leave();
+        GameLobby.Instance.CurrentLobby = null;
         SceneManager.LoadScene("MainMenu");
     }
     public void QuitGame()
