@@ -1,11 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class FirstPersonCamera : MonoBehaviour
 {
-    [SerializeField] private float sensX;
-    [SerializeField] private float sensY;
+    private float sensX;
+    private float sensY;
 
     [SerializeField] private Transform orientation;
     [SerializeField] private Transform cameraAnchor;
@@ -21,6 +22,20 @@ public class FirstPersonCamera : MonoBehaviour
     {
         xRotation = orientation.rotation.eulerAngles.x;
         yRotation = orientation.rotation.eulerAngles.y;
+
+        SettingsMenuUI.Instance.OnSensitivityChanged += SettingsMenuUI_OnSensitivityChanged;
+        SettingsMenuUI.Instance.OnFOVChanged += SettingsMenuUI_OnFOVChanged;
+    }
+
+    private void SettingsMenuUI_OnFOVChanged(object sender, SettingsMenuUI.OnSettingsValueChangedEventArgs e)
+    {
+        GetComponent<Camera>().fieldOfView = e.intArgs[0];
+    }
+
+    private void SettingsMenuUI_OnSensitivityChanged(object sender, SettingsMenuUI.OnSettingsValueChangedEventArgs e)
+    {
+        sensX = e.intArgs[0] / 10f; // divide by 10 again so its a nicer number
+        sensY = e.intArgs[1] / 10f; // divide by 10 again so its a nicer number
     }
 
     private void LateUpdate()
@@ -28,8 +43,8 @@ public class FirstPersonCamera : MonoBehaviour
         if (isEnabled)
         {
             Vector2 mouseInput = GameInput.Instance.GetMouseDelta();
-            float mouseX = mouseInput.x * sensX / 10; // divide by 10 just so sensitivity is a nicer number
-            float mouseY = mouseInput.y * sensY / 10; // divide by 10 just so sensitivity is a nicer number
+            float mouseX = mouseInput.x * sensX / 10f; // divide by 10 just so sensitivity is a nicer number
+            float mouseY = mouseInput.y * sensY / 10f; // divide by 10 just so sensitivity is a nicer number
 
             yRotation += mouseX;
             xRotation -= mouseY;

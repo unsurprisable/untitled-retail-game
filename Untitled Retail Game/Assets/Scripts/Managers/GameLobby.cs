@@ -8,7 +8,7 @@ public class GameLobby : MonoBehaviour
     public static GameLobby Instance { get; private set; }
 
     public Lobby? CurrentLobby;
-
+    
     private void Awake()
     {
         Instance = this;
