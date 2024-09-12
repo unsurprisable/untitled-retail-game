@@ -23,20 +23,15 @@ public class SteamManager : MonoBehaviour
     {
         SteamMatchmaking.OnLobbyCreated += SteamMatchmaking_OnLobbyCreated;
         SteamMatchmaking.OnLobbyEntered += SteamMatchmaking_OnLobbyEntered;
-        SteamMatchmaking.OnChatMessage += SteamMatchmaking_OnChatMessage;
+        SteamMatchmaking.OnLobbyMemberJoined += SteamMatchmaking_OnLobbyMemberJoined;
         SteamFriends.OnGameLobbyJoinRequested += SteamFriends_OnGameLobbyJoinRequested;
-    }
-
-    private void SteamMatchmaking_OnChatMessage(Lobby lobby, Friend friend, string message)
-    {
-        Debug.Log("Chat message: " + message);
     }
 
     private void OnDisable()
     {
         SteamMatchmaking.OnLobbyCreated -= SteamMatchmaking_OnLobbyCreated;
         SteamMatchmaking.OnLobbyEntered -= SteamMatchmaking_OnLobbyEntered;
-        SteamMatchmaking.OnChatMessage -= SteamMatchmaking_OnChatMessage;
+        SteamMatchmaking.OnLobbyMemberJoined -= SteamMatchmaking_OnLobbyMemberJoined;
         SteamFriends.OnGameLobbyJoinRequested -= SteamFriends_OnGameLobbyJoinRequested;
     }
 
@@ -62,8 +57,12 @@ public class SteamManager : MonoBehaviour
     {
         GameLobby.Instance.CurrentLobby = lobby;
         Debug.Log("entered a Lobby with ID: " + lobby.Id);
-        lobby.SendChatString(SteamClient.Name + " joined the lobby!");
         OnGameLobbyEntered?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void SteamMatchmaking_OnLobbyMemberJoined(Lobby lobby, Friend friend)
+    {
+        Debug.Log("wow! another user named + " + friend.Name + "joined your lobby!");
     }
 
     private void SteamFriends_OnGameLobbyJoinRequested(Lobby lobby, SteamId id)
