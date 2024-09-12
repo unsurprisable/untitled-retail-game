@@ -8896,7 +8896,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   visual: {fileID: 23103395}
-  copyLobbyButton: {fileID: 0}
+  copyLobbyButton: {fileID: 71292134}
 --- !u!1 &1735819060
 GameObject:
   m_ObjectHideFlags: 0
