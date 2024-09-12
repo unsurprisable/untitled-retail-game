@@ -20,5 +20,5 @@ MonoBehaviour:
   storageType: 0
   category: 1
   storageCapacity: {x: 13, y: 1, z: 4}
-  modelDimensions: {x: 0.12, y: 0.18, z: 0.12}
+  modelDimensions: {x: 0.151, y: 0.18, z: 0.18}
   storageAmount: 52

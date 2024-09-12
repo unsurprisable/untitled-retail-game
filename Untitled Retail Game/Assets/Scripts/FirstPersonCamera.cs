@@ -1,10 +1,10 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class FirstPersonCamera : MonoBehaviour
+public class FirstPersonCamera : NetworkBehaviour
 {
+    public static FirstPersonCamera LocalInstance { get; private set; }
+
     private float sensX;
     private float sensY;
 
@@ -18,6 +18,15 @@ public class FirstPersonCamera : MonoBehaviour
 
     private bool isEnabled;
 
+    public override void OnNetworkSpawn()
+    {
+        if (IsOwner) {
+            LocalInstance = this;
+        } else {
+            enabled = false;
+        }
+    }
+
     private void Start()
     {
         xRotation = orientation.rotation.eulerAngles.x;
@@ -29,7 +38,7 @@ public class FirstPersonCamera : MonoBehaviour
 
     private void SettingsMenuUI_OnFOVChanged(object sender, SettingsMenuUI.OnSettingsValueChangedEventArgs e)
     {
-        GetComponent<Camera>().fieldOfView = e.intArgs[0];
+        Camera.main.fieldOfView = e.intArgs[0];
     }
 
     private void SettingsMenuUI_OnSensitivityChanged(object sender, SettingsMenuUI.OnSettingsValueChangedEventArgs e)
@@ -52,8 +61,8 @@ public class FirstPersonCamera : MonoBehaviour
         }
 
         orientation.rotation = Quaternion.Euler(xRotation, yRotation, 0f);
-        transform.rotation = orientation.rotation;
-        transform.position = cameraAnchor.position;
+        Camera.main.transform.rotation = orientation.rotation;
+        Camera.main.transform.position = cameraAnchor.position;
     }
 
     public void Enable()
@@ -65,7 +74,7 @@ public class FirstPersonCamera : MonoBehaviour
     public void Disable()
     {
         isEnabled = false;
-        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
 

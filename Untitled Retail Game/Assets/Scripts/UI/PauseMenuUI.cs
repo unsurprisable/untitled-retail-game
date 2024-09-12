@@ -12,7 +12,7 @@ public class PauseMenuUI : Menu
     {
         Instance = this;
 
-        if (GameLobby.Instance != null && GameLobby.Instance.CurrentLobby != null) {
+        if (GameLobby.Instance != null && GameLobby.Instance.currentLobby != null) {
             copyLobbyButton.SetActive(true);
         }
     }
@@ -27,27 +27,29 @@ public class PauseMenuUI : Menu
     }
     public void QuitToMenu()
     {
-        if (GameLobby.Instance != null) {
-            GameLobby.Instance.CurrentLobby?.Leave();
-            GameLobby.Instance.CurrentLobby = null;
+        if (SteamManager.Instance != null) {
+            SteamManager.Instance.LeaveLobby();
         } else {
-            Debug.LogWarning("GameLobby is not initialized! Perhaps you didn't load the MainMenu scene yet?");
+            Debug.LogWarning("SteamManager is not initialized! Perhaps you didn't load the MainMenu scene yet?");
         }
         SceneManager.LoadScene("MainMenu");
     }
     public void QuitGame()
     {
+        if (SteamManager.Instance != null) {
+            SteamManager.Instance.LeaveLobby();
+        }
         Application.Quit();
     }
     public void CopyLobbyCode()
     {
-        if (GameLobby.Instance == null || GameLobby.Instance.CurrentLobby == null) {
+        if (GameLobby.Instance == null || GameLobby.Instance.currentLobby == null) {
             Debug.LogError("This button should not be enabled when a lobby connection is not established.");
             return;
         }
 
         TextEditor textEditor = new TextEditor();
-        textEditor.text = GameLobby.Instance.CurrentLobby?.Id.ToString();
+        textEditor.text = GameLobby.Instance.currentLobby?.Id.ToString();
         textEditor.SelectAll();
         textEditor.Copy();
     }

@@ -1,7 +1,6 @@
 
 using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class GameInput : MonoBehaviour
 {
@@ -26,7 +25,7 @@ public class GameInput : MonoBehaviour
         playerInputActions.Player.Enable();
         playerInputActions.Player.Jump.performed             += (context) => {OnJump?.Invoke(this, EventArgs.Empty);};
         playerInputActions.Player.MainAction.performed       += (context) => {MainAction?.Invoke(this, EventArgs.Empty);};
-        playerInputActions.Player.SecondaryAction.performed  += (context) => {SecondaryAction.Invoke(this, EventArgs.Empty);};
+        playerInputActions.Player.SecondaryAction.performed  += (context) => {SecondaryAction?.Invoke(this, EventArgs.Empty);};
         playerInputActions.Player.Drop.performed             += (context) => {OnDrop?.Invoke(this, EventArgs.Empty);};
         playerInputActions.Player.BuildMenu.performed        += (context) => {OnBuildMenu?.Invoke(this, EventArgs.Empty);};
         playerInputActions.Player.PauseMenu.performed        += (context) => {OnPauseMenu?.Invoke(this, EventArgs.Empty);};

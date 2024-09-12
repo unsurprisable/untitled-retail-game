@@ -42,12 +42,12 @@ public class MenuManager : MonoBehaviour
     public void OnMenuOpen(Menu menu) {
         inMenu = true;
         activeMenu = menu;
-        PlayerController.Instance.DisableControls();
+        PlayerController.LocalInstance.DisableControls();
     }
     public void OnMenuClose() {
         inMenu = false;
         activeMenu = null;
-        PlayerController.Instance.EnableControls();
+        PlayerController.LocalInstance.EnableControls();
     }
     public bool IsInMenu() {
         return inMenu;

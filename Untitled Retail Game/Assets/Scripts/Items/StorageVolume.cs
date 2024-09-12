@@ -36,7 +36,7 @@ public class StorageVolume : InteractableObject
         StorageVolumeUI.Instance.UpdateInfo(storeItemSO, itemAmount);
         StorageVolumeUI.Instance.Show();
 
-        if (PlayerController.Instance.GetHeldItem() is ItemScannerItem scanner) {
+        if (PlayerController.LocalInstance.GetHeldItem() is ItemScannerItem scanner) {
             scanner.SetStoreItemSO(storeItemSO);
         }
     }
@@ -44,7 +44,7 @@ public class StorageVolume : InteractableObject
     {
         StorageVolumeUI.Instance.Hide();
 
-        if (PlayerController.Instance.GetHeldItem() is ItemScannerItem scanner) {
+        if (PlayerController.LocalInstance.GetHeldItem() is ItemScannerItem scanner) {
             scanner.ResetStoreItemSO();
         }
     }

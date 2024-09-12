@@ -11,6 +11,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject networkManager;
     [SerializeField] private GameObject gameLobby;
     [SerializeField] private GameObject steamManager;
+    [SerializeField] private GameObject playerSpawner;
 
     [Space]
 
@@ -27,24 +28,27 @@ public class MainMenuManager : MonoBehaviour
         if (SteamManager.Instance == null) {
             steamManager.SetActive(true);
         }
+        if (PlayerSpawner.Instance == null) {
+            playerSpawner.SetActive(true);
+        }
     }
     
     private void Start()
     {
         DebugManager.instance.enableRuntimeUI = false;
-
         SteamManager.Instance.OnGameLobbyEntered += SteamManager_OnGameLobbyEntered;
     }
 
     private void SteamManager_OnGameLobbyEntered(object sender, EventArgs e)
     {
-        SceneManager.LoadScene("ExperimentalScene");
+        GameLobby.Instance.currentLobby?.SendChatString("someone joined the lobby and tried to load the scene");
     }
 
     public void HostPrivate() 
     {
         Debug.Log("entering private game scene; skipping lobby creation");
-        SceneManager.LoadScene("ExperimentalScene");
+        NetworkManager.Singleton.StartHost();
+        NetworkManager.Singleton.SceneManager.LoadScene("ExperimentalScene", LoadSceneMode.Single);
     }
 
     public void HostFriendsOnly()

@@ -1,16 +1,16 @@
-
+using System;
+using Unity.Netcode;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : NetworkBehaviour
 {
 
-    public static PlayerController Instance { get; private set; }
+    public static PlayerController LocalInstance { get; private set; }
 
-    private Rigidbody rb;
+    [SerializeField] private Rigidbody rb;
 
     [Header("Movement")]
-    [SerializeField] private FirstPersonCamera fpCamera;
-    [SerializeField] private Transform orientation;
+    public Transform orientation;
     [SerializeField] private float walkSpeed;
     [SerializeField] private float runSpeed;
     [SerializeField] private float drag;
@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour
     [Header("Interaction")]
     [SerializeField] private LayerMask itemLayerMask;
     [SerializeField] private Transform itemAnchor;
-    [SerializeField] private Transform cameraAnchor;
+    public Transform cameraAnchor;
     [SerializeField] private Transform playerModelTransform;
     [SerializeField] private float playerRotateSpeed;
     [SerializeField] private float interactionDistance;
@@ -37,17 +37,25 @@ public class PlayerController : MonoBehaviour
 
     private bool controlsDisabled;
 
-    private void Awake()
-    {
-        Instance = this;
 
-        rb = GetComponent<Rigidbody>();
-        
-        fpCamera.Enable();
+    public override void OnNetworkSpawn()
+    {
+        if (IsOwner) {
+            LocalInstance = this;
+            playerModelTransform.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+            playerModelTransform.GetChild(0).GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+        } else {
+            enabled = false;
+        }
     }
 
     private void Start()
     {
+        rb.isKinematic = false;
+
+        FirstPersonCamera.LocalInstance.Enable();
+        SettingsMenuUI.Instance.OnPlayerSpawned();
+
         #region Events
 
         GameInput.Instance.OnJump += (sender, args) => {
@@ -207,18 +215,14 @@ public class PlayerController : MonoBehaviour
         return heldItem;
     }
 
-    public FirstPersonCamera GetFirstPersonCamera() {
-        return fpCamera;
-    }
-
     public void DisableControls()
     {
         controlsDisabled = true;
-        fpCamera.Disable();
+        FirstPersonCamera.LocalInstance.Disable();
     }
     public void EnableControls()
     {
         controlsDisabled = false;
-        fpCamera.Enable();
+        FirstPersonCamera.LocalInstance.Enable();
     }
 }

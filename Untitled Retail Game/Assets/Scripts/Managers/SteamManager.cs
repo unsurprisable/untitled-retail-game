@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Netcode.Transports.Facepunch;
 using Steamworks;
 using Steamworks.Data;
 using Unity.Netcode;
@@ -25,26 +26,12 @@ public class SteamManager : MonoBehaviour
     {
         SteamMatchmaking.OnLobbyCreated += SteamMatchmaking_OnLobbyCreated;
         SteamMatchmaking.OnLobbyEntered += SteamMatchmaking_OnLobbyEntered;
-        SteamMatchmaking.OnLobbyMemberJoined += SteamMatchmaking_OnLobbyMemberJoined;
-        SteamMatchmaking.OnLobbyMemberLeave += SteamMatchmaking_OnLobbyMemberLeave;
         SteamFriends.OnGameLobbyJoinRequested += SteamFriends_OnGameLobbyJoinRequested;
-    }
-
-    private void SteamMatchmaking_OnLobbyMemberLeave(Lobby lobby, Friend friend)
-    {
-        Debug.Log("LEAVE: " + friend.Name + " left the lobby!");
-    }
-
-    private void SteamMatchmaking_OnLobbyMemberJoined(Lobby lobby, Friend friend)
-    {
-        Debug.Log("JOIN: " + friend.Name + " joined the lobby!");
     }
     private void OnDisable()
     {
         SteamMatchmaking.OnLobbyCreated -= SteamMatchmaking_OnLobbyCreated;
         SteamMatchmaking.OnLobbyEntered -= SteamMatchmaking_OnLobbyEntered;
-        SteamMatchmaking.OnLobbyMemberJoined -= SteamMatchmaking_OnLobbyMemberJoined;
-        SteamMatchmaking.OnLobbyMemberLeave -= SteamMatchmaking_OnLobbyMemberLeave;
         SteamFriends.OnGameLobbyJoinRequested -= SteamFriends_OnGameLobbyJoinRequested;
     }
 
@@ -58,6 +45,7 @@ public class SteamManager : MonoBehaviour
                 lobby.SetFriendsOnly();
             }
             lobby.SetJoinable(true);
+            NetworkManager.Singleton.StartHost();
         }
         else
         {
@@ -68,14 +56,26 @@ public class SteamManager : MonoBehaviour
 
     private void SteamMatchmaking_OnLobbyEntered(Lobby lobby)
     {
-        GameLobby.Instance.CurrentLobby = lobby;
+        GameLobby.Instance.currentLobby = lobby;
         Debug.Log("entered a Lobby with ID: " + lobby.Id);
         OnGameLobbyEntered?.Invoke(this, EventArgs.Empty);
+
+        if (NetworkManager.Singleton.IsHost) return;
+        NetworkManager.Singleton.gameObject.GetComponent<FacepunchTransport>().targetSteamId = lobby.Owner.Id;
+        NetworkManager.Singleton.StartClient();
+
     }
 
     private void SteamFriends_OnGameLobbyJoinRequested(Lobby lobby, SteamId id)
     {
         lobby.Join();
+    }
+
+    public void LeaveLobby()
+    {
+        GameLobby.Instance.currentLobby?.Leave();
+        GameLobby.Instance.currentLobby = null;
+        NetworkManager.Singleton.Shutdown();
     }
 
     public async void HostLobby(bool isPublic) 

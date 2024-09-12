@@ -40,16 +40,15 @@ public class SettingsMenuUI : SubMenu
 
 
 
+    public void OnPlayerSpawned() {
+        LoadSettings();
+    }
+
     private void Awake()
     {
         Instance = this;
 
         SetMissingSettingsToDefault();
-    }
-
-    private void Start()
-    {
-        LoadSettings();
     }
 
     protected override void OnShow()
