@@ -23,12 +23,15 @@ public class SteamManager : MonoBehaviour
     {
         SteamMatchmaking.OnLobbyCreated += SteamMatchmaking_OnLobbyCreated;
         SteamMatchmaking.OnLobbyEntered += SteamMatchmaking_OnLobbyEntered;
+        SteamMatchmaking.OnLobbyMemberJoined += SteamMatchmaking_OnLobbyMemberJoined;
         SteamFriends.OnGameLobbyJoinRequested += SteamFriends_OnGameLobbyJoinRequested;
     }
+
     private void OnDisable()
     {
         SteamMatchmaking.OnLobbyCreated -= SteamMatchmaking_OnLobbyCreated;
         SteamMatchmaking.OnLobbyEntered -= SteamMatchmaking_OnLobbyEntered;
+        SteamMatchmaking.OnLobbyMemberJoined -= SteamMatchmaking_OnLobbyMemberJoined;
         SteamFriends.OnGameLobbyJoinRequested -= SteamFriends_OnGameLobbyJoinRequested;
     }
 
@@ -57,6 +60,11 @@ public class SteamManager : MonoBehaviour
         OnGameLobbyEntered?.Invoke(this, EventArgs.Empty);
     }
 
+    private void SteamMatchmaking_OnLobbyMemberJoined(Lobby lobby, Friend friend)
+    {
+        Debug.Log("wow! another user named + " + friend.Name + "joined your lobby!");
+    }
+
     private void SteamFriends_OnGameLobbyJoinRequested(Lobby lobby, SteamId id)
     {
         lobby.Join();
@@ -74,14 +82,12 @@ public class SteamManager : MonoBehaviour
         await SteamMatchmaking.CreateLobbyAsync(16);
     }
 
-    public async void JoinLobbyWithIDFromClipboard()
+    public async void JoinLobbyWithID(string id)
     {
         ulong ID;
 
-        TextEditor textEditor = new TextEditor();
-        textEditor.Paste();
-        if (!ulong.TryParse(textEditor.text, out ID)) {
-            Debug.LogError("Invalid ID format!");
+        if (!ulong.TryParse(id, out ID)) {
+            Debug.LogWarning("Invalid ID format!");
             return;
         }
 
@@ -93,6 +99,6 @@ public class SteamManager : MonoBehaviour
                 return;
             }
         }
-
+        Debug.LogWarning("No lobbies found with that ID!");
     }
 }
