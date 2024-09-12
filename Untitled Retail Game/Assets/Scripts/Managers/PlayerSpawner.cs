@@ -2,6 +2,9 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine.SceneManagement;
 using UnityEngine;
+using Steamworks;
+using Steamworks.Data;
+using System;
 
 public class PlayerSpawner : NetworkBehaviour
 {
@@ -22,16 +25,30 @@ public class PlayerSpawner : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += NetworkManager_OnLoadEventCompleted;
+        NetworkManager.Singleton.SceneManager.OnSynchronize += NetworkManager_OnSynchronize;
+    }
+
+    private void NetworkManager_OnSynchronize(ulong clientId)
+    {
+        if (IsHost)
+        {
+            SpawnPlayer(clientId);
+        }
     }
 
     private void NetworkManager_OnLoadEventCompleted(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
     {
         if (IsHost && sceneName == "ExperimentalScene")
         {
-            foreach (ulong id in clientsCompleted) {
-                Transform player = Instantiate(playerPrefab);
-                player.GetComponent<NetworkObject>().SpawnAsPlayerObject(id, true);
+            foreach (ulong clientId in clientsCompleted) {
+                SpawnPlayer(clientId);
             }
         }
+    }
+
+    private void SpawnPlayer(ulong clientId)
+    {
+        Transform player = Instantiate(playerPrefab);
+        player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
     }
 }

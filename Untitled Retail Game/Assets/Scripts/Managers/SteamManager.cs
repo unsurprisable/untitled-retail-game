@@ -5,6 +5,7 @@ using Steamworks;
 using Steamworks.Data;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SteamManager : MonoBehaviour
 {
@@ -46,6 +47,7 @@ public class SteamManager : MonoBehaviour
             }
             lobby.SetJoinable(true);
             NetworkManager.Singleton.StartHost();
+            NetworkManager.Singleton.SceneManager.LoadScene("ExperimentalScene", LoadSceneMode.Single);
         }
         else
         {
