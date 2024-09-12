@@ -17,18 +17,35 @@ public class SteamManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+
+        DontDestroyOnLoad(gameObject);
     }
 
     private void OnEnable()
     {
         SteamMatchmaking.OnLobbyCreated += SteamMatchmaking_OnLobbyCreated;
         SteamMatchmaking.OnLobbyEntered += SteamMatchmaking_OnLobbyEntered;
+        SteamMatchmaking.OnLobbyMemberJoined += SteamMatchmaking_OnLobbyMemberJoined;
+        SteamMatchmaking.OnLobbyMemberLeave += SteamMatchmaking_OnLobbyMemberLeave;
         SteamFriends.OnGameLobbyJoinRequested += SteamFriends_OnGameLobbyJoinRequested;
     }
+
+    private void SteamMatchmaking_OnLobbyMemberLeave(Lobby lobby, Friend friend)
+    {
+        Debug.Log("LEAVE: " + friend.Name + " left the lobby!");
+    }
+
+    private void SteamMatchmaking_OnLobbyMemberJoined(Lobby lobby, Friend friend)
+    {
+        Debug.Log("JOIN: " + friend.Name + " joined the lobby!");
+    }
+
     private void OnDisable()
     {
         SteamMatchmaking.OnLobbyCreated -= SteamMatchmaking_OnLobbyCreated;
         SteamMatchmaking.OnLobbyEntered -= SteamMatchmaking_OnLobbyEntered;
+        SteamMatchmaking.OnLobbyMemberJoined -= SteamMatchmaking_OnLobbyMemberJoined;
+        SteamMatchmaking.OnLobbyMemberLeave -= SteamMatchmaking_OnLobbyMemberLeave;
         SteamFriends.OnGameLobbyJoinRequested -= SteamFriends_OnGameLobbyJoinRequested;
     }
 

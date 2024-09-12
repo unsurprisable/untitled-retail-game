@@ -8,6 +8,7 @@ public class MainMenuManager : MonoBehaviour
 
     [SerializeField] private GameObject networkManager;
     [SerializeField] private GameObject gameLobby;
+    [SerializeField] private GameObject steamManager;
 
     private void Awake()
     {
@@ -16,6 +17,9 @@ public class MainMenuManager : MonoBehaviour
         }
         if (GameLobby.Instance == null) {
             gameLobby.SetActive(true);
+        }
+        if (SteamManager.Instance == null) {
+            steamManager.SetActive(true);
         }
     }
     
