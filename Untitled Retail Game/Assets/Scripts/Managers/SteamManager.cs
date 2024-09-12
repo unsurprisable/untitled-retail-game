@@ -39,7 +39,6 @@ public class SteamManager : MonoBehaviour
     {
         Debug.Log("JOIN: " + friend.Name + " joined the lobby!");
     }
-
     private void OnDisable()
     {
         SteamMatchmaking.OnLobbyCreated -= SteamMatchmaking_OnLobbyCreated;
@@ -91,14 +90,12 @@ public class SteamManager : MonoBehaviour
         await SteamMatchmaking.CreateLobbyAsync(16);
     }
 
-    public async void JoinLobbyWithIDFromClipboard()
+    public async void JoinLobbyWithID(string id)
     {
         ulong ID;
 
-        TextEditor textEditor = new TextEditor();
-        textEditor.Paste();
-        if (!ulong.TryParse(textEditor.text, out ID)) {
-            Debug.LogError("Invalid ID format!");
+        if (!ulong.TryParse(id, out ID)) {
+            Debug.LogWarning("Invalid ID format!");
             return;
         }
 
@@ -110,6 +107,6 @@ public class SteamManager : MonoBehaviour
                 return;
             }
         }
-
+        Debug.LogWarning("No lobbies found with that ID!");
     }
 }
