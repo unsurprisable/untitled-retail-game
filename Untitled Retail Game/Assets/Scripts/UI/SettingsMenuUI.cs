@@ -17,8 +17,8 @@ public class SettingsMenuUI : SubMenu
     [SerializeField] private SettingsSlider sensY;
     private int SensY => (int)sensY.Value;
 
-    private const string PLAYER_PREFS_SENS_X = "MouseSensitivityX";
-    private const string PLAYER_PREFS_SENS_Y = "MouseSensitivityY";
+    public const string PLAYER_PREFS_SENS_X = "MouseSensitivityX";
+    public const string PLAYER_PREFS_SENS_Y = "MouseSensitivityY";
 
     private void InvokeOnSensitivityChanged() {
         OnSensitivityChanged?.Invoke(this, new OnSettingsValueChangedEventArgs {
@@ -30,12 +30,21 @@ public class SettingsMenuUI : SubMenu
     [SerializeField] private SettingsSlider fov;
     private int FOV => (int)fov.Value;
 
-    private const string PLAYER_PREFS_FOV = "CameraFOV";
+    public const string PLAYER_PREFS_FOV = "CameraFOV";
 
     private void InvokeOnFOVChanged() {
         OnFOVChanged?.Invoke(this, new OnSettingsValueChangedEventArgs {
             intArgs = new int[]{FOV}
         });
+    }
+
+    [SerializeField] private SettingsSlider fpsLimit;
+    private int FpsLimit => (int)fpsLimit.Value;
+    
+    public const string PLAYER_PREFS_FPS_LIMIT = "FpsLimit";
+
+    private void InvokeOnFpsChanged() {
+        Application.targetFrameRate = FpsLimit;
     }
 
 
@@ -61,13 +70,14 @@ public class SettingsMenuUI : SubMenu
     }
 
 
-
     private void SetMissingSettingsToDefault()
     {
         SetMissingInt(PLAYER_PREFS_SENS_X, 10);
         SetMissingInt(PLAYER_PREFS_SENS_Y, 8);
 
         SetMissingInt(PLAYER_PREFS_FOV, 70);
+
+        SetMissingInt(PLAYER_PREFS_FPS_LIMIT, 240);
 
         PlayerPrefs.Save();
     }
@@ -98,6 +108,9 @@ public class SettingsMenuUI : SubMenu
 
         fov.Value = PlayerPrefs.GetInt(PLAYER_PREFS_FOV);
         InvokeOnFOVChanged();
+
+        fpsLimit.Value = PlayerPrefs.GetInt(PLAYER_PREFS_FPS_LIMIT);
+        InvokeOnFpsChanged();
     }
     private void SaveSettings()
     {
@@ -109,6 +122,9 @@ public class SettingsMenuUI : SubMenu
 
         PlayerPrefs.SetInt(PLAYER_PREFS_FOV, FOV);
         InvokeOnFOVChanged();
+
+        PlayerPrefs.SetInt(PLAYER_PREFS_FPS_LIMIT, FpsLimit);
+        InvokeOnFpsChanged();
 
         PlayerPrefs.Save();
     }
