@@ -1,5 +1,5 @@
 
-public class ProductOrderItem : InteractableObject
+public class ProductOrderItem : InteractableClientObject
 {
     public override void OnInteract(PlayerController player)
     {

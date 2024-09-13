@@ -31,7 +31,7 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private Transform playerModelTransform;
     [SerializeField] private float playerRotateSpeed;
     [SerializeField] private float interactionDistance;
-    [SerializeField] private InteractableObject hoveredItem;
+    [SerializeField] private IInteractableObject hoveredItem;
     [SerializeField] private float throwForce;
     private HoldableItem heldItem;
 
@@ -130,26 +130,22 @@ public class PlayerController : NetworkBehaviour
     private void HandleItemHovering()
     {
         if (Physics.Raycast(cameraAnchor.position, orientation.forward, out RaycastHit hit, interactionDistance, itemLayerMask)) {
-            if (hit.transform.TryGetComponent<InteractableObject>(out InteractableObject item))
+            if (hit.transform.TryGetComponent(out IInteractableObject item))
             {
                 // player is looking at an item
                 if (hoveredItem != item) {
-                    if (hoveredItem != null) {
-                        hoveredItem.Unhover();
-                    }
+                    hoveredItem?.Unhover();
                     item.Hover();
                     hoveredItem = item;
                 }
             } else {
-                Debug.LogError("Item is missing 'InteractableItem' component! (make sure the only collider is on the parent object with the component)");
+                Debug.LogError("Item is missing an 'IInteractableItem' component! (make sure the only collider is on the parent object with the component)");
             }
         }
         else
         {
             // player is not looking at an item
-            if (hoveredItem != null) {
-                hoveredItem.Unhover();
-            }
+            hoveredItem?.Unhover();
             hoveredItem = null;
         }
     }
@@ -189,22 +185,53 @@ public class PlayerController : NetworkBehaviour
 
     public void PickupItem(HoldableItem item)
     {
-        item.GetComponent<Rigidbody>().isKinematic = true;
-        item.GetComponent<Collider>().enabled = false;
-        item.transform.localPosition = item.heldPositionOffset;
-        item.transform.localRotation = Quaternion.Euler(item.heldRotationValues);
+        PickupItemServerRpc(item);
+    }
 
-        item.OnPickup(this);
+    [Rpc(SendTo.Server)]
+    private void PickupItemServerRpc(NetworkBehaviourReference itemObject, RpcParams rpcParams = default)
+    {
+        if (itemObject.TryGet(out HoldableItem item))
+        {
+            item.NetworkObject.ChangeOwnership(rpcParams.Receive.SenderClientId);
+            PickupItemClientRpc(item);
+        }
+    }
 
-        heldItem = item;
+    [Rpc(SendTo.ClientsAndHost)]
+    private void PickupItemClientRpc(NetworkBehaviourReference itemObject)
+    {
+        if (itemObject.TryGet(out HoldableItem item))
+        {
+            item.GetComponent<Rigidbody>().isKinematic = true;
+            item.GetComponent<Collider>().enabled = false;
+
+            item.OnPickup(this);
+
+            heldItem = item;
+        }
     }
 
     public void DropHeldItem()
     {
+        DropHeldItemServerRpc(orientation.forward);
+    }
+
+    [Rpc(SendTo.Server)]
+    private void DropHeldItemServerRpc(Vector3 clientThrowDirection)
+    {
+        heldItem.NetworkObject.ChangeOwnership(NetworkManager.ServerClientId);
+        HoldableItem item = heldItem;
+        DropHeldItemClientRpc();
+
+        item.GetComponent<Rigidbody>().AddForce(clientThrowDirection * throwForce);
+    }
+    
+    [Rpc(SendTo.ClientsAndHost)]
+    private void DropHeldItemClientRpc()
+    {
         heldItem.GetComponent<Rigidbody>().isKinematic = false;
         heldItem.GetComponent<Collider>().enabled = true;
-
-        heldItem.GetComponent<Rigidbody>().AddForce(orientation.forward * throwForce);
         
         heldItem.OnDrop();
 

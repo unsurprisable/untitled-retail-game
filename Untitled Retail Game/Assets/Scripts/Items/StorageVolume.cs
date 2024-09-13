@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class StorageVolume : InteractableObject
+public class StorageVolume : InteractableNetworkObject
 {
     public enum StorageType { ITEM_RACK, CLOSED_FRIDGE, OPEN_FRIDGE, FREEZER, PRODUCE_BIN, WARMER }
 
@@ -24,7 +25,7 @@ public class StorageVolume : InteractableObject
     {
         if (storeItemSO != null) {
             for (int i = 0; i < storeItemSO.storageAmount; i++) {
-                AddItem();
+                AddItem(storeItemSO);
             }
         }
     }
@@ -51,7 +52,15 @@ public class StorageVolume : InteractableObject
 
     public override void OnInteract(PlayerController player)
     {
-        if (player.GetHeldItem() != null && player.GetHeldItem() is Container container) {
+        AddItemServerRpc(player);
+    }
+
+    [Rpc(SendTo.Server)]
+    private void AddItemServerRpc(NetworkBehaviourReference senderObject)
+    {
+        senderObject.TryGet(out PlayerController sender);
+        if (sender.GetHeldItem() != null && sender.GetHeldItem() is Container container)
+        { 
             if (container.IsEmpty()) {
                 Debug.Log("that container is empty, silly!");
                 return;
@@ -60,22 +69,27 @@ public class StorageVolume : InteractableObject
                 Debug.Log("oh you silly billy! this isn't a " + container.GetStoreItemSO().storageType.ToString() + "!");
                 return;
             }
-            if (storeItemSO == null || itemAmount == 0) {
-                // empty storage space; override it
-                storeItemSO = container.GetStoreItemSO();
-            }
-            if (container.GetStoreItemSO() != storeItemSO) {
+            if (storeItemSO != null && container.GetStoreItemSO() != storeItemSO) {
                 Debug.Log("wrong storage space, silly! those are different items!");
                 return;
             }
-            if (itemAmount == storeItemSO.storageAmount) {
+            if (storeItemSO != null && itemAmount == storeItemSO.storageAmount) {
                 Debug.Log("you silly goose, this storage is full!");
                 return;
             }
 
-            // place the item in storage
-            AddItem();
-            container.RemoveItem();
+            OnInteractClientRpc(container);
+        }
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void OnInteractClientRpc(NetworkBehaviourReference containerObject)
+    {
+        containerObject.TryGet(out Container container);
+        AddItem(container.GetStoreItemSO());
+        container.RemoveItem();
+
+        if (isHoveredOnClient) {
             StorageVolumeUI.Instance.UpdateInfo(storeItemSO, itemAmount);
             StorageVolumeUI.Instance.Show();
         }
@@ -83,10 +97,26 @@ public class StorageVolume : InteractableObject
 
     public override void OnInteractSecondary(PlayerController player)
     {
-        if (itemAmount > 0 && player.GetHeldItem() is Container container) {
-            if (container.IsFull() || container.GetStoreItemSO() != storeItemSO) return;
-            RemoveItem();
-            container.AddItem();
+        RemoveItemServerRpc(player);
+    }
+
+    [Rpc(SendTo.Server)]
+    private void RemoveItemServerRpc(NetworkBehaviourReference senderObject)
+    {
+        senderObject.TryGet(out PlayerController sender);
+        if (sender.GetHeldItem() != null && sender.GetHeldItem() is Container container && itemAmount > 0 && !container.IsFull() && container.GetStoreItemSO() == storeItemSO) {
+            RemoveItemClientRpc(container);
+        }
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void RemoveItemClientRpc(NetworkBehaviourReference containerObject)
+    {
+        containerObject.TryGet(out Container container);
+        RemoveItem();
+        container.AddItem();
+        
+        if (isHoveredOnClient) {
             StorageVolumeUI.Instance.UpdateInfo(storeItemSO, itemAmount);
             StorageVolumeUI.Instance.Show();
         }
@@ -131,8 +161,13 @@ public class StorageVolume : InteractableObject
         Destroy(itemDisplayStack.Pop().gameObject);
     }
 
-    private void AddItem() 
+    private void AddItem(StoreItemSO storeItemSO) 
     {
+        if (storeItemSO == null || itemAmount == 0) {
+            // empty storage space; override it
+            this.storeItemSO = storeItemSO;
+        }
+
         AddItemToDisplay();
         itemAmount++;
     }

@@ -12,7 +12,7 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: Surprisable & TMCBook
+  companyName: Surprisable
   productName: Untitled Retail Game
   defaultCursor: {fileID: 2800000, guid: b03ccd59d57541b479a8d1bacefb2236, type: 3}
   cursorHotspot: {x: 0, y: 0}

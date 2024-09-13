@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1975818728801570549}
+  - component: {fileID: -6279347137704838612}
   - component: {fileID: 3794937545322305768}
   - component: {fileID: 770972197909041956}
   - component: {fileID: 324427093974457111}
@@ -36,6 +37,27 @@ Transform:
   - {fileID: 5560462395215634780}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-6279347137704838612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3835930423566779614}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 3427705548
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!114 &3794937545322305768
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -51,7 +73,7 @@ MonoBehaviour:
   selectedVisual: {fileID: 0}
   storageType: 0
   displayOrigin: {fileID: 5560462395215634780}
-  storeItem: {fileID: 0}
+  storeItemSO: {fileID: 0}
   itemAmount: 0
 --- !u!65 &770972197909041956
 BoxCollider:

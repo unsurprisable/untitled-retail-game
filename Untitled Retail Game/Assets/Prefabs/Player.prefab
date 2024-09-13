@@ -124,8 +124,7 @@ MonoBehaviour:
   playerModelTransform: {fileID: 2945947229708487091}
   playerRotateSpeed: 20
   interactionDistance: 3.5
-  hoveredItem: {fileID: 0}
-  throwForce: 750
+  throwForce: 500
 --- !u!54 &8051314931943267243
 Rigidbody:
   m_ObjectHideFlags: 0

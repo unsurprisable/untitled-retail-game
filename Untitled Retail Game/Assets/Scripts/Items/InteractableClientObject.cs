@@ -1,23 +1,23 @@
-using System.Collections;
 using UnityEngine;
 
-public class InteractableObject : MonoBehaviour
+public class InteractableClientObject : MonoBehaviour, IInteractableObject
 {
     [Header("Interactable Object")]
     [Tooltip("Leave empty if you don't want it to have an outline.")]
     [SerializeField] private GameObject selectedVisual;
-
-    public virtual void OnInteract(PlayerController player) {}
-    public virtual void OnInteractSecondary(PlayerController player) {}
-    public virtual void OnHovered() {}
-    public virtual void OnUnhovered() {}
+    protected bool isHovered;
+    
+    public virtual void OnHovered(){}
+    public virtual void OnInteract(PlayerController player){}
+    public virtual void OnInteractSecondary(PlayerController player){}
+    public virtual void OnUnhovered(){}
 
     public void Hover()
     {
         OnHovered();
         if (selectedVisual != null)
             selectedVisual.SetActive(true);
-        
+        isHovered = true;
     }
 
     public void Unhover()
@@ -25,5 +25,6 @@ public class InteractableObject : MonoBehaviour
         OnUnhovered();
         if (selectedVisual != null)
             selectedVisual.SetActive(false);
+        isHovered = false;
     }
 }

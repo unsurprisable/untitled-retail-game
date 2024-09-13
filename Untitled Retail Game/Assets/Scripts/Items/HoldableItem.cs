@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class HoldableItem : InteractableObject
+public class HoldableItem : InteractableNetworkObject
 {
     public Vector3 heldPositionOffset;
     public Vector3 heldRotationValues;
