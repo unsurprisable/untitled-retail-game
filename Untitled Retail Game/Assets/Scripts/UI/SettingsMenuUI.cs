@@ -40,12 +40,17 @@ public class SettingsMenuUI : SubMenu
 
     [SerializeField] private SettingsSlider fpsLimit;
     private int FpsLimit => (int)fpsLimit.Value;
+    [SerializeField] private SettingsToggle vsync;
+    private int VSync => vsync.State;
     
     public const string PLAYER_PREFS_FPS_LIMIT = "FpsLimit";
+    public const string PLAYER_PREFS_USE_VSYNC = "UseVSync";
 
     private void InvokeOnFpsChanged() {
+        QualitySettings.vSyncCount = VSync;
         Application.targetFrameRate = FpsLimit;
     }
+
 
 
 
@@ -78,6 +83,7 @@ public class SettingsMenuUI : SubMenu
         SetMissingInt(PLAYER_PREFS_FOV, 70);
 
         SetMissingInt(PLAYER_PREFS_FPS_LIMIT, 240);
+        SetMissingInt(PLAYER_PREFS_USE_VSYNC, 1);
 
         PlayerPrefs.Save();
     }
@@ -110,6 +116,7 @@ public class SettingsMenuUI : SubMenu
         InvokeOnFOVChanged();
 
         fpsLimit.Value = PlayerPrefs.GetInt(PLAYER_PREFS_FPS_LIMIT);
+        vsync.State = PlayerPrefs.GetInt(PLAYER_PREFS_USE_VSYNC);
         InvokeOnFpsChanged();
     }
     private void SaveSettings()
@@ -124,6 +131,7 @@ public class SettingsMenuUI : SubMenu
         InvokeOnFOVChanged();
 
         PlayerPrefs.SetInt(PLAYER_PREFS_FPS_LIMIT, FpsLimit);
+        PlayerPrefs.SetInt(PLAYER_PREFS_USE_VSYNC, VSync);
         InvokeOnFpsChanged();
 
         PlayerPrefs.Save();

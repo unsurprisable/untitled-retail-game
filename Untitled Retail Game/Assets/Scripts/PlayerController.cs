@@ -220,6 +220,7 @@ public class PlayerController : NetworkBehaviour
     [Rpc(SendTo.Server)]
     private void DropHeldItemServerRpc(Vector3 clientThrowDirection)
     {
+        // errors here rn because heldItem will be null to any late clients who didn't see the player pick up the item
         heldItem.NetworkObject.ChangeOwnership(NetworkManager.ServerClientId);
         HoldableItem item = heldItem;
         DropHeldItemClientRpc();

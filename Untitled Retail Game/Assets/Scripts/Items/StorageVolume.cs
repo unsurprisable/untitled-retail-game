@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
@@ -14,27 +15,50 @@ public class StorageVolume : InteractableNetworkObject
     [Space]
 
     [SerializeField] private StoreItemSO storeItemSO;
-    [SerializeField] private int itemAmount;
+    private NetworkVariable<int> itemAmount = new NetworkVariable<int>(0);
 
     private Stack<Transform> itemDisplayStack = new Stack<Transform>();
 
 
-    // FOR TESTING ONLY:
-    // auto-fills the drawer if it is pre-set with a StoreItemSO
-    private void Awake()
+    // // FOR TESTING ONLY:
+    // // auto-fills the drawer if it is pre-set with a StoreItemSO
+    // private void Awake()
+    // {
+    //     if (storeItemSO != null) {
+    //         for (int i = 0; i < storeItemSO.storageAmount; i++) {
+    //             AddItem(storeItemSO);
+    //         }
+    //     }
+    // }
+
+    public override void OnNetworkSpawn()
     {
-        if (storeItemSO != null) {
-            for (int i = 0; i < storeItemSO.storageAmount; i++) {
-                AddItem(storeItemSO);
+        itemAmount.OnValueChanged += UpdateVisualForItemAmountChange;
+        // for late joining clients
+        UpdateVisualForItemAmountChange(0, itemAmount.Value);
+    }
+
+    private void UpdateVisualForItemAmountChange(int preValue, int newValue)
+    {
+            if (preValue == newValue) return; // idk if this can even happen but whatever
+            if (preValue < newValue) {
+                for (int i = preValue; i < newValue; i++) {
+                    AddItemToDisplay();
+                }
             }
-        }
+            if (preValue > newValue) {
+                for (int i = preValue; i > newValue; i--) {
+                    RemoveItemFromDisplay();
+                }
+            }
+            UpdateStorageVolumeUI();
     }
 
     public override void OnHovered()
     {
         if (storeItemSO == null) return;
 
-        StorageVolumeUI.Instance.UpdateInfo(storeItemSO, itemAmount);
+        StorageVolumeUI.Instance.UpdateInfo(storeItemSO, itemAmount.Value);
         StorageVolumeUI.Instance.Show();
 
         if (PlayerController.LocalInstance.GetHeldItem() is ItemScannerItem scanner) {
@@ -73,26 +97,22 @@ public class StorageVolume : InteractableNetworkObject
                 Debug.Log("wrong storage space, silly! those are different items!");
                 return;
             }
-            if (storeItemSO != null && itemAmount == storeItemSO.storageAmount) {
+            if (storeItemSO != null && itemAmount.Value == storeItemSO.storageAmount) {
                 Debug.Log("you silly goose, this storage is full!");
                 return;
             }
 
-            OnInteractClientRpc(container);
+            AddItemClientRpc(container);
+            itemAmount.Value++;
         }
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void OnInteractClientRpc(NetworkBehaviourReference containerObject)
+    private void AddItemClientRpc(NetworkBehaviourReference containerObject)
     {
         containerObject.TryGet(out Container container);
-        AddItem(container.GetStoreItemSO());
+        if (storeItemSO == null) storeItemSO = container.GetStoreItemSO();
         container.RemoveItem();
-
-        if (isHoveredOnClient) {
-            StorageVolumeUI.Instance.UpdateInfo(storeItemSO, itemAmount);
-            StorageVolumeUI.Instance.Show();
-        }
     }
 
     public override void OnInteractSecondary(PlayerController player)
@@ -104,8 +124,10 @@ public class StorageVolume : InteractableNetworkObject
     private void RemoveItemServerRpc(NetworkBehaviourReference senderObject)
     {
         senderObject.TryGet(out PlayerController sender);
-        if (sender.GetHeldItem() != null && sender.GetHeldItem() is Container container && itemAmount > 0 && !container.IsFull() && container.GetStoreItemSO() == storeItemSO) {
+        if (sender.GetHeldItem() != null && sender.GetHeldItem() is Container container && itemAmount.Value > 0 && !container.IsFull() && container.GetStoreItemSO() == storeItemSO) {
+            
             RemoveItemClientRpc(container);
+            itemAmount.Value--;
         }
     }
 
@@ -113,13 +135,7 @@ public class StorageVolume : InteractableNetworkObject
     private void RemoveItemClientRpc(NetworkBehaviourReference containerObject)
     {
         containerObject.TryGet(out Container container);
-        RemoveItem();
         container.AddItem();
-        
-        if (isHoveredOnClient) {
-            StorageVolumeUI.Instance.UpdateInfo(storeItemSO, itemAmount);
-            StorageVolumeUI.Instance.Show();
-        }
     }
 
     private void AddItemToDisplay()
@@ -130,6 +146,7 @@ public class StorageVolume : InteractableNetworkObject
         // move them away from the corner
         Vector3 addedPosition = new Vector3(storeItemSO.modelDimensions.x/2, 0f, -storeItemSO.modelDimensions.z/2);
 
+        int itemAmount = this.itemAmount.Value - 1; // because this is called after the value is already changed
 
         // shift each object based on existing ones... how fun :)
         addedPosition.x += storeItemSO.modelDimensions.x * itemAmount;
@@ -156,28 +173,16 @@ public class StorageVolume : InteractableNetworkObject
         itemDisplay.SetPositionAndRotation(itemPosition + itemDisplay.transform.position, Quaternion.Euler(0f, transform.rotation.eulerAngles.y + 180f, 0f));
     }
 
+    private void UpdateStorageVolumeUI()
+    {
+        if (isHoveredOnClient) {
+            StorageVolumeUI.Instance.UpdateInfo(storeItemSO, itemAmount.Value);
+            StorageVolumeUI.Instance.Show();
+        }
+    }
+
     private void RemoveItemFromDisplay()
     {
         Destroy(itemDisplayStack.Pop().gameObject);
-    }
-
-    private void AddItem(StoreItemSO storeItemSO) 
-    {
-        if (storeItemSO == null || itemAmount == 0) {
-            // empty storage space; override it
-            this.storeItemSO = storeItemSO;
-        }
-
-        AddItemToDisplay();
-        itemAmount++;
-    }
-
-    private void  RemoveItem() 
-    {
-        RemoveItemFromDisplay();
-        itemAmount--;
-        if (itemAmount < 0) {
-            Debug.LogError("Storage volume is storing a negative amount of items..?");
-        }
     }
 }
