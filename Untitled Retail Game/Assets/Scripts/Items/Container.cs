@@ -1,3 +1,5 @@
+using System;
+using Unity.Netcode;
 using UnityEngine;
 
 public class Container : HoldableItem
@@ -7,18 +9,29 @@ public class Container : HoldableItem
     [SerializeField] private StoreItemSO storeItem;
     [SerializeField] private SpriteRenderer[] iconObjects;
     [SerializeField] private int itemAmount;
-    
-    // FOR TESTING!!!!
-    private void Awake() {
-        if (storeItem != null) {
-            SetStoreItemSO(storeItem);
+
+    public override void OnNetworkSpawn()
+    {
+        if (IsServer)
+        {
+            NetworkManager.Singleton.SceneManager.OnSynchronize += NetworkManager_OnSynchronize;
+
+            if (storeItem != null) {
+                SetStoreItemSORpc(GameManager.Instance.GetStoreItemId(storeItem), RpcTarget.ClientsAndHost);
+            }
         }
     }
 
-    // make sure to set this instantly whenever instantiating a new container
-    public void SetStoreItemSO(StoreItemSO storeItemSO, bool startEmpty = false)
+    private void NetworkManager_OnSynchronize(ulong clientId)
     {
-        storeItem = storeItemSO;
+        SetStoreItemSORpc(GameManager.Instance.GetStoreItemId(storeItem), RpcTarget.Single(clientId, RpcTargetUse.Temp));
+    }
+
+    // make sure to set this instantly whenever instantiating a new container
+    [Rpc(SendTo.SpecifiedInParams, RequireOwnership = true)]
+    public void SetStoreItemSORpc(int storeItemId, RpcParams rpcParams)
+    {
+        storeItem = GameManager.Instance.GetStoreItemFromId(storeItemId);
 
         transform.name = "Container (" + storeItem.name + ")";
         foreach(SpriteRenderer r in iconObjects) {

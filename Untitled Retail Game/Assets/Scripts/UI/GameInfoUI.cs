@@ -14,7 +14,13 @@ public class GameInfoUI : MonoBehaviour
     private void Start()
     {
         GameManager.Instance.OnBalanceChanged += (sender, args) => {
-            balanceText.text = "$ " + ((GameManager)sender).GetBalance().ToString("000000.00");
+            UpdateVisual(((GameManager)sender).GetBalance());
         };
+        
+        UpdateVisual(GameManager.Instance.initialStoreBalance);
+    }
+
+    private void UpdateVisual(float newBalance) {
+        balanceText.text = "$ " + newBalance.ToString("000000.00");
     }
 }

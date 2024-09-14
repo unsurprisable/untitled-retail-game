@@ -1,50 +1,82 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.Netcode;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameManager : NetworkBehaviour
 {
     public static GameManager Instance { get; private set; }
 
     public event EventHandler OnBalanceChanged;
 
     [SerializeField] private StoreItemListSO storeItemList;
-    private Dictionary<StoreItemSO, float> itemPriceDict;
 
-    [SerializeField] private float storeBalance;
+    private Dictionary<StoreItemSO, int> itemToIdDict;
+    private Dictionary<int, float> itemPriceDict;
+
+    public float initialStoreBalance;
+    private NetworkVariable<float> storeBalance = new NetworkVariable<float>();
+
 
 
     private void Awake()
     {
         Instance = this;
 
-        itemPriceDict = new Dictionary<StoreItemSO, float>();
-        foreach (StoreItemSO storeItemSO in storeItemList.list) {
-            itemPriceDict[storeItemSO] = storeItemSO.unitPrice;
+        itemToIdDict = new Dictionary<StoreItemSO, int>();
+        for (int id = 0; id < storeItemList.list.Length; id++) {
+            itemToIdDict[storeItemList.list[id]] = id;
         }
     }
 
-    private void Start()
+    public override void OnNetworkSpawn()
     {
-        OnBalanceChanged?.Invoke(this, EventArgs.Empty);
+        if (IsServer) {
+            NetworkManager.Singleton.SceneManager.OnSynchronize += NetworkManager_OnSynchronize;
+
+            itemPriceDict = new Dictionary<int, float>();
+            foreach (int id in itemToIdDict.Values) {
+                itemPriceDict[id] = storeItemList.list[id].unitPrice;
+            }
+
+            storeBalance.Value = initialStoreBalance;
+        }
+
+        storeBalance.OnValueChanged += (preValue, newValue) => {
+            OnBalanceChanged?.Invoke(this, EventArgs.Empty);
+        };
     }
 
+    private void NetworkManager_OnSynchronize(ulong clientId)
+    {
+        SynchronizeItemPricesRpc(itemPriceDict.Keys.ToArray(), itemPriceDict.Values.ToArray(), RpcTarget.Single(clientId, RpcTargetUse.Temp));
+    }
+
+    [Rpc(SendTo.SpecifiedInParams)]
+    private void SynchronizeItemPricesRpc(int[] keys, float[] values, RpcParams rpcParams)
+    {
+        itemPriceDict = new Dictionary<int, float>();
+        for (int i = 0; i < keys.Length; i++) {
+            itemPriceDict[keys[i]] = values[i];
+        }
+    }
+
+
     public float GetBalance() {
-        return storeBalance;
+        return storeBalance.Value;
     }
 
     public void SetBalance(float newBalance) {
-        storeBalance = newBalance;
-        OnBalanceChanged?.Invoke(this, EventArgs.Empty);
+        storeBalance.Value = newBalance;
     }
 
     public void RemoveFromBalance(float cost) {
-        storeBalance -= cost;
-        OnBalanceChanged?.Invoke(this, EventArgs.Empty);
+        storeBalance.Value -= cost;
     }
 
     public bool CanAfford(float price) {
-        return storeBalance - price >= 0f;
+        return storeBalance.Value - price >= 0f;
     }
 
     public StoreItemSO[] GetStoreItemSOList() {
@@ -52,10 +84,40 @@ public class GameManager : MonoBehaviour
     }
 
     public float GetStoreItemPrice(StoreItemSO storeItemSO) {
-        return itemPriceDict[storeItemSO];
+        return itemPriceDict[itemToIdDict[storeItemSO]];
     }
 
     public void SetStoreItemPrice(StoreItemSO storeItemSO, float newPrice) {
-        itemPriceDict[storeItemSO] = newPrice;
+        itemPriceDict[itemToIdDict[storeItemSO]] = newPrice;
+    }
+
+    public int GetStoreItemId(StoreItemSO storeItemSO)
+    {
+        return itemToIdDict[storeItemSO];
+    }
+
+    public StoreItemSO GetStoreItemFromId(int id)
+    {
+        return storeItemList.list[id];
+    }
+
+    public int[] ConvertStoreItemArrayToId(StoreItemSO[] storeItemSOArray)
+    {
+        int[] idArray = new int[storeItemSOArray.Length];
+        for (int i = 0; i < idArray.Length; i++)
+        {
+            idArray[i] = itemToIdDict[storeItemSOArray[i]];
+        }
+        return idArray;
+    }
+
+    public StoreItemSO[] ConvertIdArrayToStoreItem(int[] idArray)
+    {
+        StoreItemSO[] storeItemSOArray = new StoreItemSO[idArray.Length];
+        for (int i = 0; i < idArray.Length; i++)
+        {
+            storeItemSOArray[i] = storeItemList.list[idArray[i]];
+        }
+        return storeItemSOArray;
     }
 }

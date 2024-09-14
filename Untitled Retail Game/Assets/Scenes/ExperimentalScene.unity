@@ -3836,6 +3836,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 738486575}
+  - component: {fileID: 738486577}
   - component: {fileID: 738486576}
   m_Layer: 0
   m_Name: GameManager
@@ -3872,7 +3873,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   storeItemList: {fileID: 11400000, guid: d9615e4111c1e5b4f930f063edee45d2, type: 2}
-  storeBalance: 5000
+  initialStoreBalance: 5000
+--- !u!114 &738486577
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 738486574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 2626088727
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1 &745623561
 GameObject:
   m_ObjectHideFlags: 0
@@ -6581,7 +6603,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inMenu: 0
-  activeMenu: {fileID: 0}
 --- !u!1 &1225661905
 GameObject:
   m_ObjectHideFlags: 0
@@ -9339,6 +9360,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1761013088}
+  - component: {fileID: 1761013090}
   - component: {fileID: 1761013089}
   m_Layer: 5
   m_Name: OrderMenuUI
@@ -9397,6 +9419,27 @@ MonoBehaviour:
   containerPrefab: {fileID: 672060980614443742, guid: c5079756ff58a1046863a26b54bd883a,
     type: 3}
   containerSpawnLocation: {fileID: 980416429}
+--- !u!114 &1761013090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1761013087}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 761362096
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1 &1767459204
 GameObject:
   m_ObjectHideFlags: 0

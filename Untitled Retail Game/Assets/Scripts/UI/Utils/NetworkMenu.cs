@@ -1,6 +1,7 @@
+using Unity.Netcode;
 using UnityEngine;
 
-public abstract class Menu : MonoBehaviour, IMenu
+public abstract class NetworkMenu : NetworkBehaviour, IMenu
 {
     [SerializeField] protected GameObject visual;
     protected bool isEnabled;

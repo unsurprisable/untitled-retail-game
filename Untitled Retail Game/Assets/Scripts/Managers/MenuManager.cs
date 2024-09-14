@@ -7,7 +7,7 @@ public class MenuManager : MonoBehaviour
 
     [SerializeField] private bool inMenu;
     [SerializeField] private Stack<SubMenu> openSubMenus;
-    [SerializeField] private Menu activeMenu;
+    [SerializeField] private IMenu activeMenu;
 
     private void Awake()
     {
@@ -39,7 +39,7 @@ public class MenuManager : MonoBehaviour
         openSubMenus.Pop();
     }
 
-    public void OnMenuOpen(Menu menu) {
+    public void OnMenuOpen(IMenu menu) {
         inMenu = true;
         activeMenu = menu;
         PlayerController.LocalInstance.DisableControls();

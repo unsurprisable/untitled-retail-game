@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using System.Linq;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class OrderMenuUI : Menu
+public class OrderMenuUI : NetworkMenu
 {
     public static OrderMenuUI Instance { get; private set; }
 
@@ -23,7 +25,8 @@ public class OrderMenuUI : Menu
     [SerializeField] private Color orderButtonEnabledColor;
     [SerializeField] private Color orderButtonDisabledColor;
 
-    private Dictionary<StoreItemSO, List<GameObject>> currentOrder;
+    private Dictionary<StoreItemSO, int> currentOrder;
+    private List<GameObject> activeOrderButtons = new List<GameObject>();
     private int queuedOrderCount;
 
     private HashSet<GameObject> activeProductButtons;
@@ -39,7 +42,7 @@ public class OrderMenuUI : Menu
     {
         Instance = this;
 
-        currentOrder = new Dictionary<StoreItemSO, List<GameObject>>();
+        currentOrder = new Dictionary<StoreItemSO, int>();
         activeProductButtons = new HashSet<GameObject>();
         categoryDict = new Dictionary<ProductCategory, List<StoreItemSO>>();
         foreach (StoreItemSO storeItemSO in GameManager.Instance.GetStoreItemSOList())
@@ -53,7 +56,12 @@ public class OrderMenuUI : Menu
         categoryButtons[0].GetComponent<Button>().onClick.AddListener(()=>{ ShowCategory(ProductCategory.BASIC_PRODUCTS); });
         categoryButtons[1].GetComponent<Button>().onClick.AddListener(()=>{ ShowCategory(ProductCategory.DAIRY_PRODUCTS); });
 
-        placeOrderButton.onClick.AddListener(PlaceOrder);
+        placeOrderButton.onClick.AddListener(() => {
+            int[] orderItemSOArray = GameManager.Instance.ConvertStoreItemArrayToId(currentOrder.Keys.ToArray());
+            int[] orderAmountArray = currentOrder.Values.ToArray();
+            
+            PlaceOrderServerRpc(orderTotalPrice, orderItemSOArray, orderAmountArray);
+        });
     }
 
     private void Start()
@@ -64,22 +72,34 @@ public class OrderMenuUI : Menu
         UpdateOrderButtonState();
     }
 
-    private void PlaceOrder()
+    [Rpc(SendTo.Server)]
+    private void PlaceOrderServerRpc(float orderTotalPrice, int[] orderItemSOArray, int[] orderAmountArray, RpcParams rpcParams = default)
     {
         if (!GameManager.Instance.CanAfford(orderTotalPrice)) return;
 
         GameManager.Instance.RemoveFromBalance(orderTotalPrice);
 
-        foreach (StoreItemSO storeItemSO in currentOrder.Keys)
+        for (int item = 0; item < orderItemSOArray.Length; item++)
         {
-            List<GameObject> activeOrderButtons = currentOrder[storeItemSO];
+            int orderAmount = orderAmountArray[item];
             // account for ordering multiple of the same item
-            foreach (GameObject orderButton in activeOrderButtons) {
+            for (int amount = 0; amount < orderAmount; amount++) {
                 Transform container = Instantiate(containerPrefab, containerSpawnLocation.position, Quaternion.identity);
-                container.GetComponent<Container>().SetStoreItemSO(storeItemSO);
-                Destroy(orderButton);
+                container.GetComponent<NetworkObject>().Spawn(true);
+                container.GetComponent<Container>().SetStoreItemSORpc(orderItemSOArray[item], RpcTarget.ClientsAndHost);
             }
         }
+
+        PlaceOrderClientCallbackRpc(RpcTarget.Single(rpcParams.Receive.SenderClientId, RpcTargetUse.Temp));
+    }
+
+    [Rpc(SendTo.SpecifiedInParams)]
+    private void PlaceOrderClientCallbackRpc(RpcParams rpcParams)
+    {
+        foreach (GameObject orderButton in activeOrderButtons) {
+            Destroy(orderButton);
+        }
+        activeOrderButtons.Clear();
         currentOrder.Clear();
         queuedOrderCount = 0;
         orderTotalPrice = 0f;
@@ -123,9 +143,10 @@ public class OrderMenuUI : Menu
             return;
         }
         if (!currentOrder.ContainsKey(storeItemSO)) {
-            currentOrder.Add(storeItemSO, new List<GameObject>());
-        } 
-        currentOrder[storeItemSO].Add(CreateOrderButton(storeItemSO));
+            currentOrder[storeItemSO] = 0;
+        }
+        currentOrder[storeItemSO] += 1;
+        activeOrderButtons.Add(CreateOrderButton(storeItemSO));
         orderTotalPrice += storeItemSO.unitPrice * storeItemSO.containerAmount;
         UpdateOrderTotalText();
         queuedOrderCount++;
@@ -142,7 +163,7 @@ public class OrderMenuUI : Menu
     public void RemoveItemFromOrder(ProductOrderSingleUI order)
     {
         Destroy(order.gameObject);
-        currentOrder[order.storeItemSO].Remove(order.gameObject);
+        activeOrderButtons.Remove(order.gameObject);
         orderTotalPrice -= order.storeItemSO.unitPrice * order.storeItemSO.containerAmount;
         UpdateOrderTotalText();
         queuedOrderCount--;
