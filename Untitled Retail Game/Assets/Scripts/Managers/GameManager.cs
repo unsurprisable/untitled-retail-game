@@ -10,6 +10,12 @@ public class GameManager : NetworkBehaviour
 
     public event EventHandler OnBalanceChanged;
 
+    public event EventHandler<OnItemPriceChangedEventArgs> OnItemPriceChanged;
+    public class OnItemPriceChangedEventArgs : EventArgs {
+        public StoreItemSO storeitemSO;
+        public float newItemPrice;
+    }
+
     [SerializeField] private StoreItemListSO storeItemList;
 
     private Dictionary<StoreItemSO, int> itemToIdDict;
@@ -36,7 +42,7 @@ public class GameManager : NetworkBehaviour
             NetworkManager.Singleton.SceneManager.OnSynchronize += NetworkManager_OnSynchronize;
 
             itemPriceDict = new Dictionary<int, float>();
-            foreach (int id in itemToIdDict.Values) {
+            for (int id = 0; id < storeItemList.list.Length; id++) {
                 itemPriceDict[id] = storeItemList.list[id].unitPrice;
             }
 
@@ -50,15 +56,18 @@ public class GameManager : NetworkBehaviour
 
     private void NetworkManager_OnSynchronize(ulong clientId)
     {
-        SynchronizeItemPricesRpc(itemPriceDict.Keys.ToArray(), itemPriceDict.Values.ToArray(), RpcTarget.Single(clientId, RpcTargetUse.Temp));
+        SynchronizeItemPricesRpc(itemPriceDict.Values.ToArray(), RpcTarget.Single(clientId, RpcTargetUse.Temp));
     }
 
     [Rpc(SendTo.SpecifiedInParams)]
-    private void SynchronizeItemPricesRpc(int[] keys, float[] values, RpcParams rpcParams)
+    private void SynchronizeItemPricesRpc(float[] values, RpcParams rpcParams)
     {
+        Debug.Log("synching dictionary");
         itemPriceDict = new Dictionary<int, float>();
-        for (int i = 0; i < keys.Length; i++) {
-            itemPriceDict[keys[i]] = values[i];
+        for (int id = 0; id < values.Length; id++) {
+            // don't need to pass in keys because the Server itemPriceDict values are created in the same way these are; the order will be the same either way
+            itemPriceDict[id] = values[id];
+            Debug.Log("ID " + id + ": " + values[id]);
         }
     }
 
@@ -84,11 +93,19 @@ public class GameManager : NetworkBehaviour
     }
 
     public float GetStoreItemPrice(StoreItemSO storeItemSO) {
+        int id = itemToIdDict[storeItemSO];
+        Debug.Log("ID: " + id);
+        Debug.Log(itemToIdDict != null);
         return itemPriceDict[itemToIdDict[storeItemSO]];
     }
 
-    public void SetStoreItemPrice(StoreItemSO storeItemSO, float newPrice) {
-        itemPriceDict[itemToIdDict[storeItemSO]] = newPrice;
+    [Rpc(SendTo.ClientsAndHost)]
+    public void SetStoreItemPriceRpc(int storeItemId, float newItemPrice) {
+        itemPriceDict[storeItemId] = newItemPrice;
+        OnItemPriceChanged?.Invoke(this, new OnItemPriceChangedEventArgs {
+            storeitemSO = GetStoreItemFromId(storeItemId),
+            newItemPrice = newItemPrice
+        });
     }
 
     public int GetStoreItemId(StoreItemSO storeItemSO)

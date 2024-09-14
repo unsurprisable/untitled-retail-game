@@ -15,6 +15,8 @@ public class InteractableNetworkObject : NetworkBehaviour, IInteractableObject
 
     public void Hover()
     {
+        if (isHoveredOnClient) return;
+
         OnHovered();
         if (selectedVisual != null)
             selectedVisual.SetActive(true);
@@ -23,6 +25,8 @@ public class InteractableNetworkObject : NetworkBehaviour, IInteractableObject
 
     public void Unhover()
     {
+        if (!isHoveredOnClient) return;
+
         OnUnhovered();
         if (selectedVisual != null)
             selectedVisual.SetActive(false);

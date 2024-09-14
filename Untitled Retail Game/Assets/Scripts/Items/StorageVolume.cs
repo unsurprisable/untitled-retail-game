@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
@@ -33,17 +32,13 @@ public class StorageVolume : InteractableNetworkObject
     private void NetworkManager_OnSynchronize(ulong clientId)
     {
         if (storeItemSO == null) return;
-
-        string jsonSO = JsonUtility.ToJson(storeItemSO);
-        SynchronizeItemDataRpc(jsonSO, RpcTarget.Single(clientId, RpcTargetUse.Temp));
+        SynchronizeItemDataRpc(GameManager.Instance.GetStoreItemId(storeItemSO), RpcTarget.Single(clientId, RpcTargetUse.Temp));
     }
 
     [Rpc(SendTo.SpecifiedInParams)]
-    private void SynchronizeItemDataRpc(string jsonSO, RpcParams rpcParams)
+    private void SynchronizeItemDataRpc(int storeItemId, RpcParams rpcParams)
     {
-        StoreItemSO fromJsonSO = ScriptableObject.CreateInstance<StoreItemSO>();
-        JsonUtility.FromJsonOverwrite(jsonSO, fromJsonSO);
-        storeItemSO = fromJsonSO;
+        storeItemSO = GameManager.Instance.GetStoreItemFromId(storeItemId);
 
         UpdateVisualForItemAmountChange(0, itemAmount.Value);
     }
@@ -71,7 +66,9 @@ public class StorageVolume : InteractableNetworkObject
         StorageVolumeUI.Instance.UpdateInfo(storeItemSO, itemAmount.Value);
         StorageVolumeUI.Instance.Show();
 
+        Debug.Log("haha you hovreed on me!");
         if (PlayerController.LocalInstance.GetHeldItem() is ItemScannerItem scanner) {
+            Debug.Log("setting store item");
             scanner.SetStoreItemSO(storeItemSO);
         }
     }

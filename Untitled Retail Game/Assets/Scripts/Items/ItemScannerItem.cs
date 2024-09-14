@@ -1,4 +1,5 @@
 using System;
+using Unity.Netcode;
 using UnityEngine;
 
 public class ItemScannerItem : HoldableItem
@@ -9,15 +10,27 @@ public class ItemScannerItem : HoldableItem
     [SerializeField] private TMPro.TextMeshPro sellPrice;
 
     private StoreItemSO storeItemSO;
+    private float itemPrice;
     private float newItemPrice;
+    [SerializeField] private Color defaultColor;
+    [SerializeField] private Color unsavedColor;
 
+
+
+    public override void OnUse(PlayerController player)
+    {
+        if (storeItemSO != null && newItemPrice != itemPrice)
+        {
+            SetItemPriceServerRpc(GameManager.Instance.GetStoreItemId(storeItemSO), newItemPrice);
+        }
+    }
 
     public override void OnUseSecondary(PlayerController player)
     {
         if (storeItemSO == null) return;
 
-        newItemPrice = storeItemSO.unitPrice;
-        SetNewItemPrice();
+        newItemPrice = itemPrice;
+        PreviewNewItemPrice();
     }
 
     public override void OnDrop()
@@ -29,28 +42,47 @@ public class ItemScannerItem : HoldableItem
     {
         this.storeItemSO = storeItemSO;
         itemName.text = storeItemSO.name;
-        stockPrice.text = "$" + storeItemSO.unitPrice.ToString("0.00");
-        sellPrice.text = "$" + GameManager.Instance.GetStoreItemPrice(storeItemSO).ToString("0.00");
-        newItemPrice = GameManager.Instance.GetStoreItemPrice(storeItemSO);
+        itemPrice = GameManager.Instance.GetStoreItemPrice(storeItemSO);
+        newItemPrice = itemPrice;
+
+        PreviewNewItemPrice();
 
         GameInput.Instance.OnScroll += HandleScrollWheel;
+        GameManager.Instance.OnItemPriceChanged += GameManager_OnItemPriceChanged;
+    }
+
+    private void GameManager_OnItemPriceChanged(object sender, GameManager.OnItemPriceChangedEventArgs e)
+    {
+        if (storeItemSO == e.storeitemSO) {
+            itemPrice = e.newItemPrice;
+            PreviewNewItemPrice();
+        }
     }
 
     public void ResetStoreItemSO()
     {
-        this.storeItemSO = null;
+        storeItemSO = null;
         itemName.text = "";
-        stockPrice.text = "$0.00";
-        sellPrice.text = "$0.00";
+        itemPrice = 0;
         newItemPrice = 0;
+
+        PreviewNewItemPrice();
         
         GameInput.Instance.OnScroll -= HandleScrollWheel;
+        GameManager.Instance.OnItemPriceChanged -= GameManager_OnItemPriceChanged;
     }
 
-    private void SetNewItemPrice()
+    [Rpc(SendTo.Server)]
+    private void SetItemPriceServerRpc(int storeItemId, float newItemPrice)
     {
-        GameManager.Instance.SetStoreItemPrice(storeItemSO, newItemPrice);
+        GameManager.Instance.SetStoreItemPriceRpc(storeItemId, newItemPrice);
+    }
+
+    private void PreviewNewItemPrice()
+    {
+        stockPrice.text = "$" + itemPrice.ToString("0.00");
         sellPrice.text = "$" + newItemPrice.ToString("0.00");
+        sellPrice.color = newItemPrice == itemPrice ? defaultColor : unsavedColor;
     }
 
     private void HandleScrollWheel(object sender, EventArgs e)
@@ -67,6 +99,6 @@ public class ItemScannerItem : HoldableItem
 
         newItemPrice += priceDelta * scrollDirection;
         if (newItemPrice < 0f) newItemPrice = 0f;
-        SetNewItemPrice();
+        PreviewNewItemPrice();
     }
 }
