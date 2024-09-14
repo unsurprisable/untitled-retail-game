@@ -106,8 +106,6 @@ public class SettingsMenuUI : SubMenu
 
     private void LoadSettings()
     {
-        Debug.Log("Retrieved PlayerPrefs settings; updating UI values accordingly.");
-
         sensX.Value = PlayerPrefs.GetInt(PLAYER_PREFS_SENS_X);
         sensY.Value = PlayerPrefs.GetInt(PLAYER_PREFS_SENS_Y);
         InvokeOnSensitivityChanged();

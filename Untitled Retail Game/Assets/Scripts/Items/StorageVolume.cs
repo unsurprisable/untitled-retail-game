@@ -15,7 +15,7 @@ public class StorageVolume : InteractableNetworkObject
     [Space]
 
     [SerializeField] private StoreItemSO storeItemSO;
-    private NetworkVariable<int> itemAmount = new NetworkVariable<int>(0);
+    private NetworkVariable<int> itemAmount = new NetworkVariable<int>();
 
     private Stack<Transform> itemDisplayStack = new Stack<Transform>();
 
@@ -34,16 +34,38 @@ public class StorageVolume : InteractableNetworkObject
     public override void OnNetworkSpawn()
     {
         itemAmount.OnValueChanged += UpdateVisualForItemAmountChange;
+
         // for late joining clients
+        if (!IsHost) {
+            SynchronizeStoreItemSOServerRpc();
+        }
+    }
+
+    [Rpc(SendTo.Server)]
+    private void SynchronizeStoreItemSOServerRpc(RpcParams rpcParams = default)
+    {
+        if (storeItemSO == null) return;
+
+        string jsonSO = JsonUtility.ToJson(storeItemSO);
+        SynchronizeStoreItemSOClientRpc(jsonSO, RpcTarget.Single(rpcParams.Receive.SenderClientId, RpcTargetUse.Temp));
+    }
+
+    [Rpc(SendTo.SpecifiedInParams)]
+    private void SynchronizeStoreItemSOClientRpc(string jsonSO, RpcParams rpcParams)
+    {
+        StoreItemSO fromJsonSO = ScriptableObject.CreateInstance<StoreItemSO>();
+        JsonUtility.FromJsonOverwrite(jsonSO, fromJsonSO);
+        this.storeItemSO = fromJsonSO;
+
         UpdateVisualForItemAmountChange(0, itemAmount.Value);
     }
 
     private void UpdateVisualForItemAmountChange(int preValue, int newValue)
     {
-            if (preValue == newValue) return; // idk if this can even happen but whatever
+            if (preValue == newValue) return;
             if (preValue < newValue) {
                 for (int i = preValue; i < newValue; i++) {
-                    AddItemToDisplay();
+                    AddItemToDisplay(i);
                 }
             }
             if (preValue > newValue) {
@@ -85,22 +107,11 @@ public class StorageVolume : InteractableNetworkObject
         senderObject.TryGet(out PlayerController sender);
         if (sender.GetHeldItem() != null && sender.GetHeldItem() is Container container)
         { 
-            if (container.IsEmpty()) {
-                Debug.Log("that container is empty, silly!");
-                return;
-            }
-            if (container.GetStoreItemSO().storageType != storageType) {
-                Debug.Log("oh you silly billy! this isn't a " + container.GetStoreItemSO().storageType.ToString() + "!");
-                return;
-            }
-            if (storeItemSO != null && container.GetStoreItemSO() != storeItemSO) {
-                Debug.Log("wrong storage space, silly! those are different items!");
-                return;
-            }
-            if (storeItemSO != null && itemAmount.Value == storeItemSO.storageAmount) {
-                Debug.Log("you silly goose, this storage is full!");
-                return;
-            }
+            if (container.IsEmpty() ||
+                container.GetStoreItemSO().storageType != storageType ||
+                (storeItemSO != null && container.GetStoreItemSO() != storeItemSO) ||
+                (storeItemSO != null && itemAmount.Value == storeItemSO.storageAmount)
+            ) return;
 
             AddItemClientRpc(container);
             itemAmount.Value++;
@@ -138,15 +149,13 @@ public class StorageVolume : InteractableNetworkObject
         container.AddItem();
     }
 
-    private void AddItemToDisplay()
+    private void AddItemToDisplay(int itemAmount)
     {
         Transform itemDisplay = Instantiate(storeItemSO.prefab);
         itemDisplayStack.Push(itemDisplay);
 
         // move them away from the corner
         Vector3 addedPosition = new Vector3(storeItemSO.modelDimensions.x/2, 0f, -storeItemSO.modelDimensions.z/2);
-
-        int itemAmount = this.itemAmount.Value - 1; // because this is called after the value is already changed
 
         // shift each object based on existing ones... how fun :)
         addedPosition.x += storeItemSO.modelDimensions.x * itemAmount;
