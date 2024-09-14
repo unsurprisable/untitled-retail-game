@@ -40,12 +40,23 @@ public class PlayerController : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        if (IsServer) {
+            NetworkManager.Singleton.SceneManager.OnSynchronize += NetworkManager_OnSynchronize;
+        }
+
         if (IsOwner) {
             LocalInstance = this;
             playerModelTransform.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
             playerModelTransform.GetChild(0).GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
         } else {
             enabled = false;
+        }
+    }
+
+    private void NetworkManager_OnSynchronize(ulong clientId)
+    {
+        if (heldItem != null) {
+            PickupItemClientRpc(heldItem, RpcTarget.Single(clientId, RpcTargetUse.Temp));
         }
     }
 
@@ -194,12 +205,12 @@ public class PlayerController : NetworkBehaviour
         if (itemObject.TryGet(out HoldableItem item))
         {
             item.NetworkObject.ChangeOwnership(rpcParams.Receive.SenderClientId);
-            PickupItemClientRpc(item);
+            PickupItemClientRpc(item, RpcTarget.ClientsAndHost);
         }
     }
 
-    [Rpc(SendTo.ClientsAndHost)]
-    private void PickupItemClientRpc(NetworkBehaviourReference itemObject)
+    [Rpc(SendTo.SpecifiedInParams)]
+    private void PickupItemClientRpc(NetworkBehaviourReference itemObject, RpcParams rpcParams)
     {
         if (itemObject.TryGet(out HoldableItem item))
         {

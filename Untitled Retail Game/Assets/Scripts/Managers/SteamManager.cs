@@ -62,7 +62,7 @@ public class SteamManager : MonoBehaviour
         Debug.Log("entered a Lobby with ID: " + lobby.Id);
         OnGameLobbyEntered?.Invoke(this, EventArgs.Empty);
 
-        if (NetworkManager.Singleton.IsHost) return;
+        if (NetworkManager.Singleton.IsServer) return;
         NetworkManager.Singleton.gameObject.GetComponent<FacepunchTransport>().targetSteamId = lobby.Owner.Id;
         NetworkManager.Singleton.StartClient();
 

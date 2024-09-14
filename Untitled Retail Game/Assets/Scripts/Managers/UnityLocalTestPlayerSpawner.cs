@@ -28,7 +28,7 @@ public class UnityLocalTestPlayerSpawner : NetworkBehaviour
 
     private void NetworkManager_OnSynchronize(ulong clientId)
     {
-        if (IsHost)
+        if (IsServer)
         {
             SpawnPlayer(clientId);
         }
@@ -36,7 +36,7 @@ public class UnityLocalTestPlayerSpawner : NetworkBehaviour
 
     private void NetworkManager_OnLoadEventCompleted(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
     {
-        if (IsHost && sceneName == "ExperimentalScene")
+        if (IsServer && sceneName == "ExperimentalScene")
         {
             foreach (ulong clientId in clientsCompleted) {
                 SpawnPlayer(clientId);
@@ -48,10 +48,8 @@ public class UnityLocalTestPlayerSpawner : NetworkBehaviour
     {
         Transform player = Instantiate(playerPrefab);
         player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
-        
-        // disabled accurate nametags because rn idk how to sync this to late-joining players
 
-        // string nametag = clientId == 0 ? "(Host)" : "Client " + clientId;
-        // player.GetComponent<PlayerNametagDisplay>().SetNametag(nametag);
+        string nametag = clientId == 0 ? "Host" : "Client " + clientId;
+        player.GetComponent<PlayerNametagDisplay>().SetNametag(nametag);
     }
 }

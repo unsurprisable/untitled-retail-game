@@ -30,7 +30,7 @@ public class PlayerSpawner : NetworkBehaviour
 
     private void NetworkManager_OnSynchronize(ulong clientId)
     {
-        if (IsHost)
+        if (IsServer)
         {
             SpawnPlayer(clientId);
         }
@@ -38,7 +38,7 @@ public class PlayerSpawner : NetworkBehaviour
 
     private void NetworkManager_OnLoadEventCompleted(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
     {
-        if (IsHost && sceneName == "ExperimentalScene")
+        if (IsServer && sceneName == "ExperimentalScene")
         {
             foreach (ulong clientId in clientsCompleted) {
                 SpawnPlayer(clientId);

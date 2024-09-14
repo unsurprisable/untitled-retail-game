@@ -20,42 +20,30 @@ public class StorageVolume : InteractableNetworkObject
     private Stack<Transform> itemDisplayStack = new Stack<Transform>();
 
 
-    // // FOR TESTING ONLY:
-    // // auto-fills the drawer if it is pre-set with a StoreItemSO
-    // private void Awake()
-    // {
-    //     if (storeItemSO != null) {
-    //         for (int i = 0; i < storeItemSO.storageAmount; i++) {
-    //             AddItem(storeItemSO);
-    //         }
-    //     }
-    // }
 
     public override void OnNetworkSpawn()
     {
-        itemAmount.OnValueChanged += UpdateVisualForItemAmountChange;
-
-        // for late joining clients
-        if (!IsHost) {
-            SynchronizeStoreItemSOServerRpc();
+        if (IsServer) {
+            NetworkManager.Singleton.SceneManager.OnSynchronize += NetworkManager_OnSynchronize;
         }
+
+        itemAmount.OnValueChanged += UpdateVisualForItemAmountChange;
     }
 
-    [Rpc(SendTo.Server)]
-    private void SynchronizeStoreItemSOServerRpc(RpcParams rpcParams = default)
+    private void NetworkManager_OnSynchronize(ulong clientId)
     {
         if (storeItemSO == null) return;
 
         string jsonSO = JsonUtility.ToJson(storeItemSO);
-        SynchronizeStoreItemSOClientRpc(jsonSO, RpcTarget.Single(rpcParams.Receive.SenderClientId, RpcTargetUse.Temp));
+        SynchronizeItemDataRpc(jsonSO, RpcTarget.Single(clientId, RpcTargetUse.Temp));
     }
 
     [Rpc(SendTo.SpecifiedInParams)]
-    private void SynchronizeStoreItemSOClientRpc(string jsonSO, RpcParams rpcParams)
+    private void SynchronizeItemDataRpc(string jsonSO, RpcParams rpcParams)
     {
         StoreItemSO fromJsonSO = ScriptableObject.CreateInstance<StoreItemSO>();
         JsonUtility.FromJsonOverwrite(jsonSO, fromJsonSO);
-        this.storeItemSO = fromJsonSO;
+        storeItemSO = fromJsonSO;
 
         UpdateVisualForItemAmountChange(0, itemAmount.Value);
     }
