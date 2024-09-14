@@ -91,24 +91,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""BuildMenu"",
-                    ""type"": ""Button"",
-                    ""id"": ""367ca659-b375-4b95-883d-487eb7a2f9c6"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""PauseMenu"",
-                    ""type"": ""Button"",
-                    ""id"": ""bfb7f4e2-b67c-40ce-8846-eeb02e4c01ce"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""Scroll"",
                     ""type"": ""Value"",
                     ""id"": ""041cd1ff-1f25-4bf4-a9ee-25a3831bcd3e"",
@@ -242,18 +224,64 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""f4e283b3-ecf2-4491-8d2a-4b825a74b285"",
-                    ""path"": ""<Keyboard>/tab"",
+                    ""id"": ""d20cfe1e-9638-4d11-8167-ad69d42bf1b6"",
+                    ""path"": ""<Mouse>/scroll/y"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""BuildMenu"",
+                    ""action"": ""Scroll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Menu"",
+            ""id"": ""e7aa1429-fed1-4b5a-a738-863bb8820217"",
+            ""actions"": [
+                {
+                    ""name"": ""EnterChat"",
+                    ""type"": ""Button"",
+                    ""id"": ""327c226b-be85-4085-819e-fdb486827609"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""PauseMenu"",
+                    ""type"": ""Button"",
+                    ""id"": ""762be47c-bd8d-4088-90dc-aad69103d4f6"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""BuildMenu"",
+                    ""type"": ""Button"",
+                    ""id"": ""fcef3ccc-cfa5-4b20-8cdc-fa5a47d60cff"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""30d7d547-523e-409e-a94d-5397b92ccef7"",
+                    ""path"": ""<Keyboard>/slash"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""EnterChat"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""452a4f98-bb05-4e4d-9c3d-c9de3209e44c"",
+                    ""id"": ""0b7ce4ac-bf67-486d-be7c-5dee56ef124f"",
                     ""path"": ""<Keyboard>/escape"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -264,23 +292,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""b394d04c-8849-4fdc-9c29-c32e18951a69"",
-                    ""path"": ""<Keyboard>/q"",
+                    ""id"": ""1a9273a0-03d2-49f8-93d5-6aa5bd98e3d6"",
+                    ""path"": ""<Keyboard>/tab"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""PauseMenu"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""d20cfe1e-9638-4d11-8167-ad69d42bf1b6"",
-                    ""path"": ""<Mouse>/scroll/y"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Scroll"",
+                    ""action"": ""BuildMenu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -298,9 +315,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_MainAction = m_Player.FindAction("MainAction", throwIfNotFound: true);
         m_Player_SecondaryAction = m_Player.FindAction("SecondaryAction", throwIfNotFound: true);
         m_Player_Drop = m_Player.FindAction("Drop", throwIfNotFound: true);
-        m_Player_BuildMenu = m_Player.FindAction("BuildMenu", throwIfNotFound: true);
-        m_Player_PauseMenu = m_Player.FindAction("PauseMenu", throwIfNotFound: true);
         m_Player_Scroll = m_Player.FindAction("Scroll", throwIfNotFound: true);
+        // Menu
+        m_Menu = asset.FindActionMap("Menu", throwIfNotFound: true);
+        m_Menu_EnterChat = m_Menu.FindAction("EnterChat", throwIfNotFound: true);
+        m_Menu_PauseMenu = m_Menu.FindAction("PauseMenu", throwIfNotFound: true);
+        m_Menu_BuildMenu = m_Menu.FindAction("BuildMenu", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -369,8 +389,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_MainAction;
     private readonly InputAction m_Player_SecondaryAction;
     private readonly InputAction m_Player_Drop;
-    private readonly InputAction m_Player_BuildMenu;
-    private readonly InputAction m_Player_PauseMenu;
     private readonly InputAction m_Player_Scroll;
     public struct PlayerActions
     {
@@ -383,8 +401,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @MainAction => m_Wrapper.m_Player_MainAction;
         public InputAction @SecondaryAction => m_Wrapper.m_Player_SecondaryAction;
         public InputAction @Drop => m_Wrapper.m_Player_Drop;
-        public InputAction @BuildMenu => m_Wrapper.m_Player_BuildMenu;
-        public InputAction @PauseMenu => m_Wrapper.m_Player_PauseMenu;
         public InputAction @Scroll => m_Wrapper.m_Player_Scroll;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
@@ -416,12 +432,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Drop.started += instance.OnDrop;
             @Drop.performed += instance.OnDrop;
             @Drop.canceled += instance.OnDrop;
-            @BuildMenu.started += instance.OnBuildMenu;
-            @BuildMenu.performed += instance.OnBuildMenu;
-            @BuildMenu.canceled += instance.OnBuildMenu;
-            @PauseMenu.started += instance.OnPauseMenu;
-            @PauseMenu.performed += instance.OnPauseMenu;
-            @PauseMenu.canceled += instance.OnPauseMenu;
             @Scroll.started += instance.OnScroll;
             @Scroll.performed += instance.OnScroll;
             @Scroll.canceled += instance.OnScroll;
@@ -450,12 +460,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Drop.started -= instance.OnDrop;
             @Drop.performed -= instance.OnDrop;
             @Drop.canceled -= instance.OnDrop;
-            @BuildMenu.started -= instance.OnBuildMenu;
-            @BuildMenu.performed -= instance.OnBuildMenu;
-            @BuildMenu.canceled -= instance.OnBuildMenu;
-            @PauseMenu.started -= instance.OnPauseMenu;
-            @PauseMenu.performed -= instance.OnPauseMenu;
-            @PauseMenu.canceled -= instance.OnPauseMenu;
             @Scroll.started -= instance.OnScroll;
             @Scroll.performed -= instance.OnScroll;
             @Scroll.canceled -= instance.OnScroll;
@@ -476,6 +480,68 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // Menu
+    private readonly InputActionMap m_Menu;
+    private List<IMenuActions> m_MenuActionsCallbackInterfaces = new List<IMenuActions>();
+    private readonly InputAction m_Menu_EnterChat;
+    private readonly InputAction m_Menu_PauseMenu;
+    private readonly InputAction m_Menu_BuildMenu;
+    public struct MenuActions
+    {
+        private @PlayerInputActions m_Wrapper;
+        public MenuActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @EnterChat => m_Wrapper.m_Menu_EnterChat;
+        public InputAction @PauseMenu => m_Wrapper.m_Menu_PauseMenu;
+        public InputAction @BuildMenu => m_Wrapper.m_Menu_BuildMenu;
+        public InputActionMap Get() { return m_Wrapper.m_Menu; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(MenuActions set) { return set.Get(); }
+        public void AddCallbacks(IMenuActions instance)
+        {
+            if (instance == null || m_Wrapper.m_MenuActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_MenuActionsCallbackInterfaces.Add(instance);
+            @EnterChat.started += instance.OnEnterChat;
+            @EnterChat.performed += instance.OnEnterChat;
+            @EnterChat.canceled += instance.OnEnterChat;
+            @PauseMenu.started += instance.OnPauseMenu;
+            @PauseMenu.performed += instance.OnPauseMenu;
+            @PauseMenu.canceled += instance.OnPauseMenu;
+            @BuildMenu.started += instance.OnBuildMenu;
+            @BuildMenu.performed += instance.OnBuildMenu;
+            @BuildMenu.canceled += instance.OnBuildMenu;
+        }
+
+        private void UnregisterCallbacks(IMenuActions instance)
+        {
+            @EnterChat.started -= instance.OnEnterChat;
+            @EnterChat.performed -= instance.OnEnterChat;
+            @EnterChat.canceled -= instance.OnEnterChat;
+            @PauseMenu.started -= instance.OnPauseMenu;
+            @PauseMenu.performed -= instance.OnPauseMenu;
+            @PauseMenu.canceled -= instance.OnPauseMenu;
+            @BuildMenu.started -= instance.OnBuildMenu;
+            @BuildMenu.performed -= instance.OnBuildMenu;
+            @BuildMenu.canceled -= instance.OnBuildMenu;
+        }
+
+        public void RemoveCallbacks(IMenuActions instance)
+        {
+            if (m_Wrapper.m_MenuActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IMenuActions instance)
+        {
+            foreach (var item in m_Wrapper.m_MenuActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_MenuActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public MenuActions @Menu => new MenuActions(this);
     public interface IPlayerActions
     {
         void OnCamera(InputAction.CallbackContext context);
@@ -485,8 +551,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnMainAction(InputAction.CallbackContext context);
         void OnSecondaryAction(InputAction.CallbackContext context);
         void OnDrop(InputAction.CallbackContext context);
-        void OnBuildMenu(InputAction.CallbackContext context);
-        void OnPauseMenu(InputAction.CallbackContext context);
         void OnScroll(InputAction.CallbackContext context);
+    }
+    public interface IMenuActions
+    {
+        void OnEnterChat(InputAction.CallbackContext context);
+        void OnPauseMenu(InputAction.CallbackContext context);
+        void OnBuildMenu(InputAction.CallbackContext context);
     }
 }

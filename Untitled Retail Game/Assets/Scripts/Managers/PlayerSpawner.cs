@@ -2,9 +2,6 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine.SceneManagement;
 using UnityEngine;
-using Steamworks;
-using Steamworks.Data;
-using System;
 
 public class PlayerSpawner : NetworkBehaviour
 {
@@ -50,5 +47,8 @@ public class PlayerSpawner : NetworkBehaviour
     {
         Transform player = Instantiate(playerPrefab);
         player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
+
+        string nametag = clientId == 0 ? "Host" : "Client " + clientId;
+        player.GetComponent<PlayerNametagDisplay>().SetNametag(nametag);
     }
 }

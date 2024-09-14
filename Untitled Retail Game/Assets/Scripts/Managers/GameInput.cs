@@ -13,6 +13,7 @@ public class GameInput : MonoBehaviour
     public event EventHandler OnBuildMenu;
     public event EventHandler OnPauseMenu;
     public event EventHandler OnScroll;
+    public event EventHandler OnEnterChat;
 
     private PlayerInputActions playerInputActions;
 
@@ -23,13 +24,16 @@ public class GameInput : MonoBehaviour
         playerInputActions = new PlayerInputActions();
 
         playerInputActions.Player.Enable();
+        playerInputActions.Menu.Enable();
+
         playerInputActions.Player.Jump.performed             += (context) => {OnJump?.Invoke(this, EventArgs.Empty);};
         playerInputActions.Player.MainAction.performed       += (context) => {MainAction?.Invoke(this, EventArgs.Empty);};
         playerInputActions.Player.SecondaryAction.performed  += (context) => {SecondaryAction?.Invoke(this, EventArgs.Empty);};
         playerInputActions.Player.Drop.performed             += (context) => {OnDrop?.Invoke(this, EventArgs.Empty);};
-        playerInputActions.Player.BuildMenu.performed        += (context) => {OnBuildMenu?.Invoke(this, EventArgs.Empty);};
-        playerInputActions.Player.PauseMenu.performed        += (context) => {OnPauseMenu?.Invoke(this, EventArgs.Empty);};
+        playerInputActions.Menu.BuildMenu.performed          += (context) => {OnBuildMenu?.Invoke(this, EventArgs.Empty);};
+        playerInputActions.Menu.PauseMenu.performed          += (context) => {OnPauseMenu?.Invoke(this, EventArgs.Empty);};
         playerInputActions.Player.Scroll.performed           += (context) => {OnScroll?.Invoke(this, EventArgs.Empty);};
+        playerInputActions.Menu.EnterChat.performed          += (context) => {OnEnterChat?.Invoke(this, EventArgs.Empty);};
     }
 
     public Vector2 GetMovementVectorNormalized() {
@@ -60,5 +64,11 @@ public class GameInput : MonoBehaviour
         OnBuildMenu = null;
         OnPauseMenu = null;
         OnScroll = null;
+    }
+
+    public void SetPlayerInputActive(bool value)
+    {
+        if (value) playerInputActions.Player.Enable();
+        else playerInputActions.Player.Disable();
     }
 }

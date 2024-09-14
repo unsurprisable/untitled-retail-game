@@ -36,12 +36,6 @@ public class MainMenuManager : MonoBehaviour
     private void Start()
     {
         DebugManager.instance.enableRuntimeUI = false;
-        SteamManager.Instance.OnGameLobbyEntered += SteamManager_OnGameLobbyEntered;
-    }
-
-    private void SteamManager_OnGameLobbyEntered(object sender, EventArgs e)
-    {
-        GameLobby.Instance.currentLobby?.SendChatString("someone joined the lobby and tried to load the scene");
     }
 
     public void HostPrivate() 

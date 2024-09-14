@@ -64,7 +64,7 @@ public class PlayerController : NetworkBehaviour
     {
         rb.isKinematic = false;
 
-        FirstPersonCamera.LocalInstance.Enable();
+        FirstPersonCamera.LocalInstance.Enable(true);
         SettingsMenuUI.Instance.OnPlayerSpawned();
 
         #region Events
@@ -254,14 +254,14 @@ public class PlayerController : NetworkBehaviour
         return heldItem;
     }
 
-    public void DisableControls()
+    public void DisableControls(bool changeMouseState = true)
     {
         controlsDisabled = true;
-        FirstPersonCamera.LocalInstance.Disable();
+        FirstPersonCamera.LocalInstance.Disable(changeMouseState);
     }
-    public void EnableControls()
+    public void EnableControls(bool changeMouseState = true)
     {
         controlsDisabled = false;
-        FirstPersonCamera.LocalInstance.Enable();
+        FirstPersonCamera.LocalInstance.Enable(changeMouseState);
     }
 }

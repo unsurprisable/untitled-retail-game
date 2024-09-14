@@ -8,18 +8,18 @@ public abstract class Menu : MonoBehaviour, IMenu
     protected virtual void OnShow(){}
     protected virtual void OnHide(){}
 
-    public void Show() 
+    public void Show(bool changeMouseState = true) 
     {
         visual.SetActive(true);
         isEnabled = true;
-        MenuManager.Instance.OnMenuOpen(this);
+        MenuManager.Instance.OnMenuOpen(this, changeMouseState);
         OnShow();
     }
-    public void Hide()
+    public void Hide(bool changeMouseState = true)
     {
         visual.SetActive(false);
         isEnabled = false;
-        MenuManager.Instance.OnMenuClose();
+        MenuManager.Instance.OnMenuClose(changeMouseState);
         OnHide();
     }
 }

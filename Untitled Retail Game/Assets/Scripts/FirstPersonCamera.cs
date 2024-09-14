@@ -65,17 +65,21 @@ public class FirstPersonCamera : NetworkBehaviour
         Camera.main.transform.position = cameraAnchor.position;
     }
 
-    public void Enable()
+    public void Enable(bool changeMouseState)
     {
         isEnabled = true;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        if (changeMouseState) {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
     }
-    public void Disable()
+    public void Disable(bool changeMouseState)
     {
         isEnabled = false;
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        if (changeMouseState) {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
     }
 
 }

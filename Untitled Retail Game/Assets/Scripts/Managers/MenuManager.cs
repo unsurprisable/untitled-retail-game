@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -39,18 +40,22 @@ public class MenuManager : MonoBehaviour
         openSubMenus.Pop();
     }
 
-    public void OnMenuOpen(IMenu menu) {
+    public void OnMenuOpen(IMenu menu, bool changeMouseState) {
         inMenu = true;
         activeMenu = menu;
-        PlayerController.LocalInstance.DisableControls();
+        PlayerController.LocalInstance.DisableControls(changeMouseState);
     }
-    public void OnMenuClose() {
+    public void OnMenuClose(bool changeMouseState) {
         inMenu = false;
         activeMenu = null;
-        PlayerController.LocalInstance.EnableControls();
+        PlayerController.LocalInstance.EnableControls(changeMouseState);
     }
     public bool IsInMenu() {
         return inMenu;
     }
 
+    internal void OnMenuOpen(Menu menu)
+    {
+        throw new NotImplementedException();
+    }
 }

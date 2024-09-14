@@ -66,9 +66,7 @@ public class StorageVolume : InteractableNetworkObject
         StorageVolumeUI.Instance.UpdateInfo(storeItemSO, itemAmount.Value);
         StorageVolumeUI.Instance.Show();
 
-        Debug.Log("haha you hovreed on me!");
         if (PlayerController.LocalInstance.GetHeldItem() is ItemScannerItem scanner) {
-            Debug.Log("setting store item");
             scanner.SetStoreItemSO(storeItemSO);
         }
     }

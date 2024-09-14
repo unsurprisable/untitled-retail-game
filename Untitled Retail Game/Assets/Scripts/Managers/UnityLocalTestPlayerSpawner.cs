@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine.SceneManagement;
 using UnityEngine;
-using System;
 
 public class UnityLocalTestPlayerSpawner : NetworkBehaviour
 {

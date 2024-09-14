@@ -1,15 +1,16 @@
-using System;
 using Steamworks;
 using Steamworks.Data;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class OnlineChatUI : MonoBehaviour
+public class OnlineChatUI : Menu
 {
     public static OnlineChatUI Instance { get; private set; }
 
     [SerializeField] private Transform messageContainer;
     [SerializeField] private Transform messagePrefab;
+    [SerializeField] private TMP_InputField inputField;
 
     private bool isInOfflineMode;
 
@@ -29,12 +30,17 @@ public class OnlineChatUI : MonoBehaviour
         SteamMatchmaking.OnLobbyMemberJoined += SteamMatchmaking_OnLobbyMemberJoined;
         SteamMatchmaking.OnLobbyMemberLeave += SteamMatchmaking_OnLobbyMemberLeave;
         SteamMatchmaking.OnChatMessage += SteamMatchmaking_OnChatMessage;
-        GameInput.Instance.OnJump += GameInput_OnJump;
-    }
 
-    private void GameInput_OnJump(object sender, EventArgs e)
-    {
-        GameLobby.Instance.currentLobby?.SendChatString(SteamClient.Name + " jumped!");
+        GameInput.Instance.OnEnterChat += (sender, context) => {
+            if (isEnabled) return;
+            Show(false);
+        };
+        inputField.onSubmit.AddListener((call) => {
+            if (inputField.text == string.Empty) return;
+            string message = SteamClient.Name + ": " + inputField.text.Trim();
+            GameLobby.Instance.currentLobby?.SendChatString(message);
+            Hide(false);
+        });
     }
 
     private void OnDisable()
@@ -43,7 +49,6 @@ public class OnlineChatUI : MonoBehaviour
         SteamMatchmaking.OnLobbyMemberJoined -= SteamMatchmaking_OnLobbyMemberJoined;
         SteamMatchmaking.OnLobbyMemberLeave -= SteamMatchmaking_OnLobbyMemberLeave;
         SteamMatchmaking.OnChatMessage -= SteamMatchmaking_OnChatMessage;
-        GameInput.Instance.OnJump -= GameInput_OnJump;
     }
 
     private void SteamMatchmaking_OnLobbyMemberLeave(Lobby lobby, Friend friend)
@@ -65,5 +70,19 @@ public class OnlineChatUI : MonoBehaviour
     {
         Transform messageObj = Instantiate(messagePrefab, messageContainer);
         messageObj.GetComponent<TextMeshProUGUI>().text = message;
+    }
+
+
+    protected override void OnShow()
+    {
+        GameInput.Instance.SetPlayerInputActive(false);
+        inputField.text = "";
+        inputField.Select();
+    }
+
+    protected override void OnHide()
+    {
+        EventSystem.current.SetSelectedGameObject(null);
+        GameInput.Instance.SetPlayerInputActive(true);
     }
 }

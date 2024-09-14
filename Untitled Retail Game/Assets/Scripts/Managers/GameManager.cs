@@ -62,12 +62,10 @@ public class GameManager : NetworkBehaviour
     [Rpc(SendTo.SpecifiedInParams)]
     private void SynchronizeItemPricesRpc(float[] values, RpcParams rpcParams)
     {
-        Debug.Log("synching dictionary");
         itemPriceDict = new Dictionary<int, float>();
         for (int id = 0; id < values.Length; id++) {
             // don't need to pass in keys because the Server itemPriceDict values are created in the same way these are; the order will be the same either way
             itemPriceDict[id] = values[id];
-            Debug.Log("ID " + id + ": " + values[id]);
         }
     }
 
@@ -93,9 +91,6 @@ public class GameManager : NetworkBehaviour
     }
 
     public float GetStoreItemPrice(StoreItemSO storeItemSO) {
-        int id = itemToIdDict[storeItemSO];
-        Debug.Log("ID: " + id);
-        Debug.Log(itemToIdDict != null);
         return itemPriceDict[itemToIdDict[storeItemSO]];
     }
 
