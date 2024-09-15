@@ -21,7 +21,7 @@ public class ItemScannerItem : HoldableItem
     {
         if (storeItemSO != null && newItemPrice != itemPrice)
         {
-            SetItemPriceServerRpc(GameManager.Instance.GetStoreItemId(storeItemSO), newItemPrice);
+            SetItemPriceServerRpc(storeItemSO.Id, newItemPrice);
         }
     }
 

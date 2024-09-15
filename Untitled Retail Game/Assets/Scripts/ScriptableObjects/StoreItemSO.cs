@@ -38,4 +38,10 @@ public class StoreItemSO : ScriptableObject
     [Tooltip("Should just be equal to the volume of the storage capacity.")]
     public int storageAmount;
 
+
+    public int Id => GameManager.Instance.GetStoreItemId(this);
+
+    public static StoreItemSO FromId(int id) {
+        return GameManager.Instance.GetStoreItemFromId(id);
+    }
 }

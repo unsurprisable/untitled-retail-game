@@ -5,31 +5,37 @@ public class InteractableNetworkObject : NetworkBehaviour, IInteractableObject
 {
     [Header("Interactable Object")]
     [Tooltip("Leave empty if you don't want it to have an outline.")]
-    [SerializeField] private GameObject selectedVisual;
-    protected bool isHoveredOnClient;
-
+    [SerializeField] private bool enableOutline = true;
+    private Outline outline;
+    protected bool isHovered;
+    
     public virtual void OnHovered(){}
     public virtual void OnInteract(PlayerController player){}
     public virtual void OnInteractSecondary(PlayerController player){}
     public virtual void OnUnhovered(){}
 
+    private void Start()
+    {
+        if (enableOutline) {
+            outline = gameObject.AddComponent<Outline>();
+            outline.OutlineMode = PlayerController.LocalInstance.outlineMode;
+            outline.OutlineColor = PlayerController.LocalInstance.outlineColor;
+            outline.OutlineWidth = PlayerController.LocalInstance.outlineWidth;
+            outline.enabled = false;
+        }
+    }
+
     public void Hover()
     {
-        if (isHoveredOnClient) return;
-
         OnHovered();
-        if (selectedVisual != null)
-            selectedVisual.SetActive(true);
-        isHoveredOnClient = true;
+        if (enableOutline) outline.enabled = true;
+        isHovered = true;
     }
 
     public void Unhover()
     {
-        if (!isHoveredOnClient) return;
-
         OnUnhovered();
-        if (selectedVisual != null)
-            selectedVisual.SetActive(false);
-        isHoveredOnClient = false;
+        if (enableOutline) outline.enabled = false;
+        isHovered = false;
     }
 }

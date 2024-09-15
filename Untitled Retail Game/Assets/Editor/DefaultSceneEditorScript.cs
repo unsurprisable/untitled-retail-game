@@ -3,9 +3,9 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 
 [InitializeOnLoad]
-public class EditorInit
+public class DefaultSceneEditorScript
 {
-    static EditorInit()
+    static DefaultSceneEditorScript()
     {
         var pathOfFirstScene = EditorBuildSettings.scenes[0].path;
         var sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(pathOfFirstScene);

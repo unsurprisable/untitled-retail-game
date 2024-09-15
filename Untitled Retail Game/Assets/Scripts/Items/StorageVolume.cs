@@ -32,13 +32,13 @@ public class StorageVolume : InteractableNetworkObject
     private void NetworkManager_OnSynchronize(ulong clientId)
     {
         if (storeItemSO == null) return;
-        SynchronizeItemDataRpc(GameManager.Instance.GetStoreItemId(storeItemSO), RpcTarget.Single(clientId, RpcTargetUse.Temp));
+        SynchronizeItemDataRpc(storeItemSO.Id, RpcTarget.Single(clientId, RpcTargetUse.Temp));
     }
 
     [Rpc(SendTo.SpecifiedInParams)]
     private void SynchronizeItemDataRpc(int storeItemId, RpcParams rpcParams)
     {
-        storeItemSO = GameManager.Instance.GetStoreItemFromId(storeItemId);
+        storeItemSO = StoreItemSO.FromId(storeItemId);
 
         UpdateVisualForItemAmountChange(0, itemAmount.Value);
     }
@@ -167,7 +167,7 @@ public class StorageVolume : InteractableNetworkObject
 
     private void UpdateStorageVolumeUI()
     {
-        if (isHoveredOnClient) {
+        if (isHovered) {
             StorageVolumeUI.Instance.UpdateInfo(storeItemSO, itemAmount.Value);
             StorageVolumeUI.Instance.Show();
         }

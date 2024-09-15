@@ -4,7 +4,8 @@ public class InteractableClientObject : MonoBehaviour, IInteractableObject
 {
     [Header("Interactable Object")]
     [Tooltip("Leave empty if you don't want it to have an outline.")]
-    [SerializeField] private GameObject selectedVisual;
+    [SerializeField] private bool enableOutline = true;
+    private Outline outline;
     protected bool isHovered;
     
     public virtual void OnHovered(){}
@@ -12,19 +13,28 @@ public class InteractableClientObject : MonoBehaviour, IInteractableObject
     public virtual void OnInteractSecondary(PlayerController player){}
     public virtual void OnUnhovered(){}
 
+    private void Start()
+    {
+        if (enableOutline) {
+            outline = gameObject.AddComponent<Outline>();
+            outline.OutlineMode = PlayerController.LocalInstance.outlineMode;
+            outline.OutlineColor = PlayerController.LocalInstance.outlineColor;
+            outline.OutlineWidth = PlayerController.LocalInstance.outlineWidth;
+            outline.enabled = false;
+        }
+    }
+
     public void Hover()
     {
         OnHovered();
-        if (selectedVisual != null)
-            selectedVisual.SetActive(true);
+        if (enableOutline) outline.enabled = true;
         isHovered = true;
     }
 
     public void Unhover()
     {
         OnUnhovered();
-        if (selectedVisual != null)
-            selectedVisual.SetActive(false);
+        if (enableOutline) outline.enabled = false;
         isHovered = false;
     }
 }

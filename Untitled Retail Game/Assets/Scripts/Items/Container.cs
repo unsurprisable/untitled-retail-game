@@ -17,21 +17,21 @@ public class Container : HoldableItem
             NetworkManager.Singleton.SceneManager.OnSynchronize += NetworkManager_OnSynchronize;
 
             if (storeItem != null) {
-                SetStoreItemSORpc(GameManager.Instance.GetStoreItemId(storeItem), RpcTarget.ClientsAndHost);
+                SetStoreItemSORpc(storeItem.Id, RpcTarget.ClientsAndHost);
             }
         }
     }
 
     private void NetworkManager_OnSynchronize(ulong clientId)
     {
-        SetStoreItemSORpc(GameManager.Instance.GetStoreItemId(storeItem), RpcTarget.Single(clientId, RpcTargetUse.Temp));
+        SetStoreItemSORpc(storeItem.Id, RpcTarget.Single(clientId, RpcTargetUse.Temp));
     }
 
     // make sure to set this instantly whenever instantiating a new container
     [Rpc(SendTo.SpecifiedInParams, RequireOwnership = true)]
     public void SetStoreItemSORpc(int storeItemId, RpcParams rpcParams)
     {
-        storeItem = GameManager.Instance.GetStoreItemFromId(storeItemId);
+        storeItem = StoreItemSO.FromId(storeItemId);
 
         transform.name = "Container (" + storeItem.name + ")";
         foreach(SpriteRenderer r in iconObjects) {

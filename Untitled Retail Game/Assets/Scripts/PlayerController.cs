@@ -35,6 +35,11 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private float throwForce;
     private HoldableItem heldItem;
 
+    [Header("Interaction Outlines")]
+    public Outline.Mode outlineMode;
+    public Color outlineColor;
+    public float outlineWidth;
+
     private bool controlsDisabled;
 
 

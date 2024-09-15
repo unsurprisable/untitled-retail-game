@@ -1,3 +1,4 @@
+using Steamworks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -7,6 +8,7 @@ public class PauseMenuUI : Menu
     public static PauseMenuUI Instance { get; private set; }
 
     [SerializeField] private GameObject copyLobbyButton;
+    [SerializeField] private GameObject inviteFriendsButton;
 
     private void Awake()
     {
@@ -14,6 +16,7 @@ public class PauseMenuUI : Menu
 
         if (GameLobby.Instance != null && GameLobby.Instance.currentLobby != null) {
             copyLobbyButton.SetActive(true);
+            inviteFriendsButton.SetActive(true);
         }
     }
 
@@ -52,5 +55,13 @@ public class PauseMenuUI : Menu
         textEditor.text = GameLobby.Instance.currentLobby?.Id.ToString();
         textEditor.SelectAll();
         textEditor.Copy();
+    }
+    public void OpenFriendInvites()
+    {
+        if (GameLobby.Instance == null || GameLobby.Instance.currentLobby == null) {
+            Debug.LogError("This button should not be enabled when a lobby connection is not established.");
+            return;
+        }
+        SteamFriends.OpenGameInviteOverlay((SteamId)(GameLobby.Instance.currentLobby?.Id));
     }
 }
