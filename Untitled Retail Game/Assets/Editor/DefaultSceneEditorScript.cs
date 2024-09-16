@@ -3,7 +3,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 
 [InitializeOnLoad]
-public class DefaultSceneEditorScript
+public class DefaultSceneEditorScript 
 {
     static DefaultSceneEditorScript()
     {

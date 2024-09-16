@@ -32,7 +32,7 @@ public class StoreItemSO : ScriptableObject
 
     [Header("Storage Data")]
     [Tooltip("Represents the dimensions of the 3D shape formed from a full storage of this item.")]
-    public Vector3 storageCapacity;
+    public Vector3Int storageCapacity;
     [Tooltip("Represents the distance each model should be away from each other.")]
     public Vector3 modelDimensions;
     [Tooltip("Should just be equal to the volume of the storage capacity.")]

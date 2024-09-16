@@ -127,7 +127,7 @@ MonoBehaviour:
   throwForce: 500
   outlineMode: 0
   outlineColor: {r: 0, g: 1, b: 0.9806142, a: 1}
-  outlineWidth: 12
+  outlineWidth: 15
 --- !u!54 &8051314931943267243
 Rigidbody:
   m_ObjectHideFlags: 0

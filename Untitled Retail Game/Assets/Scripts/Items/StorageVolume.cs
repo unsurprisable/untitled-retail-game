@@ -27,6 +27,10 @@ public class StorageVolume : InteractableNetworkObject
         }
 
         itemAmount.OnValueChanged += UpdateVisualForItemAmountChange;
+
+        if (IsServer && storeItemSO != null) {
+            itemAmount.Value = storeItemSO.storageAmount;
+        }
     }
 
     private void NetworkManager_OnSynchronize(ulong clientId)
@@ -151,6 +155,9 @@ public class StorageVolume : InteractableNetworkObject
         addedPosition.z += verticalWraps * storeItemSO.modelDimensions.z * storeItemSO.storageCapacity.z;
         addedPosition.y += verticalWraps * storeItemSO.modelDimensions.y;
 
+        float slantTheta = transform.rotation.eulerAngles.x * Mathf.Deg2Rad;
+        float verticalSlant = addedPosition.z * Mathf.Tan(slantTheta);
+        addedPosition.y -= verticalSlant;
 
         // rotate the addedPosition relative to the Y axis rotation of the storage object
         // (so that these translations will always be relative to the object, regardless of its rotation)
