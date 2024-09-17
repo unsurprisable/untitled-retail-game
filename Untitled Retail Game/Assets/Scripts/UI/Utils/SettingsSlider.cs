@@ -2,6 +2,7 @@ using System;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class SettingsSlider : MonoBehaviour
@@ -10,7 +11,7 @@ public class SettingsSlider : MonoBehaviour
     [SerializeField] private Slider slider;
     public float Value {
         get => slider.value;
-        set { slider.value = value; OnSliderValueChanged(value); }
+        set { slider.value = value; SyncInputFieldFromSlider(value); }
     }
 
     private void Awake()
@@ -19,29 +20,56 @@ public class SettingsSlider : MonoBehaviour
         valueInputField.lineLimit = 1;
 
         valueInputField.onValidateInput += ValidateInput;
+        valueInputField.onValueChanged.AddListener(OnInputFieldValueChanged);
+        valueInputField.onDeselect.AddListener(FinalizeInputField);
+        valueInputField.onSubmit.AddListener((text) => { EventSystem.current.SetSelectedGameObject(null); });
+    }
+
+    private void OnInputFieldValueChanged(string text)
+    {
+        if (int.TryParse(text, out int result))
+        {
+            if (result > slider.minValue && result < slider.maxValue) 
+                SyncSliderFromInputField();
+        }
+        else if (text != "")
+        {
+            SyncInputFieldFromSlider();
+        }
     }
 
     private char ValidateInput(string text, int charIndex, char addedChar)
     {
-        if (!int.TryParse(addedChar.ToString(), out int a)) {
+        if (!int.TryParse(addedChar.ToString(), out _)) {
             return '\0'; // not an integer
-        }
-        if (int.TryParse(text, out int result))
-        {
-            Debug.Log(result);
-            if (result > slider.maxValue) {
-                valueInputField.text = slider.maxValue.ToString();
-                return '\0';
-            } else if (result < slider.minValue) {
-                valueInputField.text = slider.minValue.ToString();
-                return '\0';
-            }
         }
         return addedChar;
     }
 
-    public void OnSliderValueChanged(float newValue)
+    private void FinalizeInputField(string text)
     {
-        valueInputField.text = newValue.ToString();
+        if (text == "" || !int.TryParse(text, out int result)) {
+            SyncInputFieldFromSlider();
+        } else {
+            if (result > slider.maxValue) {
+                valueInputField.text = slider.maxValue.ToString();
+            } else if (result < slider.minValue) {
+                valueInputField.text = slider.minValue.ToString();
+            }
+        }
+        SyncSliderFromInputField();
+    }
+
+    public void SyncSliderFromInputField()
+    {
+        slider.value = int.Parse(valueInputField.text);
+    }
+    public void SyncInputFieldFromSlider(float newValue = -1)
+    {
+        if (newValue == -1) {
+            valueInputField.text = slider.value.ToString();
+        } else {
+            valueInputField.text = newValue.ToString();
+        }
     }
 }

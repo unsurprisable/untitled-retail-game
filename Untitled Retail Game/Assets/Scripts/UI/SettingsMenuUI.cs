@@ -117,7 +117,7 @@ public class SettingsMenuUI : SubMenu
         vsync.State = PlayerPrefs.GetInt(PLAYER_PREFS_USE_VSYNC);
         InvokeOnFpsChanged();
     }
-    private void SaveSettings()
+    public void SaveSettings()
     {
         Debug.Log("Writing settings to PlayerPrefs...");
 
