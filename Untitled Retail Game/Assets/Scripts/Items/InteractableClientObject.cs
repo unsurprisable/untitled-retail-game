@@ -13,6 +13,8 @@ public class InteractableClientObject : MonoBehaviour, IInteractableObject
     public virtual void OnInteractSecondary(PlayerController player){}
     public virtual void OnInteractHeld(PlayerController player, float time){}
     public virtual void OnInteractHeldLookAway(PlayerController player){}
+    public virtual void OnAlternateHeld(PlayerController player, float time){}
+    public virtual void OnAlternateHeldLookAway(PlayerController player){}
     public virtual void OnUnhovered(){}
 
     private void Start()

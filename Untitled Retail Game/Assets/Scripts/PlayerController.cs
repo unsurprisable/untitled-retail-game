@@ -36,7 +36,9 @@ public class PlayerController : NetworkBehaviour
     private HoldableItem heldItem;
 
     [Header("Interaction Held")]
-    private bool interactHeld;
+    private bool mainInteractHeld;
+    private bool alternateInteractHeld;
+    private bool InteractHeld => mainInteractHeld || alternateInteractHeld;
     [SerializeField] private IInteractableObject interactHeldItem; // the item that was interacted with at the start of the hold
     [SerializeField] private float interactHeldTime;
     private bool InteractHeldIsHovering => interactHeldItem != null && interactHeldItem.IsHovered();
@@ -51,13 +53,14 @@ public class PlayerController : NetworkBehaviour
 
 
     // TODO:
-    // Interaction Held detection:
-    // X only starts if an object is interacted with (so clicking and holding in the air won't do anything)
-    // X should remember what object the hold is associated with (should also have an event for when you look away from it)
-    // X needs to keep track of the time it's been held down (and reset when looking away or when controls are disabled in a menu)
-    // X needs to call OnInteractHeld() on that item every frame it's being hovered/held
-    // X needs to turn off and reset time+item when LMB isn't held anymore
-    // X OnInteractHeldLookAway() event triggers when you look away from ANY item, not just the held one!
+    // Alternate Interaction Held detection
+    // X Add RMB release event to GameInput
+    // X reuse interactHeldItem and interactHeldTime
+    // X add lambda to replace interactHeld and created two bools for primary & alternate interact held
+    // X implement event methods in IInteractableObject for OnAlternateInteractHeld() and OnAlternateInteractHeldLookAway()
+    // - utilize this to allow item removing from storage volumes
+
+    // X Interaction Held detection
 
 
     public override void OnNetworkSpawn()
@@ -104,20 +107,22 @@ public class PlayerController : NetworkBehaviour
 
             if (heldItem != null && heldItem.hasUse) {
                 heldItem.OnUse(this);
-                // interact held logic
-                interactHeld = true;
-                // interactHeldIsHovering = true;
-                interactHeldItem = heldItem;
+
+                if (!InteractHeld) { // so only LMB or RMB can be held at once
+                    mainInteractHeld = true;
+                    interactHeldItem = heldItem;
+                }
 
             } else if (heldItem == null && hoveredItem is HoldableItem item) {
                 PickupItem(item);
             
             } else {
                 hoveredItem.OnInteract(this);
-                // interact held logic
-                interactHeld = true;
-                // interactHeldIsHovering = true;
-                interactHeldItem = hoveredItem;
+                
+                if (!InteractHeld) {
+                    mainInteractHeld = true;
+                    interactHeldItem = hoveredItem;
+                }
             }
         };
 
@@ -130,17 +135,31 @@ public class PlayerController : NetworkBehaviour
             if (heldItem != null && heldItem.hasUse) {
                 heldItem.OnUseSecondary(this);
 
+                if (!InteractHeld) { // so only LMB or RMB can be held at once
+                    alternateInteractHeld = true;
+                    interactHeldItem = heldItem;
+                }
             } else {
                 hoveredItem.OnInteractSecondary(this);
+                
+                if (!InteractHeld) {
+                    alternateInteractHeld = true;
+                    interactHeldItem = hoveredItem;
+                }
             }
         };
 
         // Releasing Main Action (LMB)
         // used for: Detecting when interact held is cancelled
         GameInput.Instance.MainActionReleased += (sender, args) => {
-            interactHeld = false;
-            // interactHeldIsHovering = false;
-            // interactHeldTime = 0f;
+            mainInteractHeld = false;
+            interactHeldItem = null;
+        };
+
+        // Releasing Alternate Action (RMB)
+        // used for: Detecting when alternate interact held is cancelled
+        GameInput.Instance.SecondaryActionReleased += (sender, args) => {
+            alternateInteractHeld = false;
             interactHeldItem = null;
         };
 
@@ -198,10 +217,6 @@ public class PlayerController : NetworkBehaviour
                     item.Hover();
                     hoveredItem = item;
                 }
-
-                // if (interactHeld) {
-                //     interactHeldIsHovering = true;
-                // }
             } else {
                 Debug.LogError("Item is missing an 'IInteractableItem' component! (make sure the only collider is on the parent object with the component)");
             }
@@ -212,10 +227,12 @@ public class PlayerController : NetworkBehaviour
             if (hoveredItem != null) {
 
                 // as far as i know, interactHeld should only be true if interactHeldItem is !null... if this errors, that's probably why
-                if (interactHeld && interactHeldItem == hoveredItem) {
-                    // interactHeldTime = 0f;
-                    interactHeldItem.OnInteractHeldLookAway(this);
-                    // interactHeldIsHovering = false;
+                if (InteractHeld && interactHeldItem == hoveredItem) {
+                    if (mainInteractHeld) {
+                        interactHeldItem.OnInteractHeldLookAway(this);
+                    } else {
+                        interactHeldItem.OnAlternateHeldLookAway(this);
+                    }
                 }
 
                 hoveredItem.Unhover();
@@ -262,9 +279,13 @@ public class PlayerController : NetworkBehaviour
     }
 
     private void HandleInteractHeld() {
-        if (interactHeld && InteractHeldIsHovering) {
+        if (InteractHeld && InteractHeldIsHovering) {
             interactHeldTime += Time.deltaTime;
-            interactHeldItem.OnInteractHeld(this, interactHeldTime);
+            if (mainInteractHeld) {
+                interactHeldItem.OnInteractHeld(this, interactHeldTime);
+            } else {
+                interactHeldItem.OnAlternateHeld(this, interactHeldTime);
+            }
         } else {
             interactHeldTime = 0f;
         }

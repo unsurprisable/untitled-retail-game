@@ -6,6 +6,8 @@ public interface IInteractableObject
     public void OnInteractSecondary(PlayerController player);
     public void OnInteractHeld(PlayerController player, float time);
     public void OnInteractHeldLookAway(PlayerController player);
+    public void OnAlternateHeld(PlayerController player, float time);
+    public void OnAlternateHeldLookAway(PlayerController player);
     public void OnHovered();
     public void OnUnhovered();
 

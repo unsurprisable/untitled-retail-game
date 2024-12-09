@@ -89,9 +89,15 @@ public class StorageVolume : InteractableNetworkObject
         }
     }
 
+    // double repetition here, but imo it's more efficient than making a general "interact OR alternate interact" event
     public override void OnInteract(PlayerController player)
     {
-        // AddItemServerRpc(player);
+        // reset the cooldown so the actual functionality in OnInteractHeld triggers instantly
+        interactHeldCooldownLeft = 0f;
+    }
+
+    public override void OnInteractSecondary(PlayerController player)
+    {
         interactHeldCooldownLeft = 0f;
     }
 
@@ -101,6 +107,16 @@ public class StorageVolume : InteractableNetworkObject
 
         if (interactHeldCooldownLeft <= 0) {
             AddItemServerRpc(player);
+            interactHeldCooldownLeft = interactHeldCooldownCurve.Evaluate(time);
+        }
+    }
+
+    public override void OnAlternateHeld(PlayerController player, float time)
+    {
+        interactHeldCooldownLeft -= Time.deltaTime;
+
+        if (interactHeldCooldownLeft <= 0) {
+            RemoveItemServerRpc(player);
             interactHeldCooldownLeft = interactHeldCooldownCurve.Evaluate(time);
         }
     }
@@ -128,11 +144,6 @@ public class StorageVolume : InteractableNetworkObject
         containerObject.TryGet(out Container container);
         if (storeItemSO == null) storeItemSO = container.GetStoreItemSO();
         container.RemoveItem();
-    }
-
-    public override void OnInteractSecondary(PlayerController player)
-    {
-        RemoveItemServerRpc(player);
     }
 
     [Rpc(SendTo.Server)]
