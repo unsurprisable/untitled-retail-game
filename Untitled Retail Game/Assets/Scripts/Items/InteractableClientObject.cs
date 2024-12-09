@@ -11,6 +11,8 @@ public class InteractableClientObject : MonoBehaviour, IInteractableObject
     public virtual void OnHovered(){}
     public virtual void OnInteract(PlayerController player){}
     public virtual void OnInteractSecondary(PlayerController player){}
+    public virtual void OnInteractHeld(PlayerController player, float time){}
+    public virtual void OnInteractHeldLookAway(PlayerController player){}
     public virtual void OnUnhovered(){}
 
     private void Start()
@@ -36,5 +38,9 @@ public class InteractableClientObject : MonoBehaviour, IInteractableObject
         OnUnhovered();
         if (enableOutline) outline.enabled = false;
         isHovered = false;
+    }
+
+    public bool IsHovered() {
+        return isHovered;
     }
 }

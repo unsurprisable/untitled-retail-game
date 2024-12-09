@@ -9,6 +9,7 @@ public class GameInput : MonoBehaviour
     public event EventHandler OnJump;
     public event EventHandler MainAction;
     public event EventHandler SecondaryAction;
+    public event EventHandler MainActionReleased;
     public event EventHandler OnDrop;
     public event EventHandler OnBuildMenu;
     public event EventHandler OnPauseMenu;
@@ -28,6 +29,7 @@ public class GameInput : MonoBehaviour
 
         playerInputActions.Player.Jump.performed             += (context) => {OnJump?.Invoke(this, EventArgs.Empty);};
         playerInputActions.Player.MainAction.performed       += (context) => {MainAction?.Invoke(this, EventArgs.Empty);};
+        playerInputActions.Player.MainAction.canceled        += (context) => {MainActionReleased?.Invoke(this, EventArgs.Empty);};
         playerInputActions.Player.SecondaryAction.performed  += (context) => {SecondaryAction?.Invoke(this, EventArgs.Empty);};
         playerInputActions.Player.Drop.performed             += (context) => {OnDrop?.Invoke(this, EventArgs.Empty);};
         playerInputActions.Menu.BuildMenu.performed          += (context) => {OnBuildMenu?.Invoke(this, EventArgs.Empty);};

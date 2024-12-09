@@ -18,6 +18,12 @@ public class StorageVolume : InteractableNetworkObject
 
     private Stack<Transform> itemDisplayStack = new Stack<Transform>();
 
+    [Space]
+    [Header("Interaction")]
+    [SerializeField] private AnimationCurve interactHeldCooldownCurve; // should probably make this static somewhere to save memory (rn every single volume has one of these in memory)
+    private float interactHeldCooldownLeft;
+
+
 
 
     public override void OnNetworkSpawn()
@@ -85,7 +91,18 @@ public class StorageVolume : InteractableNetworkObject
 
     public override void OnInteract(PlayerController player)
     {
-        AddItemServerRpc(player);
+        // AddItemServerRpc(player);
+        interactHeldCooldownLeft = 0f;
+    }
+
+    public override void OnInteractHeld(PlayerController player, float time)
+    {
+        interactHeldCooldownLeft -= Time.deltaTime;
+
+        if (interactHeldCooldownLeft <= 0) {
+            AddItemServerRpc(player);
+            interactHeldCooldownLeft = interactHeldCooldownCurve.Evaluate(time);
+        }
     }
 
     [Rpc(SendTo.Server)]
