@@ -25,10 +25,7 @@ public class BuildMenuUI : Menu
     private Dictionary<BuildCategory, List<BuildObjectSO>> categoryDict;
     private Dictionary<BuildObjectSO, int> buildObjectIdDictionary; // quick map from a buildObjectSO to its ID (index in objectList)
 
-    // TODO:
-    // - store a list in memory of the player's favorites
-    // - when saving to playerprefs, turn the list into a string of IDs: "1 11 5 9 ..."
-    // - parse the string back into a list when retrieving it
+
 
     private void Awake()
     {
@@ -78,7 +75,7 @@ public class BuildMenuUI : Menu
     }
 
     public new void Hide(bool changeMouseState = true) {
-        // TECHNICALLY writing to PlayerPrefs should be done less frequently, however I don't see any immediate issues with doing it every time the menu is closed
+        // TECHNICALLY writing to PlayerPrefs should be done less frequently (but I don't see any immediate issues with doing it every time the menu is closed)
         // save favorites to playerprefs
         if (favoritesModified) {
             StringBuilder idString = new StringBuilder("");

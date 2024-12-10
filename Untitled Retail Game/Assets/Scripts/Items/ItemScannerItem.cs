@@ -42,6 +42,7 @@ public class ItemScannerItem : HoldableItem
     {
         this.storeItemSO = storeItemSO;
         itemName.text = storeItemSO.name;
+        stockPrice.text = "$" + storeItemSO.unitPrice.ToString("0.00");
         itemPrice = GameManager.Instance.GetStoreItemPrice(storeItemSO);
         newItemPrice = itemPrice;
 
@@ -80,7 +81,6 @@ public class ItemScannerItem : HoldableItem
 
     private void PreviewNewItemPrice()
     {
-        stockPrice.text = "$" + itemPrice.ToString("0.00");
         sellPrice.text = "$" + newItemPrice.ToString("0.00");
         sellPrice.color = newItemPrice == itemPrice ? defaultColor : unsavedColor;
     }
