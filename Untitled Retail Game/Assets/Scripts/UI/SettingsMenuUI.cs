@@ -98,6 +98,7 @@ public class SettingsMenuUI : SubMenu
         SaveSettings();
     }
 
+    #region PlayerPrefs
 
     private void SetMissingSettingsToDefault()
     {
@@ -162,7 +163,7 @@ public class SettingsMenuUI : SubMenu
         PlayerPrefs.Save();
     }
 
-
+    #endregion
     
     private void InitializeResolutionDropdown()
     {

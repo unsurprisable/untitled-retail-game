@@ -13,6 +13,6 @@ public class BuildObjectSO : ScriptableObject
     public Sprite preview;
     [Tooltip("The category that this object will be displayed in.")]
     public BuildMenuUI.BuildCategory category;
-    [Tooltip("Add this object to the \"Important Objects\" category.")]
-    public bool isImportant;
+    // [Tooltip("Add this object to the \"Important Objects\" category.")]
+    // public bool isImportant;
 }

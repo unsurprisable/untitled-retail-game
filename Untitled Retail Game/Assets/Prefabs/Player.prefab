@@ -109,22 +109,23 @@ MonoBehaviour:
   runSpeed: 240
   drag: 20
   jumpForce: 800
+  jumpInputBuffer: 0.14
   groundLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
   collisionWidth: 0.75
   maxGroundDistance: 0.01
   collisionReduction: {x: 0.05, y: 0, z: 0.05}
-  jumpInputBuffer: 0.05
+  cameraAnchor: {fileID: 6124144014867049397}
   itemLayerMask:
     serializedVersion: 2
     m_Bits: 64
   itemAnchor: {fileID: 8356127256379805207}
-  cameraAnchor: {fileID: 6124144014867049397}
   playerModelTransform: {fileID: 2945947229708487091}
   playerRotateSpeed: 20
   interactionDistance: 3.5
   throwForce: 500
+  interactHeldTime: 0
   outlineMode: 0
   outlineColor: {r: 0, g: 1, b: 0.9806142, a: 1}
   outlineWidth: 15
