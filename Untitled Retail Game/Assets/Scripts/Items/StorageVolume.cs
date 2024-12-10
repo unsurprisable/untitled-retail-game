@@ -18,6 +18,12 @@ public class StorageVolume : InteractableNetworkObject
 
     private Stack<Transform> itemDisplayStack = new Stack<Transform>();
 
+    [Space]
+    [Header("Interaction")]
+    [SerializeField] private AnimationCurve interactHeldCooldownCurve; // should probably make this static somewhere to save memory (rn every single volume has one of these in memory)
+    private float interactHeldCooldownLeft;
+
+
 
 
     public override void OnNetworkSpawn()
@@ -83,9 +89,36 @@ public class StorageVolume : InteractableNetworkObject
         }
     }
 
+    // double repetition here, but imo it's more efficient than making a general "interact OR alternate interact" event
     public override void OnInteract(PlayerController player)
     {
-        AddItemServerRpc(player);
+        // reset the cooldown so the actual functionality in OnInteractHeld triggers instantly
+        interactHeldCooldownLeft = 0f;
+    }
+
+    public override void OnInteractSecondary(PlayerController player)
+    {
+        interactHeldCooldownLeft = 0f;
+    }
+
+    public override void OnInteractHeld(PlayerController player, float time)
+    {
+        interactHeldCooldownLeft -= Time.deltaTime;
+
+        if (interactHeldCooldownLeft <= 0) {
+            AddItemServerRpc(player);
+            interactHeldCooldownLeft = interactHeldCooldownCurve.Evaluate(time);
+        }
+    }
+
+    public override void OnAlternateHeld(PlayerController player, float time)
+    {
+        interactHeldCooldownLeft -= Time.deltaTime;
+
+        if (interactHeldCooldownLeft <= 0) {
+            RemoveItemServerRpc(player);
+            interactHeldCooldownLeft = interactHeldCooldownCurve.Evaluate(time);
+        }
     }
 
     [Rpc(SendTo.Server)]
@@ -111,11 +144,6 @@ public class StorageVolume : InteractableNetworkObject
         containerObject.TryGet(out Container container);
         if (storeItemSO == null) storeItemSO = container.GetStoreItemSO();
         container.RemoveItem();
-    }
-
-    public override void OnInteractSecondary(PlayerController player)
-    {
-        RemoveItemServerRpc(player);
     }
 
     [Rpc(SendTo.Server)]

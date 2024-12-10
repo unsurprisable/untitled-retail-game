@@ -12,6 +12,10 @@ public class InteractableNetworkObject : NetworkBehaviour, IInteractableObject
     public virtual void OnHovered(){}
     public virtual void OnInteract(PlayerController player){}
     public virtual void OnInteractSecondary(PlayerController player){}
+    public virtual void OnInteractHeld(PlayerController player, float time){}
+    public virtual void OnInteractHeldLookAway(PlayerController player){}
+    public virtual void OnAlternateHeld(PlayerController player, float time){}
+    public virtual void OnAlternateHeldLookAway(PlayerController player){}
     public virtual void OnUnhovered(){}
 
     private void Start()
@@ -37,5 +41,9 @@ public class InteractableNetworkObject : NetworkBehaviour, IInteractableObject
         OnUnhovered();
         if (enableOutline) outline.enabled = false;
         isHovered = false;
+    }
+    
+    public bool IsHovered() {
+        return isHovered;
     }
 }

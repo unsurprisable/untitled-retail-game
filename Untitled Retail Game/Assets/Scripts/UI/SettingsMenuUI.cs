@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SettingsMenuUI : SubMenu
@@ -51,7 +53,27 @@ public class SettingsMenuUI : SubMenu
         Application.targetFrameRate = FpsLimit;
     }
 
+    [SerializeField] private SettingsDropdown resolution;
+    [SerializeField] private SettingsToggle fullscreen;
+    private int Fullscreen => (int)fullscreen.State;
+    [SerializeField] private SettingsToggle borderless;
+    private int Borderless => (int)borderless.State;
+    private List<Resolution> filteredResolutions;
 
+    public void InvokeOnDisplaySettingsChanged() {
+        Screen.fullScreen = Fullscreen == 1;
+        if (Fullscreen == 1) {
+            if (Borderless == 1) {
+                Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+            } else {
+                Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
+            }
+            Screen.fullScreen = true;
+        } else {
+            Screen.fullScreenMode = FullScreenMode.Windowed;
+            Screen.fullScreen = false;
+        }
+    }
 
 
     public void OnPlayerSpawned() {
@@ -61,6 +83,8 @@ public class SettingsMenuUI : SubMenu
     private void Awake()
     {
         Instance = this;
+
+        InitializeResolutionDropdown();
 
         SetMissingSettingsToDefault();
     }
@@ -116,6 +140,9 @@ public class SettingsMenuUI : SubMenu
         fpsLimit.Value = PlayerPrefs.GetInt(PLAYER_PREFS_FPS_LIMIT);
         vsync.State = PlayerPrefs.GetInt(PLAYER_PREFS_USE_VSYNC);
         InvokeOnFpsChanged();
+
+        fullscreen.State = Screen.fullScreen ? 1 : 0;
+        borderless.State = Screen.fullScreenMode == FullScreenMode.FullScreenWindow ? 1 : 0;
     }
     public void SaveSettings()
     {
@@ -133,5 +160,47 @@ public class SettingsMenuUI : SubMenu
         InvokeOnFpsChanged();
 
         PlayerPrefs.Save();
+    }
+
+
+    
+    private void InitializeResolutionDropdown()
+    {
+        int currentResolutionIndex = 0;
+
+        var resolutions = Screen.resolutions;
+        filteredResolutions = new List<Resolution>();
+
+        resolution.dropdown.ClearOptions();
+        var currentRefreshRate = Screen.currentResolution.refreshRateRatio;
+        
+        foreach (Resolution res in resolutions)
+        {
+            if (res.refreshRateRatio.Equals(currentRefreshRate))
+            {
+                filteredResolutions.Add(res);
+            }
+        }
+        
+        List<string> options = new List<string>();
+        for (int i = 0; i < filteredResolutions.Count; i++)
+        {
+            var resolution = filteredResolutions[i];
+            string resolutionOption = $"{resolution.width} x {resolution.height}";
+            options.Add(resolutionOption);
+            if (resolution.width == Screen.width && resolution.height == Screen.height)
+            {
+                currentResolutionIndex = i;
+            }
+        }
+        resolution.dropdown.AddOptions(options);
+        resolution.dropdown.value = currentResolutionIndex;
+        resolution.dropdown.RefreshShownValue();
+    }
+
+    public void SetResolution(int resolutionIndex)
+    {
+        Resolution resolution = filteredResolutions[resolutionIndex];
+        Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
     }
 }

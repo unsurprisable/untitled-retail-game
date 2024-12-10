@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 656001738
+  GlobalObjectIdHash: 3427705548
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -74,6 +74,30 @@ MonoBehaviour:
   storageType: 0
   displayOrigin: {fileID: 5560462395215634780}
   storeItemSO: {fileID: 0}
+  interactHeldCooldownCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -0.05
+      value: 0.44999945
+      inSlope: -0.9442896
+      outSlope: -0.9442896
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.3439103
+    - serializedVersion: 3
+      time: 1.25
+      value: 0.049993377
+      inSlope: -0.0005205291
+      outSlope: -0.0005205291
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33284286
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!65 &770972197909041956
 BoxCollider:
   m_ObjectHideFlags: 0

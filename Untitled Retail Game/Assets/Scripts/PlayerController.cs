@@ -17,17 +17,17 @@ public class PlayerController : NetworkBehaviour
 
     [Header("Jumping")]
     [SerializeField] private float jumpForce;
+    [SerializeField] private float jumpInputBuffer;
+    private float jumpInputBufferLeft;
     [SerializeField] private LayerMask groundLayerMask;
     [SerializeField] private float collisionWidth;
     [SerializeField] private float maxGroundDistance;
-    [SerializeField] private Vector3 collisionReduction;
-    [SerializeField] private float jumpInputBuffer;
-    private float jumpInputBufferLeft;
+    [SerializeField] private Vector3 collisionReduction; // no idea what this is (i forgor)
 
     [Header("Interaction")]
+    public Transform cameraAnchor;
     [SerializeField] private LayerMask itemLayerMask;
     [SerializeField] private Transform itemAnchor;
-    public Transform cameraAnchor;
     [SerializeField] private Transform playerModelTransform;
     [SerializeField] private float playerRotateSpeed;
     [SerializeField] private float interactionDistance;
@@ -35,12 +35,32 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private float throwForce;
     private HoldableItem heldItem;
 
+    [Header("Interaction Held")]
+    private bool mainInteractHeld;
+    private bool alternateInteractHeld;
+    private bool InteractHeld => mainInteractHeld || alternateInteractHeld;
+    [SerializeField] private IInteractableObject interactHeldItem; // the item that was interacted with at the start of the hold
+    [SerializeField] private float interactHeldTime;
+    private bool InteractHeldIsHovering => interactHeldItem != null && interactHeldItem.IsHovered();
+    private bool InteractHeldItemIsHoldable => interactHeldItem != null && interactHeldItem is HoldableItem;
+
     [Header("Interaction Outlines")]
     public Outline.Mode outlineMode;
     public Color outlineColor;
     public float outlineWidth;
 
     private bool controlsDisabled;
+
+
+    // TODO:
+    // Alternate Interaction Held detection
+    // X Add RMB release event to GameInput
+    // X reuse interactHeldItem and interactHeldTime
+    // X add lambda to replace interactHeld and created two bools for primary & alternate interact held
+    // X implement event methods in IInteractableObject for OnAlternateInteractHeld() and OnAlternateInteractHeldLookAway()
+    // - utilize this to allow item removing from storage volumes
+
+    // X Interaction Held detection
 
 
     public override void OnNetworkSpawn()
@@ -75,34 +95,78 @@ public class PlayerController : NetworkBehaviour
         #region Events
 
         GameInput.Instance.OnJump += (sender, args) => {
+            // jump is actually detected in HandleMovement(); this indirectly causes the player to jump by resetting the buffer
             jumpInputBufferLeft = jumpInputBuffer;
         };
 
+        // Main Action (LMB)
+        // used for: Using held items, Interacting with objects, Picking up objects, Beginning interact held functionality
         GameInput.Instance.MainAction += (sender, args) => {
             if (controlsDisabled) return;
             if (hoveredItem == null) return;
+
             if (heldItem != null && heldItem.hasUse) {
                 heldItem.OnUse(this);
+
+                if (!InteractHeld) { // so only LMB or RMB can be held at once
+                    mainInteractHeld = true;
+                    interactHeldItem = heldItem;
+                }
+
             } else if (heldItem == null && hoveredItem is HoldableItem item) {
                 PickupItem(item);
+            
             } else {
                 hoveredItem.OnInteract(this);
+                
+                if (!InteractHeld) {
+                    mainInteractHeld = true;
+                    interactHeldItem = hoveredItem;
+                }
             }
         };
 
+        // Secondary Action (RMB)
+        // used for: Using secondary ability of held items, Interacting with second ability of objects
         GameInput.Instance.SecondaryAction += (sender, args) => {
             if (controlsDisabled) return;
             if (hoveredItem == null) return; 
+
             if (heldItem != null && heldItem.hasUse) {
                 heldItem.OnUseSecondary(this);
+
+                if (!InteractHeld) { // so only LMB or RMB can be held at once
+                    alternateInteractHeld = true;
+                    interactHeldItem = heldItem;
+                }
             } else {
                 hoveredItem.OnInteractSecondary(this);
+                
+                if (!InteractHeld) {
+                    alternateInteractHeld = true;
+                    interactHeldItem = hoveredItem;
+                }
             }
+        };
+
+        // Releasing Main Action (LMB)
+        // used for: Detecting when interact held is cancelled
+        GameInput.Instance.MainActionReleased += (sender, args) => {
+            mainInteractHeld = false;
+            interactHeldItem = null;
+        };
+
+        // Releasing Alternate Action (RMB)
+        // used for: Detecting when alternate interact held is cancelled
+        GameInput.Instance.SecondaryActionReleased += (sender, args) => {
+            alternateInteractHeld = false;
+            interactHeldItem = null;
         };
 
         GameInput.Instance.OnDrop += (sender, args) => {
             if (controlsDisabled) return;
             if (heldItem == null) return;
+            
             DropHeldItem();
         };
 
@@ -114,6 +178,7 @@ public class PlayerController : NetworkBehaviour
         if (controlsDisabled) return;
 
         HandleItemHovering();
+        HandleInteractHeld();
     }
 
     private void FixedUpdate()
@@ -126,9 +191,7 @@ public class PlayerController : NetworkBehaviour
         HandlePlayerVisual();
     }
 
-    private bool IsGrounded() {
-        return Physics.OverlapBox(transform.position + Vector3.down * maxGroundDistance, new Vector3(collisionWidth/2, maxGroundDistance/2, collisionWidth/2) - collisionReduction, Quaternion.identity, groundLayerMask).Length != 0;
-    }
+    #region Update Functions
 
     private void HandlePlayerVisual()
     {
@@ -161,8 +224,20 @@ public class PlayerController : NetworkBehaviour
         else
         {
             // player is not looking at an item
-            hoveredItem?.Unhover();
-            hoveredItem = null;
+            if (hoveredItem != null) {
+
+                // as far as i know, interactHeld should only be true if interactHeldItem is !null... if this errors, that's probably why
+                if (InteractHeld && interactHeldItem == hoveredItem) {
+                    if (mainInteractHeld) {
+                        interactHeldItem.OnInteractHeldLookAway(this);
+                    } else {
+                        interactHeldItem.OnAlternateHeldLookAway(this);
+                    }
+                }
+
+                hoveredItem.Unhover();
+                hoveredItem = null;
+            }
         }
     }
 
@@ -190,6 +265,7 @@ public class PlayerController : NetworkBehaviour
 
         rb.AddForce(moveDir);
         
+        // jump detection
         jumpInputBufferLeft -= Time.fixedDeltaTime;
         if (jumpInputBufferLeft > 0 && IsGrounded()) {
             rb.velocity -= Vector3.up * rb.velocity.y; // cancel current velocity
@@ -198,6 +274,26 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+    private bool IsGrounded() {
+        return Physics.OverlapBox(transform.position + Vector3.down * maxGroundDistance, new Vector3(collisionWidth/2, maxGroundDistance/2, collisionWidth/2) - collisionReduction, Quaternion.identity, groundLayerMask).Length != 0;
+    }
+
+    private void HandleInteractHeld() {
+        if (InteractHeld && InteractHeldIsHovering) {
+            interactHeldTime += Time.deltaTime;
+            if (mainInteractHeld) {
+                interactHeldItem.OnInteractHeld(this, interactHeldTime);
+            } else {
+                interactHeldItem.OnAlternateHeld(this, interactHeldTime);
+            }
+        } else {
+            interactHeldTime = 0f;
+        }
+    }
+    
+    #endregion
+
+    #region Interactions
 
     public void PickupItem(HoldableItem item)
     {
@@ -258,6 +354,8 @@ public class PlayerController : NetworkBehaviour
     public HoldableItem GetHeldItem() {
         return heldItem;
     }
+
+    #endregion
 
     public void DisableControls(bool changeMouseState = true)
     {
