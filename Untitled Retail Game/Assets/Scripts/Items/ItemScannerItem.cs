@@ -64,6 +64,7 @@ public class ItemScannerItem : HoldableItem
     {
         storeItemSO = null;
         itemName.text = "";
+        stockPrice.text = "$0.00";
         itemPrice = 0;
         newItemPrice = 0;
 
