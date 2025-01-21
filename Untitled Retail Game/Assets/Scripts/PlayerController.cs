@@ -267,15 +267,30 @@ public class PlayerController : NetworkBehaviour
         
         // jump detection
         jumpInputBufferLeft -= Time.fixedDeltaTime;
-        if (jumpInputBufferLeft > 0 && IsGrounded()) {
+        if (jumpInputBufferLeft > 0 && IsGrounded(out Collider[] groundObjects)) {
             rb.velocity -= Vector3.up * rb.velocity.y; // cancel current velocity
             rb.AddForce(Vector3.up * jumpForce);
             jumpInputBufferLeft = 0f;
+
+            // newtons 3rd law because im bored lol
+            ApplyThirdLaw(groundObjects);
         }
     }
 
-    private bool IsGrounded() {
-        return Physics.OverlapBox(transform.position + Vector3.down * maxGroundDistance, new Vector3(collisionWidth/2, maxGroundDistance/2, collisionWidth/2) - collisionReduction, Quaternion.identity, groundLayerMask).Length != 0;
+    // private bool IsGrounded() {
+    //     return Physics.OverlapBox(transform.position + Vector3.down * maxGroundDistance, new Vector3(collisionWidth/2, maxGroundDistance/2, collisionWidth/2) - collisionReduction, Quaternion.identity, groundLayerMask).Length != 0;
+    // }
+    private bool IsGrounded(out Collider[] groundObjects) {
+        groundObjects = Physics.OverlapBox(transform.position + Vector3.down * maxGroundDistance, new Vector3(collisionWidth/2, maxGroundDistance/2, collisionWidth/2) - collisionReduction, Quaternion.identity, groundLayerMask);
+        return groundObjects.Length != 0;
+    }
+    private void ApplyThirdLaw(Collider[] groundObjects) {
+        float distributedForce = jumpForce / groundObjects.Length;
+        foreach (Collider collider in groundObjects) {
+            if (collider.TryGetComponent<Rigidbody>(out Rigidbody rb)) {
+                rb.AddForce(Vector3.down * distributedForce);
+            }
+        }
     }
 
     private void HandleInteractHeld() {
