@@ -12,4 +12,6 @@ public class HoldableItem : InteractableNetworkObject
     public virtual void OnUseSecondary(PlayerController player) {}
     public virtual void OnPickup(PlayerController player) {}
     public virtual void OnDrop() {}
+    
+    public virtual void HeldUpdate(PlayerController player) {}
 }

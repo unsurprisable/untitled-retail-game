@@ -100,7 +100,6 @@ public class PlayerController : NetworkBehaviour
         // used for: Using held items, Interacting with objects, Picking up objects, Beginning interact held functionality
         GameInput.Instance.MainAction += (sender, args) => {
             if (controlsDisabled) return;
-            if (hoveredItem == null) return;
 
             if (heldItem != null && heldItem.hasUse) {
                 heldItem.OnUse(this);
@@ -110,10 +109,10 @@ public class PlayerController : NetworkBehaviour
                     interactHeldItem = heldItem;
                 }
 
-            } else if (heldItem == null && hoveredItem is HoldableItem item) {
+            } else if (heldItem == null && hoveredItem != null && hoveredItem is HoldableItem item) {
                 PickupItem(item);
             
-            } else {
+            } else if (hoveredItem != null) {
                 hoveredItem.OnInteract(this);
                 
                 if (!InteractHeld) {
@@ -176,6 +175,11 @@ public class PlayerController : NetworkBehaviour
 
         HandleItemHovering();
         HandleInteractHeld();
+
+        // this should probably move but its here for now
+        if (heldItem != null) {
+            heldItem.HeldUpdate(this);
+        }
     }
 
     private void FixedUpdate()
@@ -210,7 +214,9 @@ public class PlayerController : NetworkBehaviour
             {
                 // player is looking at an item
                 if (hoveredItem != otherItem) {
-                    hoveredItem?.Unhover();
+                    if (hoveredItem != null) {
+                        hoveredItem.Unhover();
+                    }
                     if (heldItem == null || ItemInteractions.HeldItemCanInteractWithOther(heldItem, otherItem)) {
                         otherItem.Hover(); // only tell an item it's hovered if it can be interacted with by the player's item
                         hoveredItem = otherItem;
