@@ -53,14 +53,11 @@ public class PlayerController : NetworkBehaviour
 
 
     // TODO:
-    // Alternate Interaction Held detection
-    // X Add RMB release event to GameInput
-    // X reuse interactHeldItem and interactHeldTime
-    // X add lambda to replace interactHeld and created two bools for primary & alternate interact held
-    // X implement event methods in IInteractableObject for OnAlternateInteractHeld() and OnAlternateInteractHeldLookAway()
-    // - utilize this to allow item removing from storage volumes
-
+    //
+    
+    // DONE:
     // X Interaction Held detection
+    // X Alternate Interaction Held detection
 
 
     public override void OnNetworkSpawn()
@@ -209,13 +206,15 @@ public class PlayerController : NetworkBehaviour
     private void HandleItemHovering()
     {
         if (Physics.Raycast(cameraAnchor.position, orientation.forward, out RaycastHit hit, interactionDistance, itemLayerMask)) {
-            if (hit.transform.TryGetComponent(out IInteractableObject item))
+            if (hit.transform.TryGetComponent(out IInteractableObject otherItem))
             {
                 // player is looking at an item
-                if (hoveredItem != item) {
+                if (hoveredItem != otherItem) {
                     hoveredItem?.Unhover();
-                    item.Hover();
-                    hoveredItem = item;
+                    if (heldItem == null || ItemInteractions.HeldItemCanInteractWithOther(heldItem, otherItem)) {
+                        otherItem.Hover(); // only tell an item it's hovered if it can be interacted with by the player's item
+                        hoveredItem = otherItem;
+                    }
                 }
             } else {
                 Debug.LogError("Item is missing an 'IInteractableItem' component! (make sure the only collider is on the parent object with the component)");
