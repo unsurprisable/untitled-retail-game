@@ -166,7 +166,7 @@ public class StorageVolume : InteractableNetworkObject
 
     private void AddItemToDisplay(int itemAmount)
     {
-        Transform itemDisplay = Instantiate(storeItemSO.prefab);
+        Transform itemDisplay = Instantiate(storeItemSO.prefab, transform.parent);
         itemDisplayStack.Push(itemDisplay);
 
         // move them away from the corner

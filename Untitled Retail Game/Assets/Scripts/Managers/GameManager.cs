@@ -69,6 +69,7 @@ public class GameManager : NetworkBehaviour
         }
     }
 
+    #region Economy
 
     public float GetBalance() {
         return storeBalance.Value;
@@ -78,6 +79,10 @@ public class GameManager : NetworkBehaviour
         storeBalance.Value = newBalance;
     }
 
+    public void AddToBalance(float income) {
+        storeBalance.Value += income;
+    }
+
     public void RemoveFromBalance(float cost) {
         storeBalance.Value -= cost;
     }
@@ -85,6 +90,10 @@ public class GameManager : NetworkBehaviour
     public bool CanAfford(float price) {
         return storeBalance.Value - price >= 0f;
     }
+
+    #endregion
+
+    #region Store Item API
 
     public StoreItemSO[] GetStoreItemSOList() {
         return storeItemList.list;
@@ -132,4 +141,6 @@ public class GameManager : NetworkBehaviour
         }
         return storeItemSOArray;
     }
+
+    #endregion
 }
