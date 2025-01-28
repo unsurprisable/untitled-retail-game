@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Pool;
 
 public class StorageVolume : InteractableNetworkObject
 {
@@ -16,14 +17,14 @@ public class StorageVolume : InteractableNetworkObject
     [SerializeField] private StoreItemSO storeItemSO;
     private NetworkVariable<int> itemAmount = new NetworkVariable<int>();
 
-    private Stack<Transform> itemDisplayStack = new Stack<Transform>();
+    private Transform[] itemDisplayPool;
 
     [Space]
     [Header("Interaction")]
     [SerializeField] private AnimationCurve interactHeldCooldownCurve; // should probably make this static somewhere to save memory (rn every single volume has one of these in memory)
     private float interactHeldCooldownLeft;
 
-
+    // private bool performanceTestForward;
 
 
     public override void OnNetworkSpawn()
@@ -35,6 +36,11 @@ public class StorageVolume : InteractableNetworkObject
         itemAmount.OnValueChanged += UpdateVisualForItemAmountChange;
 
         if (IsServer && storeItemSO != null) {
+            SetStoreItemSO(storeItemSO);
+            // if (transform.parent.GetComponent<Animator>() != null) {
+            //     performanceTestForward = true;
+            //     return; //for performance test
+            // }
             itemAmount.Value = storeItemSO.storageAmount;
         }
     }
@@ -48,7 +54,7 @@ public class StorageVolume : InteractableNetworkObject
     [Rpc(SendTo.SpecifiedInParams)]
     private void SynchronizeItemDataRpc(int storeItemId, RpcParams rpcParams)
     {
-        storeItemSO = StoreItemSO.FromId(storeItemId);
+        SetStoreItemSO(StoreItemSO.FromId(storeItemId));
 
         UpdateVisualForItemAmountChange(0, itemAmount.Value);
     }
@@ -62,8 +68,8 @@ public class StorageVolume : InteractableNetworkObject
                 }
             }
             if (preValue > newValue) {
-                for (int i = preValue; i > newValue; i--) {
-                    RemoveItemFromDisplay();
+                for (int i = preValue-1; i >= newValue; i--) {
+                    RemoveItemFromDisplay(i);
                 }
             }
             UpdateStorageVolumeUI();
@@ -142,7 +148,7 @@ public class StorageVolume : InteractableNetworkObject
     private void AddItemClientRpc(NetworkBehaviourReference containerObject)
     {
         containerObject.TryGet(out Container container);
-        if (storeItemSO == null) storeItemSO = container.GetStoreItemSO();
+        if (storeItemSO == null) SetStoreItemSO(container.GetStoreItemSO());
         container.RemoveItem();
     }
 
@@ -164,22 +170,22 @@ public class StorageVolume : InteractableNetworkObject
         container.AddItem();
     }
 
-    private void AddItemToDisplay(int itemAmount)
+    private void GenerateItemDisplay(int itemIndex)
     {
-        Transform itemDisplay = Instantiate(storeItemSO.prefab, transform.parent);
-        itemDisplayStack.Push(itemDisplay);
+        Transform itemDisplay = Instantiate(storeItemSO.prefab);
+        itemDisplayPool[itemIndex] = itemDisplay;
 
         // move them away from the corner
         Vector3 addedPosition = new Vector3(storeItemSO.modelDimensions.x/2, 0f, -storeItemSO.modelDimensions.z/2);
 
         // shift each object based on existing ones... how fun :)
-        addedPosition.x += storeItemSO.modelDimensions.x * itemAmount;
+        addedPosition.x += storeItemSO.modelDimensions.x * itemIndex;
 
-        int horizontalWraps = Mathf.FloorToInt(itemAmount / storeItemSO.storageCapacity.x);
+        int horizontalWraps = Mathf.FloorToInt(itemIndex / storeItemSO.storageCapacity.x);
         addedPosition.x -= horizontalWraps * storeItemSO.modelDimensions.x * storeItemSO.storageCapacity.x;
         addedPosition.z -= horizontalWraps * storeItemSO.modelDimensions.z;
 
-        int verticalWraps = Mathf.FloorToInt(itemAmount / (storeItemSO.storageCapacity.x * storeItemSO.storageCapacity.z));
+        int verticalWraps = Mathf.FloorToInt(itemIndex / (storeItemSO.storageCapacity.x * storeItemSO.storageCapacity.z));
         addedPosition.z += verticalWraps * storeItemSO.modelDimensions.z * storeItemSO.storageCapacity.z;
         addedPosition.y += verticalWraps * storeItemSO.modelDimensions.y;
 
@@ -198,6 +204,8 @@ public class StorageVolume : InteractableNetworkObject
         Vector3 itemPosition = displayOrigin.position + addedPosition;
 
         itemDisplay.SetPositionAndRotation(itemPosition + itemDisplay.transform.position, Quaternion.Euler(0f, transform.rotation.eulerAngles.y + 180f, 0f));
+
+        itemDisplay.gameObject.SetActive(false);
     }
 
     private void UpdateStorageVolumeUI()
@@ -208,8 +216,42 @@ public class StorageVolume : InteractableNetworkObject
         }
     }
 
-    private void RemoveItemFromDisplay()
+    private void AddItemToDisplay(int itemIndex)
     {
-        Destroy(itemDisplayStack.Pop().gameObject);
+        itemDisplayPool[itemIndex].gameObject.SetActive(true);
     }
+
+    private void RemoveItemFromDisplay(int itemIndex)
+    {
+        itemDisplayPool[itemIndex].gameObject.SetActive(false);
+    }
+
+    // serves as an event so that the object pool can be re-generated when the storeItemSO changes
+    private void SetStoreItemSO(StoreItemSO storeItemSO)
+    {
+        this.storeItemSO = storeItemSO;
+
+        if (itemDisplayPool != null) {
+            foreach (Transform itemDisplay in itemDisplayPool) {
+                Destroy(itemDisplay.gameObject);
+            }
+        }
+        
+        itemDisplayPool = new Transform[storeItemSO.storageAmount];
+
+        for (int i = 0; i < storeItemSO.storageAmount; i++) {
+            GenerateItemDisplay(i);
+        }
+    }
+
+    // private void FixedUpdate()
+    // {
+    //     if (performanceTestForward) {
+    //         itemAmount.Value++;
+    //         if (itemAmount.Value == storeItemSO.storageAmount) performanceTestForward = false;
+    //     } else {
+    //         itemAmount.Value--;
+    //         if (itemAmount.Value == 0) performanceTestForward = true;
+    //     }
+    // }
 }
