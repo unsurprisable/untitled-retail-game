@@ -292,7 +292,7 @@ public class PlayerController : NetworkBehaviour
     private void ApplyThirdLaw(Collider[] groundObjects) {
         float distributedForce = jumpForce / groundObjects.Length;
         foreach (Collider collider in groundObjects) {
-            if (collider.TryGetComponent<Rigidbody>(out Rigidbody rb)) {
+            if (collider.TryGetComponent(out Rigidbody rb)) {
                 rb.AddForce(Vector3.down * distributedForce);
             }
         }

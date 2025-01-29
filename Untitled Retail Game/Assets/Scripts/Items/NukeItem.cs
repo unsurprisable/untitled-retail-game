@@ -10,8 +10,11 @@ public class NukeItem : HoldableItem
     public override void OnUse(PlayerController player)
     {
         if (Physics.Raycast(player.cameraAnchor.position, player.orientation.forward, out RaycastHit hit, interactDistance, interactLayerMask)) {
-            Debug.Log(hit.transform.parent.name);
-            Destroy(hit.transform.parent.gameObject);
+            if (hit.transform.parent.TryGetComponent(out BuildObject buildObject)) {
+                buildObject.Sell();
+            } else {
+                Debug.LogWarning($"Object \"{hit.transform.name}\" is on BuildBounds layer without a BuildObject parent! oh no D:");
+            }
         }
     }
 

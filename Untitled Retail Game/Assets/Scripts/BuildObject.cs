@@ -11,7 +11,7 @@ public class BuildObject : MonoBehaviour
         GameManager.Instance.AddToBalance(buildObjectSO.price); // 100% sellback rate
         OnSell();
         Destroy(gameObject);
+        Debug.Log($"Sold \"{buildObjectSO.name}\" for {buildObjectSO.price}");
     }
-
 }
 
