@@ -1,7 +1,6 @@
 using Steamworks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class PauseMenuUI : Menu
 {

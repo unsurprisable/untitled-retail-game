@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using Netcode.Transports.Facepunch;
 using Steamworks;
 using Steamworks.Data;
