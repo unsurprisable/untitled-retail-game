@@ -6,9 +6,9 @@ public class PlayerController : NetworkBehaviour
 
     public static PlayerController LocalInstance { get; private set; }
 
-    [SerializeField] private Rigidbody rb;
 
     [Header("Movement")]
+    [SerializeField] private Rigidbody rb;
     public Transform orientation;
     [SerializeField] private float walkSpeed;
     [SerializeField] private float runSpeed;
@@ -21,7 +21,7 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private LayerMask groundLayerMask;
     [SerializeField] private float collisionWidth;
     [SerializeField] private float maxGroundDistance;
-    [SerializeField] private Vector3 collisionReduction; // no idea what this is (i forgor)
+    [SerializeField] private Vector3 collisionReduction; // no idea what this is lol (i forgot)
 
     [Header("Interaction")]
     public Transform cameraAnchor;
@@ -37,11 +37,10 @@ public class PlayerController : NetworkBehaviour
     [Header("Interaction Held")]
     private bool mainInteractHeld;
     private bool alternateInteractHeld;
-    private bool InteractHeld => mainInteractHeld || alternateInteractHeld;
     [SerializeField] private IInteractableObject interactHeldItem; // the item that was interacted with at the start of the hold
     [SerializeField] private float interactHeldTime;
+    private bool InteractHeld => mainInteractHeld || alternateInteractHeld;
     private bool InteractHeldIsHovering => interactHeldItem != null && interactHeldItem.IsHovered();
-    private bool InteractHeldItemIsHoldable => interactHeldItem != null && interactHeldItem is HoldableItem;
 
     [Header("Interaction Outlines")]
     public Outline.Mode outlineMode;
@@ -49,6 +48,7 @@ public class PlayerController : NetworkBehaviour
     public float outlineWidth;
 
     private bool controlsDisabled;
+    private BuildModeController buildMode;
 
 
     // TODO:
@@ -67,6 +67,7 @@ public class PlayerController : NetworkBehaviour
 
         if (IsOwner) {
             LocalInstance = this;
+            buildMode = GetComponent<BuildModeController>();
             playerModelTransform.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
             playerModelTransform.GetChild(0).GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
         } else {
@@ -88,17 +89,28 @@ public class PlayerController : NetworkBehaviour
         FirstPersonCamera.LocalInstance.Enable(true);
         SettingsMenuUI.Instance.OnPlayerSpawned();
 
+
+
+
+
         #region Events
 
+        // jump is actually detected in HandleMovement(); this indirectly causes the player to jump by resetting the buffer
         GameInput.Instance.OnJump += (sender, args) => {
-            // jump is actually detected in HandleMovement(); this indirectly causes the player to jump by resetting the buffer
             jumpInputBufferLeft = jumpInputBuffer;
+            
+            if (buildMode.IsActive()) {
+                buildMode.Deactivate();
+            } else {
+                EnterBuildMode();
+            }
         };
+
 
         // Main Action (LMB)
         // used for: Using held items, Interacting with objects, Picking up objects, Beginning interact held functionality
         GameInput.Instance.MainAction += (sender, args) => {
-            if (controlsDisabled) return;
+            if (controlsDisabled || buildMode.IsActive()) return;
 
             if (heldItem != null && heldItem.hasUse) {
                 heldItem.OnUse(this);
@@ -121,10 +133,11 @@ public class PlayerController : NetworkBehaviour
             }
         };
 
+
         // Secondary Action (RMB)
         // used for: Using secondary ability of held items, Interacting with second ability of objects
         GameInput.Instance.SecondaryAction += (sender, args) => {
-            if (controlsDisabled) return;
+            if (controlsDisabled || buildMode.IsActive()) return;
             if (hoveredItem == null) return; 
 
             if (heldItem != null && heldItem.hasUse) {
@@ -144,12 +157,14 @@ public class PlayerController : NetworkBehaviour
             }
         };
 
+
         // Releasing Main Action (LMB)
         // used for: Detecting when interact held is cancelled
         GameInput.Instance.MainActionReleased += (sender, args) => {
             mainInteractHeld = false;
             interactHeldItem = null;
         };
+
 
         // Releasing Alternate Action (RMB)
         // used for: Detecting when alternate interact held is cancelled
@@ -158,24 +173,37 @@ public class PlayerController : NetworkBehaviour
             interactHeldItem = null;
         };
 
+        
+        // Dropping Held Item (F)
         GameInput.Instance.OnDrop += (sender, args) => {
-            if (controlsDisabled) return;
+            if (controlsDisabled || buildMode.IsActive()) return;
             if (heldItem == null) return;
             
             DropHeldItem();
         };
 
-        #endregion
     }
+
+    #endregion
+
+
+
+
+
+
+
+    #region Update Functions
 
     private void Update()
     {
         if (controlsDisabled) return;
 
-        HandleItemHovering();
-        HandleInteractHeld();
+        if (!buildMode.IsActive()) {
+            HandleItemHovering();
+            HandleInteractHeld();
+        }
 
-        // this should probably move but its here for now
+        // this should probably move but its here for now because idk where to put it
         if (heldItem != null) {
             heldItem.HeldUpdate(this);
         }
@@ -191,7 +219,7 @@ public class PlayerController : NetworkBehaviour
         HandlePlayerVisual();
     }
 
-    #region Update Functions
+
 
     private void HandlePlayerVisual()
     {
@@ -277,7 +305,8 @@ public class PlayerController : NetworkBehaviour
             jumpInputBufferLeft = 0f;
 
             // newtons 3rd law because im bored lol
-            ApplyThirdLaw(groundObjects);
+            // also just realized this isn't sent through the server so it's probably multiplayer buggy (havent tested)
+            ApplyThirdLawOnJump(groundObjects);
         }
     }
 
@@ -288,7 +317,7 @@ public class PlayerController : NetworkBehaviour
         groundObjects = Physics.OverlapBox(transform.position + Vector3.down * maxGroundDistance, new Vector3(collisionWidth/2, maxGroundDistance/2, collisionWidth/2) - collisionReduction, Quaternion.identity, groundLayerMask);
         return groundObjects.Length != 0;
     }
-    private void ApplyThirdLaw(Collider[] groundObjects) {
+    private void ApplyThirdLawOnJump(Collider[] groundObjects) {
         float distributedForce = jumpForce / groundObjects.Length;
         foreach (Collider collider in groundObjects) {
             if (collider.TryGetComponent(out Rigidbody rb)) {
@@ -311,6 +340,12 @@ public class PlayerController : NetworkBehaviour
     }
     
     #endregion
+
+
+
+
+
+
 
     #region Interactions
 
@@ -376,6 +411,12 @@ public class PlayerController : NetworkBehaviour
 
     #endregion
 
+
+
+
+
+
+
     public void DisableControls(bool changeMouseState = true)
     {
         controlsDisabled = true;
@@ -385,5 +426,13 @@ public class PlayerController : NetworkBehaviour
     {
         controlsDisabled = false;
         FirstPersonCamera.LocalInstance.Enable(changeMouseState);
+    }
+    public void EnterBuildMode() {
+        buildMode.Activate();
+        
+        if (hoveredItem != null) {
+            hoveredItem.Unhover();
+            hoveredItem = null;
+    }
     }
 }

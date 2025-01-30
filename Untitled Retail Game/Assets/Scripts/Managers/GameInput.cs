@@ -12,10 +12,15 @@ public class GameInput : MonoBehaviour
     public event EventHandler SecondaryAction;
     public event EventHandler SecondaryActionReleased;
     public event EventHandler OnDrop;
+    public event EventHandler OnScroll;
+
+    public event EventHandler OnRotateLeft;
+    public event EventHandler OnRotateRight;
+    
     public event EventHandler OnBuildMenu;
     public event EventHandler OnPauseMenu;
-    public event EventHandler OnScroll;
     public event EventHandler OnEnterChat;
+    
 
     private PlayerInputActions playerInputActions;
 
@@ -26,17 +31,17 @@ public class GameInput : MonoBehaviour
         playerInputActions = new PlayerInputActions();
 
         playerInputActions.Player.Enable();
-        playerInputActions.Menu.Enable();
-
         playerInputActions.Player.Jump.performed             += (context) => {OnJump?.Invoke(this, EventArgs.Empty);};
         playerInputActions.Player.MainAction.performed       += (context) => {MainAction?.Invoke(this, EventArgs.Empty);};
         playerInputActions.Player.MainAction.canceled        += (context) => {MainActionReleased?.Invoke(this, EventArgs.Empty);};
         playerInputActions.Player.SecondaryAction.performed  += (context) => {SecondaryAction?.Invoke(this, EventArgs.Empty);};
         playerInputActions.Player.SecondaryAction.canceled   += (context) => {SecondaryActionReleased?.Invoke(this, EventArgs.Empty);};
+        playerInputActions.Player.Scroll.performed           += (context) => {OnScroll?.Invoke(this, EventArgs.Empty);};
         playerInputActions.Player.Drop.performed             += (context) => {OnDrop?.Invoke(this, EventArgs.Empty);};
+        
+        playerInputActions.Menu.Enable();
         playerInputActions.Menu.BuildMenu.performed          += (context) => {OnBuildMenu?.Invoke(this, EventArgs.Empty);};
         playerInputActions.Menu.PauseMenu.performed          += (context) => {OnPauseMenu?.Invoke(this, EventArgs.Empty);};
-        playerInputActions.Player.Scroll.performed           += (context) => {OnScroll?.Invoke(this, EventArgs.Empty);};
         playerInputActions.Menu.EnterChat.performed          += (context) => {OnEnterChat?.Invoke(this, EventArgs.Empty);};
     }
 
@@ -70,9 +75,12 @@ public class GameInput : MonoBehaviour
         OnScroll = null;
     }
 
-    public void SetPlayerInputActive(bool value)
+    public void SetPlayerInputActive(bool active)
     {
-        if (value) playerInputActions.Player.Enable();
-        else playerInputActions.Player.Disable();
+        if (active) {
+            playerInputActions.Player.Enable();
+        } else {
+            playerInputActions.Player.Disable();
+        }
     }
 }
