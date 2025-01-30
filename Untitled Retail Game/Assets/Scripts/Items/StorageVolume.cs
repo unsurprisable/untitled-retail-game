@@ -242,6 +242,15 @@ public class StorageVolume : InteractableNetworkObject
         }
     }
 
+    public override void OnDestroy()
+    {
+        if (itemDisplayPool != null) {
+            foreach (Transform itemDisplay in itemDisplayPool) {
+                Destroy(itemDisplay.gameObject); // this can cause an error if the object is destroyed before the storage volume
+            }
+        }
+    }
+
     // private void FixedUpdate()
     // {
     //     if (performanceTestForward) {

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1509942093231113313}
   - component: {fileID: -7945180650771814823}
   - component: {fileID: 8084647323533090033}
+  - component: {fileID: 7160789203381093293}
   - component: {fileID: 8051314931943267243}
   - component: {fileID: 4533051988577277692}
   - component: {fileID: -7070206048958643255}
@@ -129,6 +130,26 @@ MonoBehaviour:
   outlineMode: 0
   outlineColor: {r: 0, g: 1, b: 0.9806142, a: 1}
   outlineWidth: 15
+--- !u!114 &7160789203381093293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2978558580931582509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8106673988416b644897ec42b0368274, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buildObjectSO: {fileID: 0}
+  buildDistance: 30
+  buildCollisionLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  canBuildMaterial: {fileID: 2100000, guid: d4dcff38c4c58624ebf541cb3cf8825f, type: 2}
+  invalidBuildMaterial: {fileID: 2100000, guid: c153bc944d0a98243ae22b41347f9308,
+    type: 2}
 --- !u!54 &8051314931943267243
 Rigidbody:
   m_ObjectHideFlags: 0
