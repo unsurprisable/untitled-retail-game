@@ -276,7 +276,7 @@ public class PlayerController : NetworkBehaviour
     private void HandleMovement()
     {
         // horizontal drag
-        Vector3 dragVelocity = -rb.velocity;
+        Vector3 dragVelocity = -rb.linearVelocity;
         dragVelocity.y = 0;
         rb.AddForce(drag * dragVelocity);
 
@@ -300,7 +300,7 @@ public class PlayerController : NetworkBehaviour
         // jump detection
         jumpInputBufferLeft -= Time.fixedDeltaTime;
         if (jumpInputBufferLeft > 0 && IsGrounded(out Collider[] groundObjects)) {
-            rb.velocity -= Vector3.up * rb.velocity.y; // cancel current velocity
+            rb.linearVelocity -= Vector3.up * rb.linearVelocity.y; // cancel current velocity
             rb.AddForce(Vector3.up * jumpForce);
             jumpInputBufferLeft = 0f;
 
