@@ -433,6 +433,6 @@ public class PlayerController : NetworkBehaviour
         if (hoveredItem != null) {
             hoveredItem.Unhover();
             hoveredItem = null;
-    }
+        }
     }
 }

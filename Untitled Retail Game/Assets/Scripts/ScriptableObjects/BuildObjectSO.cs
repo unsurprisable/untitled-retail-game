@@ -9,6 +9,8 @@ public class BuildObjectSO : ScriptableObject
     public int price;
     [Tooltip("The prefab of the object itself.")]
     public Transform prefab;
+    [Tooltip("The prefab of the object's build mode variant.")]
+    public Transform buildModePrefab;
     [Tooltip("Preview of the object, shown in the build menu.")]
     public Sprite preview;
     [Tooltip("The category that this object will be displayed in.")]
