@@ -1,7 +1,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public class Container : HoldableItem
+public class ContainerItem : HoldableItem
 {
     [Space]
     [Header("Container")]
@@ -32,7 +32,7 @@ public class Container : HoldableItem
     {
         storeItem = StoreItemSO.FromId(storeItemId);
 
-        transform.name = "Container (" + storeItem.name + ")";
+        transform.name = "ContainerItem (" + storeItem.name + ")";
         foreach(SpriteRenderer r in iconObjects) {
             r.sprite = storeItem.icon;
         }

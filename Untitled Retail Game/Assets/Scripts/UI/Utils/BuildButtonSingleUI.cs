@@ -25,20 +25,29 @@ public class BuildButtonSingleUI : MonoBehaviour
         preview.sprite = buildObjectSO.preview;
         label.text = buildObjectSO.name;
         price.text = "$" + buildObjectSO.price;
-        button.onClick.AddListener(() => {
-            Debug.Log("enter build mode overlay");
-            BuildMenuUI.Instance.Hide();
-        });
 
-        favoriteButton.onClick.AddListener(() => {
-            isFavorited = !isFavorited;
-            if (isFavorited) {
-                BuildMenuUI.Instance.AddFavorite(buildObjectSO);
-                favoriteButton.image.sprite = favoritedIcon;
-            } else {
-                BuildMenuUI.Instance.RemoveFavorite(buildObjectSO);
-                favoriteButton.image.sprite = unfavoritedIcon;
-            }
-        });
+        button.onClick.AddListener(SelectBuild);
+
+        favoriteButton.onClick.AddListener(ToggleFavoriteButton);
+    }
+
+    private void SelectBuild()
+    {
+        Debug.Log("enter build mode overlay");
+        BuildMenuUI.Instance.Hide();
+
+        PlayerController.LocalInstance.EnterBuildMode(buildObjectSO);
+    }
+
+    private void ToggleFavoriteButton()
+    {
+        isFavorited = !isFavorited;
+        if (isFavorited) {
+            BuildMenuUI.Instance.AddFavorite(buildObjectSO);
+            favoriteButton.image.sprite = favoritedIcon;
+        } else {
+            BuildMenuUI.Instance.RemoveFavorite(buildObjectSO);
+            favoriteButton.image.sprite = unfavoritedIcon;
+        }
     }
 }

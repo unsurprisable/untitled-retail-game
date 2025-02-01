@@ -99,11 +99,11 @@ public class PlayerController : NetworkBehaviour
         GameInput.Instance.OnJump += (sender, args) => {
             jumpInputBufferLeft = jumpInputBuffer;
             
-            if (buildMode.IsActive()) {
-                buildMode.Deactivate();
-            } else {
-                EnterBuildMode();
-            }
+            // if (buildMode.IsActive()) {
+            //     buildMode.Deactivate();
+            // } else {
+            //     EnterBuildMode();
+            // }
         };
 
 
@@ -221,7 +221,7 @@ public class PlayerController : NetworkBehaviour
 
 
 
-    private void HandlePlayerVisual()
+    private void HandlePlayerVisual() 
     {
         playerModelTransform.transform.rotation = Quaternion.Slerp(
             playerModelTransform.transform.rotation, 
@@ -234,7 +234,7 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    private void HandleItemHovering()
+    private void HandleItemHovering() 
     {
         if (Physics.Raycast(cameraAnchor.position, orientation.forward, out RaycastHit hit, interactionDistance, itemLayerMask)) {
             if (hit.transform.TryGetComponent(out IInteractableObject otherItem))
@@ -273,7 +273,7 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    private void HandleMovement()
+    private void HandleMovement() 
     {
         // horizontal drag
         Vector3 dragVelocity = -rb.linearVelocity;
@@ -313,7 +313,8 @@ public class PlayerController : NetworkBehaviour
     // private bool IsGrounded() {
     //     return Physics.OverlapBox(transform.position + Vector3.down * maxGroundDistance, new Vector3(collisionWidth/2, maxGroundDistance/2, collisionWidth/2) - collisionReduction, Quaternion.identity, groundLayerMask).Length != 0;
     // }
-    private bool IsGrounded(out Collider[] groundObjects) {
+    private bool IsGrounded(out Collider[] groundObjects) 
+    {
         groundObjects = Physics.OverlapBox(transform.position + Vector3.down * maxGroundDistance, new Vector3(collisionWidth/2, maxGroundDistance/2, collisionWidth/2) - collisionReduction, Quaternion.identity, groundLayerMask);
         return groundObjects.Length != 0;
     }
@@ -326,7 +327,8 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    private void HandleInteractHeld() {
+    private void HandleInteractHeld() 
+    {
         if (InteractHeld && InteractHeldIsHovering) {
             interactHeldTime += Time.deltaTime;
             if (mainInteractHeld) {
@@ -349,13 +351,13 @@ public class PlayerController : NetworkBehaviour
 
     #region Interactions
 
-    public void PickupItem(HoldableItem item)
+    public void PickupItem(HoldableItem item) 
     {
         PickupItemServerRpc(item);
     }
 
     [Rpc(SendTo.Server)]
-    private void PickupItemServerRpc(NetworkBehaviourReference itemObject, RpcParams rpcParams = default)
+    private void PickupItemServerRpc(NetworkBehaviourReference itemObject, RpcParams rpcParams = default) 
     {
         if (itemObject.TryGet(out HoldableItem item))
         {
@@ -365,7 +367,7 @@ public class PlayerController : NetworkBehaviour
     }
 
     [Rpc(SendTo.SpecifiedInParams)]
-    private void PickupItemClientRpc(NetworkBehaviourReference itemObject, RpcParams rpcParams)
+    private void PickupItemClientRpc(NetworkBehaviourReference itemObject, RpcParams rpcParams) 
     {
         if (itemObject.TryGet(out HoldableItem item))
         {
@@ -378,14 +380,12 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    public void DropHeldItem()
-    {
+    public void DropHeldItem() {
         DropHeldItemServerRpc(orientation.forward);
     }
 
     [Rpc(SendTo.Server)]
-    private void DropHeldItemServerRpc(Vector3 clientThrowDirection)
-    {
+    private void DropHeldItemServerRpc(Vector3 clientThrowDirection) {
         // errors here rn because heldItem will be null to any late clients who didn't see the player pick up the item
         heldItem.NetworkObject.ChangeOwnership(NetworkManager.ServerClientId);
         HoldableItem item = heldItem;
@@ -395,8 +395,7 @@ public class PlayerController : NetworkBehaviour
     }
     
     [Rpc(SendTo.ClientsAndHost)]
-    private void DropHeldItemClientRpc()
-    {
+    private void DropHeldItemClientRpc() {
         heldItem.GetComponent<Rigidbody>().isKinematic = false;
         heldItem.GetComponent<Collider>().enabled = true;
         
@@ -417,22 +416,31 @@ public class PlayerController : NetworkBehaviour
 
 
 
-    public void DisableControls(bool changeMouseState = true)
-    {
+    public void DisableControls(bool changeMouseState = true) {
         controlsDisabled = true;
         FirstPersonCamera.LocalInstance.Disable(changeMouseState);
     }
-    public void EnableControls(bool changeMouseState = true)
-    {
+    public void EnableControls(bool changeMouseState = true) {
         controlsDisabled = false;
         FirstPersonCamera.LocalInstance.Enable(changeMouseState);
     }
-    public void EnterBuildMode() {
+
+
+
+
+
+
+    #region Build Mode
+
+    public void EnterBuildMode(BuildObjectSO buildObjectSO) {
         buildMode.Activate();
+        buildMode.SetBuildObject(buildObjectSO);
         
         if (hoveredItem != null) {
             hoveredItem.Unhover();
             hoveredItem = null;
         }
     }
+
+    #endregion
 }

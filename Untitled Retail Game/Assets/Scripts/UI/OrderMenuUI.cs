@@ -86,7 +86,7 @@ public class OrderMenuUI : NetworkMenu
             for (int amount = 0; amount < orderAmount; amount++) {
                 Transform container = Instantiate(containerPrefab, containerSpawnLocation.position, Quaternion.identity);
                 container.GetComponent<NetworkObject>().Spawn(true);
-                container.GetComponent<Container>().SetStoreItemSORpc(orderItemSOArray[item], RpcTarget.ClientsAndHost);
+                container.GetComponent<ContainerItem>().SetStoreItemSORpc(orderItemSOArray[item], RpcTarget.ClientsAndHost);
             }
         }
 

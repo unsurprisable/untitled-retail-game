@@ -129,7 +129,7 @@ public class StorageVolume : InteractableNetworkObject
     private void AddItemServerRpc(NetworkBehaviourReference senderObject)
     {
         senderObject.TryGet(out PlayerController sender);
-        if (sender.GetHeldItem() != null && sender.GetHeldItem() is Container container)
+        if (sender.GetHeldItem() != null && sender.GetHeldItem() is ContainerItem container)
         { 
             if (container.IsEmpty() ||
                 container.GetStoreItemSO().storageType != storageType ||
@@ -145,7 +145,7 @@ public class StorageVolume : InteractableNetworkObject
     [Rpc(SendTo.ClientsAndHost)]
     private void AddItemClientRpc(NetworkBehaviourReference containerObject)
     {
-        containerObject.TryGet(out Container container);
+        containerObject.TryGet(out ContainerItem container);
         if (storeItemSO == null) SetStoreItemSO(container.GetStoreItemSO());
         container.RemoveItem();
     }
@@ -154,7 +154,7 @@ public class StorageVolume : InteractableNetworkObject
     private void RemoveItemServerRpc(NetworkBehaviourReference senderObject)
     {
         senderObject.TryGet(out PlayerController sender);
-        if (sender.GetHeldItem() != null && sender.GetHeldItem() is Container container && itemAmount.Value > 0 && !container.IsFull() && container.GetStoreItemSO() == storeItemSO) {
+        if (sender.GetHeldItem() != null && sender.GetHeldItem() is ContainerItem container && itemAmount.Value > 0 && !container.IsFull() && container.GetStoreItemSO() == storeItemSO) {
             
             RemoveItemClientRpc(container);
             itemAmount.Value--;
@@ -164,7 +164,7 @@ public class StorageVolume : InteractableNetworkObject
     [Rpc(SendTo.ClientsAndHost)]
     private void RemoveItemClientRpc(NetworkBehaviourReference containerObject)
     {
-        containerObject.TryGet(out Container container);
+        containerObject.TryGet(out ContainerItem container);
         container.AddItem();
     }
 

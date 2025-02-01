@@ -5,7 +5,7 @@ public static class ItemInteractions
         if (
 
             // compatibility matrix
-            (heldItem is Container 
+            (heldItem is ContainerItem 
                 && other is StorageVolume) ||
             (heldItem is ItemScannerItem
                 && other is StorageVolume)
