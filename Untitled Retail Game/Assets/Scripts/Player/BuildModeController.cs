@@ -24,12 +24,11 @@ public class BuildModeController : NetworkBehaviour
 
     public void Start()
     {
+        // LMB to ask the server to build the object
         GameInput.Instance.MainAction += (sender, args) => {
             if (buildObjectSO == null) return;
 
-            Transform buildObject = Instantiate(buildObjectSO.prefab, buildObjectPreview.position, buildObjectPreview.rotation);
-            buildObject.GetComponent<NetworkObject>().Spawn();
-            buildObject.GetComponent<BuildObject>().Place();
+            TryBuildServerRpc(buildObjectSO.Id, buildObjectPreview.position, buildObjectPreview.rotation);
 
             Deactivate();
         };
@@ -45,6 +44,27 @@ public class BuildModeController : NetworkBehaviour
 
             nudgeDistance = Mathf.Clamp(nudgeDistance + (scrollDirection * nudgeDistanceStep), 0, nudgeDistanceRange);
         };
+    }
+
+    [Rpc(SendTo.Server)]
+    private void TryBuildServerRpc(int buildObjectID, Vector3 pos, Quaternion rot)
+    {
+        BuildObjectSO buildObjectSO = BuildObjectSO.FromId(buildObjectID);
+
+        if (GameManager.Instance.CanAfford(buildObjectSO.price)) {
+            GameManager.Instance.RemoveFromBalance(buildObjectSO.price);
+            NetworkObject buildObject = NetworkManager.SpawnManager.InstantiateAndSpawn(buildObjectSO.prefab.GetComponent<NetworkObject>(), position: pos, rotation: rot);
+
+            BuildClientRpc(buildObject.GetComponent<BuildObject>());
+        }
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void BuildClientRpc(NetworkBehaviourReference buildObjectReference)
+    {
+        if (buildObjectReference.TryGet(out BuildObject buildObject)) {
+            buildObject.Place();
+        }
     }
 
     private void LateUpdate()

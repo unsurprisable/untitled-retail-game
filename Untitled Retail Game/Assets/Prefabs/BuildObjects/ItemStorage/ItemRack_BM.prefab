@@ -100,6 +100,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   meshRenderer: {fileID: 3875140036239200564}
+  outline: {fileID: 0}
 --- !u!1001 &2451883395715435952
 PrefabInstance:
   m_ObjectHideFlags: 0

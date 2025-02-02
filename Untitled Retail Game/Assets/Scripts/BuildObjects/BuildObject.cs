@@ -12,14 +12,13 @@ public class BuildObject : NetworkBehaviour
 
     public void Place() {
         OnPlace();
+
+        Debug.Log($"Placed \"{buildObjectSO.name}\" for {buildObjectSO.price}");
     }
 
     public void Sell() {
-        GameManager.Instance.AddToBalance(buildObjectSO.price); // 100% sellback rate
-
         OnSell();
 
-        Destroy(gameObject);
         Debug.Log($"Sold \"{buildObjectSO.name}\" for {buildObjectSO.price}");
     }
 }

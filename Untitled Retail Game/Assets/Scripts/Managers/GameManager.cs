@@ -107,20 +107,12 @@ public class GameManager : NetworkBehaviour
     public void SetStoreItemPriceRpc(int storeItemId, float newItemPrice) {
         itemPriceDict[storeItemId] = newItemPrice;
         OnItemPriceChanged?.Invoke(this, new OnItemPriceChangedEventArgs {
-            storeitemSO = GetStoreItemFromId(storeItemId),
+            storeitemSO = StoreItemSO.FromId(storeItemId),
             newItemPrice = newItemPrice
         });
     }
 
-    public int GetStoreItemId(StoreItemSO storeItemSO)
-    {
-        return itemToIdDict[storeItemSO];
-    }
 
-    public StoreItemSO GetStoreItemFromId(int id)
-    {
-        return storeItemList.list[id];
-    }
 
     public int[] ConvertStoreItemArrayToId(StoreItemSO[] storeItemSOArray)
     {

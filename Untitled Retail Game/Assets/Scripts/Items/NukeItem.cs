@@ -1,4 +1,5 @@
 
+using Unity.Netcode;
 using UnityEngine;
 
 public class NukeItem : HoldableItem
@@ -11,10 +12,30 @@ public class NukeItem : HoldableItem
     {
         if (Physics.Raycast(player.cameraAnchor.position, player.orientation.forward, out RaycastHit hit, interactDistance, interactLayerMask)) {
             if (hit.transform.parent.TryGetComponent(out BuildObject buildObject)) {
-                buildObject.Sell();
+                SellObjectServerRpc(buildObject);
             } else {
                 Debug.LogWarning($"Object \"{hit.transform.name}\" is on BuildBounds layer without a BuildObject parent! oh no D:");
             }
+        }
+    }
+
+
+    // SELLING IS HANDLED HERE BECAUSE IDK WHERE TO PUT IT YET (as of writing this i havent made a selling mode yet so if ur here because thats a thing now then hi o/ from 2/1/2025)
+    [Rpc(SendTo.Server)]
+    private void SellObjectServerRpc(NetworkBehaviourReference buildObjectReference)
+    {
+        if (buildObjectReference.TryGet(out BuildObject buildObject)) {
+            GameManager.Instance.AddToBalance(buildObject.buildObjectSO.price); // 100% sellback rate
+            SellObjectClientRpc(buildObjectReference);
+            Destroy(buildObject.gameObject);
+        }
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void SellObjectClientRpc(NetworkBehaviourReference buildObjectReference)
+    {
+        if (buildObjectReference.TryGet(out BuildObject buildObject)) {
+            buildObject.Sell();
         }
     }
 

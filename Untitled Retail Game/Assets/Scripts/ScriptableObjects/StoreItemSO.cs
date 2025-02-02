@@ -39,9 +39,9 @@ public class StoreItemSO : ScriptableObject
     public int storageAmount;
 
 
-    public int Id => GameManager.Instance.GetStoreItemId(this);
+    public int Id => SerializeManager.Instance.GetStoreItemId(this);
 
     public static StoreItemSO FromId(int id) {
-        return GameManager.Instance.GetStoreItemFromId(id);
+        return SerializeManager.Instance.GetStoreItemFromId(id);
     }
 }

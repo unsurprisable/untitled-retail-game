@@ -15,6 +15,11 @@ public class BuildObjectSO : ScriptableObject
     public Sprite preview;
     [Tooltip("The category that this object will be displayed in.")]
     public BuildMenuUI.BuildCategory category;
-    // [Tooltip("Add this object to the \"Important Objects\" category.")]
-    // public bool isImportant;
+
+
+    public int Id => SerializeManager.Instance.GetBuildObjectID(this);
+
+    public static BuildObjectSO FromId(int id) {
+        return SerializeManager.Instance.GetBuildObjectFromId(id);
+    }
 }
