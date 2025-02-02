@@ -57,6 +57,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GlobalObjectIdHash: 3771737970
   InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -64,6 +66,8 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!114 &1509942093231113313
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -76,6 +80,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82d02a8dbe32ef24b9ae56f3f7e8af7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   nametag: {fileID: 2005900117212209733}
 --- !u!114 &-7945180650771814823
 MonoBehaviour:
@@ -89,6 +94,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d0e43e6caba9774e90f934f1b1e6eda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   orientation: {fileID: 5149553165726652253}
   cameraAnchor: {fileID: 6124144014867049397}
   maxLookAngle: 75
@@ -104,6 +110,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac1ef0bf748cffd41a3e386754d9d3a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   rb: {fileID: 8051314931943267243}
   orientation: {fileID: 5149553165726652253}
   walkSpeed: 150
@@ -142,10 +149,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8106673988416b644897ec42b0368274, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   buildDistance: 2
   nudgeDistanceRange: 10
   nudgeDistanceStep: 0.1
   defaultNudgePercent: 25
+  nudgeSprintBoost: 10
+  rotationSpeed: 90
+  rotationSprintBoost: 4
   buildCollisionLayerMask:
     serializedVersion: 2
     m_Bits: 0
@@ -212,6 +223,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0ed65c1a057ba44aa8c27d75e7e4267, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  NetworkTransformExpanded: 0
+  AuthorityMode: 0
+  TickSyncChildren: 0
   UseUnreliableDeltas: 0
   SyncPositionX: 1
   SyncPositionY: 1
@@ -229,6 +244,7 @@ MonoBehaviour:
   UseQuaternionCompression: 0
   UseHalfFloatPrecision: 0
   InLocalSpace: 0
+  SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
 --- !u!1 &4041807380066303311
@@ -332,6 +348,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0ed65c1a057ba44aa8c27d75e7e4267, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  NetworkTransformExpanded: 0
+  AuthorityMode: 0
+  TickSyncChildren: 0
   UseUnreliableDeltas: 0
   SyncPositionX: 0
   SyncPositionY: 0
@@ -349,6 +369,7 @@ MonoBehaviour:
   UseQuaternionCompression: 0
   UseHalfFloatPrecision: 0
   InLocalSpace: 0
+  SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
 --- !u!1 &4213173426657410240

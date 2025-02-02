@@ -47,7 +47,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -100,7 +100,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   meshRenderer: {fileID: 3875140036239200564}
-  outline: {fileID: 0}
 --- !u!1001 &2451883395715435952
 PrefabInstance:
   m_ObjectHideFlags: 0

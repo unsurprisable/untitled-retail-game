@@ -37,6 +37,9 @@ public class GameInput : MonoBehaviour
         playerInputActions.Player.SecondaryAction.canceled   += (context) => {SecondaryActionReleased?.Invoke(this, EventArgs.Empty);};
         playerInputActions.Player.Scroll.performed           += (context) => {OnScroll?.Invoke(this, EventArgs.Empty);};
         playerInputActions.Player.Drop.performed             += (context) => {OnDrop?.Invoke(this, EventArgs.Empty);};
+
+        playerInputActions.Player.RotateLeft.performed       += (context) => {OnRotateLeft?.Invoke(this, EventArgs.Empty);};
+        playerInputActions.Player.RotateRight.performed      += (context) => {OnRotateRight?.Invoke(this, EventArgs.Empty);};
         
         playerInputActions.Menu.Enable();
         playerInputActions.Menu.BuildMenu.performed          += (context) => {OnBuildMenu?.Invoke(this, EventArgs.Empty);};
@@ -61,6 +64,13 @@ public class GameInput : MonoBehaviour
         if (scrollRaw < 0) return -1;
         if (scrollRaw > 0) return 1;
         return 0;
+    }
+
+    public int GetRotateDirection() {
+        int rotateDirection = 0;
+        if (playerInputActions.Player.RotateLeft.IsPressed()) rotateDirection--;
+        if (playerInputActions.Player.RotateRight.IsPressed()) rotateDirection++;
+        return rotateDirection;
     }
 
     private void OnDestroy()

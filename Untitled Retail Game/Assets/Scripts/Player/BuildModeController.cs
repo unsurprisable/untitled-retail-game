@@ -9,13 +9,20 @@ public class BuildModeController : NetworkBehaviour
     private BuildObjectSO buildObjectSO;
     private Transform buildObjectPreview;
 
+    [Header("Positioning")]
     [SerializeField] private float buildDistance;
     [SerializeField] private float nudgeDistanceRange;
     [SerializeField] private float nudgeDistanceStep;
-    private float nudgeDistance;
     [SerializeField] private int defaultNudgePercent;
+    [SerializeField] private float nudgeSprintBoost;
+    private float nudgeDistance;
+
+    [Header("Rotating")]
+    [SerializeField] private float rotationSpeed;
+    [SerializeField] private float rotationSprintBoost;
+    
+    [Header("Technical")]
     [SerializeField] private LayerMask buildCollisionLayerMask;
-    [Space]
     [SerializeField] private Material canBuildMaterial;
     [SerializeField] private Material invalidBuildMaterial;
 
@@ -26,6 +33,7 @@ public class BuildModeController : NetworkBehaviour
     {
         // LMB to ask the server to build the object
         GameInput.Instance.MainAction += (sender, args) => {
+            if (!isActive) return;
             if (buildObjectSO == null) return;
 
             TryBuildServerRpc(buildObjectSO.Id, buildObjectPreview.position, buildObjectPreview.rotation);
@@ -35,14 +43,20 @@ public class BuildModeController : NetworkBehaviour
 
         // RMB to cancel build mode
         GameInput.Instance.SecondaryAction += (sender, args) => {
+            if (!isActive) return;
+
             Deactivate();
         };
 
         // Scroll to nudge build object
         GameInput.Instance.OnScroll += (sender, args) => {
+            if (!isActive) return;
+
             int scrollDirection = GameInput.Instance.GetScrollDirection();
 
-            nudgeDistance = Mathf.Clamp(nudgeDistance + (scrollDirection * nudgeDistanceStep), 0, nudgeDistanceRange);
+            float nudgeAmount = nudgeDistanceStep * scrollDirection;
+            if (GameInput.Instance.GetIsSprinting()) nudgeAmount *= nudgeSprintBoost;
+            nudgeDistance = Mathf.Clamp(nudgeDistance + nudgeAmount, 0, nudgeDistanceRange);
         };
     }
 
@@ -75,6 +89,13 @@ public class BuildModeController : NetworkBehaviour
         previewLocation += PlayerController.LocalInstance.orientation.forward * (buildDistance + nudgeDistance);
 
         buildObjectPreview.position = previewLocation;
+
+        int rotateDirection = GameInput.Instance.GetRotateDirection();
+        if (rotateDirection != 0) {
+            float rotateAmount = rotationSpeed * rotateDirection * Time.deltaTime;
+            if (GameInput.Instance.GetIsSprinting()) rotateAmount *= rotationSprintBoost;
+            buildObjectPreview.Rotate(Vector3.up, rotateAmount);
+        }
     }
 
 
