@@ -21,6 +21,6 @@ public class GameInfoUI : MonoBehaviour
     }
 
     private void UpdateVisual(float newBalance) {
-        balanceText.text = "$ " + newBalance.ToString("000000.00");
+        balanceText.text = "$ " + newBalance.ToString("0,000,000.00");
     }
 }

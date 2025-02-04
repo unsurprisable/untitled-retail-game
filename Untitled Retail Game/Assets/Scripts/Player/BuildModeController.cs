@@ -65,7 +65,7 @@ public class BuildModeController : NetworkBehaviour
     {
         BuildObjectSO buildObjectSO = BuildObjectSO.FromId(buildObjectID);
 
-        if (GameManager.Instance.CanAfford(buildObjectSO.price)) {
+        if (CanBuild()) {
             GameManager.Instance.RemoveFromBalance(buildObjectSO.price);
             NetworkObject buildObject = NetworkManager.SpawnManager.InstantiateAndSpawn(buildObjectSO.prefab.GetComponent<NetworkObject>(), position: pos, rotation: rot);
 
@@ -84,6 +84,12 @@ public class BuildModeController : NetworkBehaviour
     private void LateUpdate()
     {
         if (!isActive) return;
+
+        if (CanBuild()) {
+            buildObjectPreview.GetComponent<BuildModePreviewObject>().SetMaterial(canBuildMaterial);
+        } else {
+            buildObjectPreview.GetComponent<BuildModePreviewObject>().SetMaterial(invalidBuildMaterial);
+        }
 
         Vector3 previewLocation = PlayerController.LocalInstance.cameraAnchor.position;
         previewLocation += PlayerController.LocalInstance.orientation.forward * (buildDistance + nudgeDistance);
@@ -109,7 +115,7 @@ public class BuildModeController : NetworkBehaviour
 
         this.buildObjectSO = buildObjectSO;
         buildObjectPreview = Instantiate(buildObjectSO.buildModePrefab);
-        buildObjectPreview.GetComponent<BuildModePreviewObject>().SetMaterial(canBuildMaterial);
+        buildObjectPreview.LookAt(PlayerController.LocalInstance.transform.position);
     }
 
 
@@ -131,6 +137,13 @@ public class BuildModeController : NetworkBehaviour
     public bool IsActive()
     {
         return isActive;
+    }
+
+    private bool CanBuild() {
+        if (buildObjectSO == null) return false;
+        if (!GameManager.Instance.CanAfford(buildObjectSO.price)) return false;
+
+        return true;
     }
     
 }
