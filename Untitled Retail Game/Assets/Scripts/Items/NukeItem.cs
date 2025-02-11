@@ -7,15 +7,34 @@ public class NukeItem : HoldableItem
     [Header("Nuke")]
     [SerializeField] private float interactDistance;
     [SerializeField] private LayerMask interactLayerMask;
+    [SerializeField] BuildObject selectedObject;
 
     public override void OnUse(PlayerController player)
     {
+        if (selectedObject != null) {
+            SellObjectServerRpc(selectedObject);
+        }
+    }
+
+    public override void HeldUpdate(PlayerController player) {
         if (Physics.Raycast(player.cameraAnchor.position, player.orientation.forward, out RaycastHit hit, interactDistance, interactLayerMask)) {
             if (hit.transform.parent.TryGetComponent(out BuildObject buildObject)) {
-                SellObjectServerRpc(buildObject);
+                if (selectedObject != buildObject) {
+                    if (selectedObject != null) {
+                        selectedObject.HideBuildBounds();
+                    }
+                    selectedObject = buildObject;
+                    selectedObject.ShowBuildBounds();
+                    Debug.Log("selected " + selectedObject.name);
+                }
             } else {
                 Debug.LogWarning($"Object \"{hit.transform.name}\" is on BuildBounds layer without a BuildObject parent! oh no D:");
             }
+        } else {
+            if (selectedObject != null) {
+                selectedObject.HideBuildBounds();
+            }
+            selectedObject = null;
         }
     }
 
