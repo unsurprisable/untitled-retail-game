@@ -3,6 +3,7 @@ using UnityEngine;
 public class BuildModePreviewObject : MonoBehaviour
 {
     [SerializeField] private MeshRenderer meshRenderer;
+    public Transform buildBounds;
 
     public void SetMaterial(Material material)
     {

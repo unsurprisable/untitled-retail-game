@@ -7,7 +7,7 @@ public class BuildModeController : NetworkBehaviour
     private bool isActive;
 
     private BuildObjectSO buildObjectSO;
-    private Transform buildObjectPreview;
+    private BuildModePreviewObject buildObjectPreview;
 
     [Header("Positioning")]
     [SerializeField] private float buildDistance;
@@ -23,6 +23,7 @@ public class BuildModeController : NetworkBehaviour
     
     [Header("Technical")]
     [SerializeField] private LayerMask buildCollisionLayerMask;
+    [SerializeField] private LayerMask buildSurfaceLayerMask;
     [SerializeField] private Material canBuildMaterial;
     [SerializeField] private Material invalidBuildMaterial;
 
@@ -36,7 +37,7 @@ public class BuildModeController : NetworkBehaviour
             if (!isActive) return;
             if (buildObjectSO == null) return;
 
-            TryBuildServerRpc(buildObjectSO.Id, buildObjectPreview.position, buildObjectPreview.rotation);
+            TryBuildServerRpc(buildObjectSO.Id, buildObjectPreview.transform.position, buildObjectPreview.transform.rotation);
 
             Deactivate();
         };
@@ -91,16 +92,21 @@ public class BuildModeController : NetworkBehaviour
             buildObjectPreview.GetComponent<BuildModePreviewObject>().SetMaterial(invalidBuildMaterial);
         }
 
-        Vector3 previewLocation = PlayerController.LocalInstance.cameraAnchor.position;
-        previewLocation += PlayerController.LocalInstance.orientation.forward * (buildDistance + nudgeDistance);
+        Vector3 camPos = PlayerController.LocalInstance.cameraAnchor.position;
+        float distance = buildDistance + nudgeDistance;
 
-        buildObjectPreview.position = previewLocation;
+        if (Physics.Raycast(camPos, PlayerController.LocalInstance.orientation.forward, out RaycastHit hit, distance, buildSurfaceLayerMask)) {
+            buildObjectPreview.transform.position = hit.point;
+        } else {
+            buildObjectPreview.transform.position = camPos + PlayerController.LocalInstance.orientation.forward * distance;
+        }
+
 
         int rotateDirection = GameInput.Instance.GetRotateDirection();
         if (rotateDirection != 0) {
             float rotateAmount = rotationSpeed * rotateDirection * Time.deltaTime;
             if (GameInput.Instance.GetIsSprinting()) rotateAmount *= rotationSprintBoost;
-            buildObjectPreview.Rotate(Vector3.up, rotateAmount);
+            buildObjectPreview.transform.Rotate(Vector3.up, rotateAmount);
         }
     }
 
@@ -114,8 +120,8 @@ public class BuildModeController : NetworkBehaviour
         }
 
         this.buildObjectSO = buildObjectSO;
-        buildObjectPreview = Instantiate(buildObjectSO.buildModePrefab);
-        buildObjectPreview.LookAt(PlayerController.LocalInstance.transform.position);
+        buildObjectPreview = Instantiate(buildObjectSO.buildModePrefab).GetComponent<BuildModePreviewObject>();
+        buildObjectPreview.transform.LookAt(PlayerController.LocalInstance.transform.position);
     }
 
 
@@ -143,7 +149,12 @@ public class BuildModeController : NetworkBehaviour
         if (buildObjectSO == null) return false;
         if (!GameManager.Instance.CanAfford(buildObjectSO.price)) return false;
 
+        Collider[] overlappingBuildBounds = Physics.OverlapBox(buildObjectPreview.buildBounds.position, buildObjectPreview.buildBounds.localScale / 2, buildObjectPreview.buildBounds.rotation, buildCollisionLayerMask);
+        foreach (Collider collider in overlappingBuildBounds) {
+            if (!collider.transform.Equals(buildObjectPreview.buildBounds.transform)) return false;
+        }
+
         return true;
     }
-    
+
 }

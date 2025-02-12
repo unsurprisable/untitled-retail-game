@@ -159,7 +159,10 @@ MonoBehaviour:
   rotationSprintBoost: 4
   buildCollisionLayerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4294967295
+  buildSurfaceLayerMask:
+    serializedVersion: 2
+    m_Bits: 512
   canBuildMaterial: {fileID: 2100000, guid: 31894077fba0f23418570c81f7bb2a86, type: 2}
   invalidBuildMaterial: {fileID: 2100000, guid: 3b0c595301138a34fac327b9bffa7e62,
     type: 2}
