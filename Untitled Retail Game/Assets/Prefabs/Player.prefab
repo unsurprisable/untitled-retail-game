@@ -150,13 +150,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  buildDistance: 2
-  nudgeDistanceRange: 10
-  nudgeDistanceStep: 0.1
-  defaultNudgePercent: 25
-  nudgeSprintBoost: 10
-  rotationSpeed: 90
-  rotationSprintBoost: 4
+  buildDistance: 5
+  defaultRotationOffset: 270
+  rotationSpeed: 15
+  rotationSprintBoost: 6
   buildCollisionLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295

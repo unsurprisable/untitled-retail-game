@@ -11,21 +11,24 @@ public class BuildModeController : NetworkBehaviour
 
     [Header("Positioning")]
     [SerializeField] private float buildDistance;
-    [SerializeField] private float nudgeDistanceRange;
-    [SerializeField] private float nudgeDistanceStep;
-    [SerializeField] private int defaultNudgePercent;
-    [SerializeField] private float nudgeSprintBoost;
-    private float nudgeDistance;
+    // [SerializeField] private float nudgeDistanceRange;
+    // [SerializeField] private float nudgeDistanceStep;
+    // [SerializeField] private int defaultNudgePercent;
+    // [SerializeField] private float nudgeSprintBoost;
+    // [SerializeField] private float nudgeDistance;
 
     [Header("Rotating")]
+    [SerializeField] private float defaultRotationOffset;
     [SerializeField] private float rotationSpeed;
     [SerializeField] private float rotationSprintBoost;
+    private float rotationOffset;
     
     [Header("Technical")]
     [SerializeField] private LayerMask buildCollisionLayerMask;
     [SerializeField] private LayerMask buildSurfaceLayerMask;
     [SerializeField] private Material canBuildMaterial;
     [SerializeField] private Material invalidBuildMaterial;
+    private bool isSurfaced;
 
 
 
@@ -50,15 +53,15 @@ public class BuildModeController : NetworkBehaviour
         };
 
         // Scroll to nudge build object
-        GameInput.Instance.OnScroll += (sender, args) => {
-            if (!isActive) return;
+        // GameInput.Instance.OnScroll += (sender, args) => {
+        //     if (!isActive) return;
 
-            int scrollDirection = GameInput.Instance.GetScrollDirection();
+        //     int scrollDirection = GameInput.Instance.GetScrollDirection();
 
-            float nudgeAmount = nudgeDistanceStep * scrollDirection;
-            if (GameInput.Instance.GetIsSprinting()) nudgeAmount *= nudgeSprintBoost;
-            nudgeDistance = Mathf.Clamp(nudgeDistance + nudgeAmount, 0, nudgeDistanceRange);
-        };
+        //     float nudgeAmount = nudgeDistanceStep * scrollDirection;
+        //     if (GameInput.Instance.GetIsSprinting()) nudgeAmount *= nudgeSprintBoost;
+        //     nudgeDistance = Mathf.Clamp(nudgeDistance + nudgeAmount, 0, nudgeDistanceRange);
+        // };
     }
 
     [Rpc(SendTo.Server)]
@@ -93,27 +96,33 @@ public class BuildModeController : NetworkBehaviour
         }
 
         Vector3 camPos = PlayerController.LocalInstance.cameraAnchor.position;
-        float distance = buildDistance + nudgeDistance;
+        float distance = buildDistance/* + nudgeDistance*/;
 
+        Vector3 previewLoc;
         if (Physics.Raycast(camPos, PlayerController.LocalInstance.orientation.forward, out RaycastHit hit, distance, buildSurfaceLayerMask)) {
-            buildObjectPreview.transform.position = hit.point;
+            // TODO: confirm that this mesh's normal is pointing up before setting isSurfaced (otherwise you can place stuff on walls)
+            isSurfaced = true;
+            previewLoc = hit.point;
         } else {
-            buildObjectPreview.transform.position = camPos + PlayerController.LocalInstance.orientation.forward * distance;
+            isSurfaced = false;
+            previewLoc = camPos + PlayerController.LocalInstance.orientation.forward * distance;
         }
-
 
         int rotateDirection = GameInput.Instance.GetRotateDirection();
         if (rotateDirection != 0) {
             float rotateAmount = rotationSpeed * rotateDirection * Time.deltaTime;
             if (GameInput.Instance.GetIsSprinting()) rotateAmount *= rotationSprintBoost;
-            buildObjectPreview.transform.Rotate(Vector3.up, rotateAmount);
+            rotationOffset += rotateAmount;
         }
+
+        buildObjectPreview.transform.SetPositionAndRotation(previewLoc, Quaternion.Euler(0f, PlayerController.LocalInstance.orientation.rotation.eulerAngles.y + rotationOffset, 0f));
     }
 
 
     public void SetBuildObject(BuildObjectSO buildObjectSO)
     {
-        nudgeDistance = nudgeDistanceRange * defaultNudgePercent / 100;
+        // nudgeDistance = nudgeDistanceRange * defaultNudgePercent / 100;
+        rotationOffset = defaultRotationOffset;
 
         if (buildObjectPreview != null) {
             Destroy(buildObjectPreview.gameObject);
@@ -121,7 +130,6 @@ public class BuildModeController : NetworkBehaviour
 
         this.buildObjectSO = buildObjectSO;
         buildObjectPreview = Instantiate(buildObjectSO.buildModePrefab).GetComponent<BuildModePreviewObject>();
-        buildObjectPreview.transform.LookAt(PlayerController.LocalInstance.transform.position);
     }
 
 
@@ -148,6 +156,7 @@ public class BuildModeController : NetworkBehaviour
     private bool CanBuild() {
         if (buildObjectSO == null) return false;
         if (!GameManager.Instance.CanAfford(buildObjectSO.price)) return false;
+        if (!isSurfaced) return false;
 
         Collider[] overlappingBuildBounds = Physics.OverlapBox(buildObjectPreview.buildBounds.position, buildObjectPreview.buildBounds.localScale / 2, buildObjectPreview.buildBounds.rotation, buildCollisionLayerMask);
         foreach (Collider collider in overlappingBuildBounds) {
