@@ -88,6 +88,7 @@ public class BuildModeController : NetworkBehaviour
     private void LateUpdate()
     {
         if (!isActive) return;
+        if (buildObjectPreview == null) return;
 
         if (CanBuild()) {
             buildObjectPreview.GetComponent<BuildModePreviewObject>().SetMaterial(canBuildMaterial);
@@ -102,7 +103,7 @@ public class BuildModeController : NetworkBehaviour
         if (Physics.Raycast(camPos, PlayerController.LocalInstance.orientation.forward, out RaycastHit hit, distance, buildSurfaceLayerMask)) {
             // TODO: confirm that this mesh's normal is pointing up before setting isSurfaced (otherwise you can place stuff on walls)
             isSurfaced = true;
-            previewLoc = hit.point;
+            previewLoc = hit.point + Vector3.up * (buildObjectPreview.transform.position.y - buildObjectPreview.buildBounds.position.y + buildObjectPreview.buildBounds.localScale.y/2 + 0.01f);
         } else {
             isSurfaced = false;
             previewLoc = camPos + PlayerController.LocalInstance.orientation.forward * distance;
@@ -121,6 +122,11 @@ public class BuildModeController : NetworkBehaviour
 
     public void SetBuildObject(BuildObjectSO buildObjectSO)
     {
+        if (buildObjectSO.buildModePrefab == null) {
+            Debug.LogWarning("BuildObjectSO " + buildObjectSO.name + " has not been assigned a build mode prefab!");
+            return;
+        }
+
         // nudgeDistance = nudgeDistanceRange * defaultNudgePercent / 100;
         rotationOffset = defaultRotationOffset;
 
