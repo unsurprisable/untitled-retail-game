@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5876349006005858286}
   - component: {fileID: 3804058716166666659}
   - component: {fileID: 5333146473336709311}
-  m_Layer: 8
+  m_Layer: 1
   m_Name: BuildBounds
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -119,7 +119,7 @@ GameObject:
   - component: {fileID: 2164401015542713277}
   - component: {fileID: 3952413617320595002}
   - component: {fileID: 6082421587180869094}
-  m_Layer: 0
+  m_Layer: 1
   m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -204,7 +204,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7497828867905338876}
   - component: {fileID: 1702480636846465478}
-  m_Layer: 0
+  m_Layer: 1
   m_Name: ClosedFridge_BM
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -38,6 +38,7 @@ public class BuildModeController : NetworkBehaviour
         // LMB to ask the server to build the object
         GameInput.Instance.MainAction += (sender, args) => {
             if (!isActive) return;
+            if (MenuManager.Instance.IsInMenu()) return;
             if (buildObjectSO == null) return;
 
             TryBuildServerRpc(buildObjectSO.Id, buildObjectPreview.transform.position, buildObjectPreview.transform.rotation);
@@ -48,6 +49,7 @@ public class BuildModeController : NetworkBehaviour
         // RMB to cancel build mode
         GameInput.Instance.SecondaryAction += (sender, args) => {
             if (!isActive) return;
+            if (MenuManager.Instance.IsInMenu()) return;
 
             Deactivate();
         };
@@ -65,11 +67,12 @@ public class BuildModeController : NetworkBehaviour
     }
 
     [Rpc(SendTo.Server)]
-    private void TryBuildServerRpc(int buildObjectID, Vector3 pos, Quaternion rot)
+    private void TryBuildServerRpc(int buildObjectID, Vector3 pos, Quaternion rot, RpcParams rpcParams = default)
     {
         BuildObjectSO buildObjectSO = BuildObjectSO.FromId(buildObjectID);
 
-        if (CanBuild()) {
+        // if host sent this request, just check locally; otherwise simulate the check on the host
+        if ((rpcParams.Receive.SenderClientId == OwnerClientId && CanBuild()) || CanBuild(buildObjectSO, pos, rot)) {
             GameManager.Instance.RemoveFromBalance(buildObjectSO.price);
             NetworkObject buildObject = NetworkManager.SpawnManager.InstantiateAndSpawn(buildObjectSO.prefab.GetComponent<NetworkObject>(), position: pos, rotation: rot);
 
@@ -169,6 +172,32 @@ public class BuildModeController : NetworkBehaviour
             if (!collider.transform.Equals(buildObjectPreview.buildBounds.transform)) return false;
         }
 
+        return true;
+    }
+
+    // this is needed when clients ask the server to check if their build is valid -
+    // since this game uses a host system, i can't just override any of the attributes since the server is also a client 
+    // (so the host would see weird stuff going on whenever a client runs this check)
+    // therefore, this just simulates the build on the host's end but hides the actual object to not mess with anything
+    private bool CanBuild(BuildObjectSO buildObjectSO, Vector3 pos, Quaternion rot) {
+        if (buildObjectSO == null) return false;
+        if (!GameManager.Instance.CanAfford(buildObjectSO.price)) return false;
+        // missing isSurfaced check since it's kind of a hassle to implement in this context
+
+        Debug.Log("simulated check");
+
+        BuildModePreviewObject simulatedPreview = Instantiate(buildObjectSO.buildModePrefab, pos, rot).GetComponent<BuildModePreviewObject>();
+        simulatedPreview.GetComponentInChildren<MeshRenderer>().enabled = false;
+
+        Collider[] overlappingBuildBounds = Physics.OverlapBox(simulatedPreview.buildBounds.position, simulatedPreview.buildBounds.localScale / 2, simulatedPreview.buildBounds.rotation, buildCollisionLayerMask);
+        foreach (Collider collider in overlappingBuildBounds) {
+            if (!collider.transform.Equals(simulatedPreview.buildBounds.transform)) {
+                Destroy(simulatedPreview.gameObject);
+                return false;
+            }
+        }
+
+        Destroy(simulatedPreview.gameObject);
         return true;
     }
 

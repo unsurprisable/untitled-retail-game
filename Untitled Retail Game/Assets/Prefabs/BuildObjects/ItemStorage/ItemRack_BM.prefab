@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3843901046877307072}
   - component: {fileID: 3298305624360134836}
-  m_Layer: 8
+  m_Layer: 1
   m_Name: BuildBounds
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -63,7 +63,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6906291854759542065}
   - component: {fileID: -7860357728061161660}
-  m_Layer: 0
+  m_Layer: 1
   m_Name: ItemRack_BM
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -193,6 +193,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Model
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 7fdc1de2d494ad44d898cecca26442aa,
+        type: 3}
+      propertyPath: m_Layer
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 7fdc1de2d494ad44d898cecca26442aa,
         type: 3}
