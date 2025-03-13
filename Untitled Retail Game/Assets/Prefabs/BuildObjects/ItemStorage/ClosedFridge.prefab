@@ -226,7 +226,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7497828867905338876}
   - component: {fileID: 3899256338019845979}
-  - component: {fileID: 7244509636872059172}
+  - component: {fileID: 907176330407176758}
   m_Layer: 0
   m_Name: ClosedFridge
   m_TagString: Untagged
@@ -264,7 +264,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 599074907
+  GlobalObjectIdHash: 4034235414
   InScenePlacedSourceGlobalObjectIdHash: 4034235414
   DeferredDespawnTick: 0
   Ownership: 1
@@ -277,7 +277,7 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
---- !u!114 &7244509636872059172
+--- !u!114 &907176330407176758
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -286,12 +286,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 6817606584906074613}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e12a0369f1dbf349ae00f92cbc02b9d, type: 3}
+  m_Script: {fileID: 11500000, guid: ff00315388f405f49b6385033626b237, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  buildObjectSO: {fileID: 11400000, guid: a987ee63905848149b0beffdafe87d47, type: 2}
   buildBoundsRenderer: {fileID: 5333146473336709311}
+  storageVolumes:
+  - {fileID: 2825431854239935966}
 --- !u!1001 &1414025668138759478
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -380,6 +381,11 @@ PrefabInstance:
       propertyPath: storageType
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3794937545322305768, guid: d45f10be70516654e85aa77e1ff137ae,
+        type: 3}
+      propertyPath: parentDisplayObject
+      value: 
+      objectReference: {fileID: 907176330407176758}
     - target: {fileID: 3835930423566779614, guid: d45f10be70516654e85aa77e1ff137ae,
         type: 3}
       propertyPath: m_Name
@@ -396,3 +402,15 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1414025668138759478}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2825431854239935966 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3794937545322305768, guid: d45f10be70516654e85aa77e1ff137ae,
+    type: 3}
+  m_PrefabInstance: {fileID: 1414025668138759478}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da7209cb7ba1ec74db797ecef0488af2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

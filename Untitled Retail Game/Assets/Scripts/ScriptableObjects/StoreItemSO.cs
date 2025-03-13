@@ -24,7 +24,7 @@ public class StoreItemSO : ScriptableObject
     [Tooltip("Price per unit (not per stack).")]
     public float unitPrice;
     [Tooltip("The type of storage this item requires.")]
-    public StorageVolume.StorageType storageType;
+    public StoreManager.StorageType storageType;
     [Tooltip("The shop category this item will appear in.")]
     public OrderMenuUI.ProductCategory category;
 

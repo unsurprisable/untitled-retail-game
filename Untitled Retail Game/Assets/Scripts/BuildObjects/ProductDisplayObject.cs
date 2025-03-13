@@ -3,5 +3,5 @@ using UnityEngine;
 public class ProductDisplayObject : BuildObject
 {
     [Header("Product Display Object")]
-    [SerializeField] private Transform[] storageVolumes;
+    [SerializeField] private StorageVolume[] storageVolumes;
 }

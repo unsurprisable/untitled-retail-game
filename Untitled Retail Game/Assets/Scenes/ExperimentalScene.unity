@@ -219,6 +219,11 @@ PrefabInstance:
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 2603448710
       objectReference: {fileID: 0}
+    - target: {fileID: 1624779353890304090, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: parentDisplayObject
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3024102925468981269, guid: 9587f4f9543ce2643b6be6b99b2607cd,
         type: 3}
       propertyPath: GlobalObjectIdHash
@@ -228,6 +233,16 @@ PrefabInstance:
         type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 2603448710
+      objectReference: {fileID: 0}
+    - target: {fileID: 3045820521333067081, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: parentDisplayObject
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3856999988459109073, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: parentDisplayObject
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 3906302283907936141, guid: 9587f4f9543ce2643b6be6b99b2607cd,
         type: 3}
@@ -333,6 +348,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ItemRack (7)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8119635472428319666, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: parentDisplayObject
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5951790978932180592, guid: 9587f4f9543ce2643b6be6b99b2607cd, type: 3}
@@ -3459,6 +3479,11 @@ PrefabInstance:
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 2603448710
       objectReference: {fileID: 0}
+    - target: {fileID: 1624779353890304090, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: parentDisplayObject
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3024102925468981269, guid: 9587f4f9543ce2643b6be6b99b2607cd,
         type: 3}
       propertyPath: GlobalObjectIdHash
@@ -3468,6 +3493,16 @@ PrefabInstance:
         type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 2603448710
+      objectReference: {fileID: 0}
+    - target: {fileID: 3045820521333067081, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: parentDisplayObject
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3856999988459109073, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: parentDisplayObject
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 3906302283907936141, guid: 9587f4f9543ce2643b6be6b99b2607cd,
         type: 3}
@@ -3573,6 +3608,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ItemRack (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8119635472428319666, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: parentDisplayObject
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5951790978932180592, guid: 9587f4f9543ce2643b6be6b99b2607cd, type: 3}
@@ -4293,6 +4333,11 @@ PrefabInstance:
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 2603448710
       objectReference: {fileID: 0}
+    - target: {fileID: 1624779353890304090, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: parentDisplayObject
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3024102925468981269, guid: 9587f4f9543ce2643b6be6b99b2607cd,
         type: 3}
       propertyPath: GlobalObjectIdHash
@@ -4302,6 +4347,16 @@ PrefabInstance:
         type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 2603448710
+      objectReference: {fileID: 0}
+    - target: {fileID: 3045820521333067081, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: parentDisplayObject
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3856999988459109073, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: parentDisplayObject
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 3906302283907936141, guid: 9587f4f9543ce2643b6be6b99b2607cd,
         type: 3}
@@ -4407,6 +4462,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ItemRack (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8119635472428319666, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: parentDisplayObject
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5951790978932180592, guid: 9587f4f9543ce2643b6be6b99b2607cd, type: 3}
@@ -9288,6 +9348,11 @@ PrefabInstance:
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 2603448710
       objectReference: {fileID: 0}
+    - target: {fileID: 1624779353890304090, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: parentDisplayObject
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3024102925468981269, guid: 9587f4f9543ce2643b6be6b99b2607cd,
         type: 3}
       propertyPath: GlobalObjectIdHash
@@ -9297,6 +9362,16 @@ PrefabInstance:
         type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 2603448710
+      objectReference: {fileID: 0}
+    - target: {fileID: 3045820521333067081, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: parentDisplayObject
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3856999988459109073, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: parentDisplayObject
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 3906302283907936141, guid: 9587f4f9543ce2643b6be6b99b2607cd,
         type: 3}
@@ -9402,6 +9477,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ItemRack (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8119635472428319666, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: parentDisplayObject
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5951790978932180592, guid: 9587f4f9543ce2643b6be6b99b2607cd, type: 3}
@@ -9537,6 +9617,11 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: 2100000, guid: 3b0c595301138a34fac327b9bffa7e62, type: 2}
+    - target: {fileID: 1624779353890304090, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: parentDisplayObject
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3024102925468981269, guid: 9587f4f9543ce2643b6be6b99b2607cd,
         type: 3}
       propertyPath: GlobalObjectIdHash
@@ -9546,6 +9631,16 @@ PrefabInstance:
         type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 2603448710
+      objectReference: {fileID: 0}
+    - target: {fileID: 3045820521333067081, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: parentDisplayObject
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3856999988459109073, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: parentDisplayObject
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 3906302283907936141, guid: 9587f4f9543ce2643b6be6b99b2607cd,
         type: 3}
@@ -9651,6 +9746,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ItemRack (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8119635472428319666, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: parentDisplayObject
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5951790978932180592, guid: 9587f4f9543ce2643b6be6b99b2607cd, type: 3}
@@ -9869,11 +9969,29 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 610677216
       objectReference: {fileID: 0}
+    - target: {fileID: 1624779353890304090, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: storeItemSO
+      value: 
+      objectReference: {fileID: 11400000, guid: bb62488a221026b4996662e446368ca0,
+        type: 2}
     - target: {fileID: 3024102925468981269, guid: 9587f4f9543ce2643b6be6b99b2607cd,
         type: 3}
       propertyPath: GlobalObjectIdHash
       value: 3141189290
       objectReference: {fileID: 0}
+    - target: {fileID: 3045820521333067081, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: storeItemSO
+      value: 
+      objectReference: {fileID: 11400000, guid: bb62488a221026b4996662e446368ca0,
+        type: 2}
+    - target: {fileID: 3856999988459109073, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: storeItemSO
+      value: 
+      objectReference: {fileID: 11400000, guid: bb62488a221026b4996662e446368ca0,
+        type: 2}
     - target: {fileID: 3906302283907936141, guid: 9587f4f9543ce2643b6be6b99b2607cd,
         type: 3}
       propertyPath: GlobalObjectIdHash
@@ -9949,6 +10067,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: ItemRack (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 8119635472428319666, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: storeItemSO
+      value: 
+      objectReference: {fileID: 11400000, guid: bb62488a221026b4996662e446368ca0,
+        type: 2}
     m_RemovedComponents:
     - {fileID: 7845175899359437174, guid: 9587f4f9543ce2643b6be6b99b2607cd, type: 3}
     - {fileID: 3024102925468981269, guid: 9587f4f9543ce2643b6be6b99b2607cd, type: 3}
@@ -10743,6 +10867,50 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2ea8eafaacb614b49b73e022f5f349c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &1599040959
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1599040960}
+  - component: {fileID: 1599040961}
+  m_Layer: 0
+  m_Name: StoreManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1599040960
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1599040959}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1886692916}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1599040961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1599040959}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11045f0ae01fd23499699b2424c795ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1616653988
@@ -12185,6 +12353,11 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: 2100000, guid: 31894077fba0f23418570c81f7bb2a86, type: 2}
+    - target: {fileID: 1624779353890304090, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: parentDisplayObject
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 2558088680533255929, guid: 9587f4f9543ce2643b6be6b99b2607cd,
         type: 3}
       propertyPath: m_Materials.Array.size
@@ -12204,6 +12377,16 @@ PrefabInstance:
         type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 2603448710
+      objectReference: {fileID: 0}
+    - target: {fileID: 3045820521333067081, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: parentDisplayObject
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3856999988459109073, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: parentDisplayObject
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 3906302283907936141, guid: 9587f4f9543ce2643b6be6b99b2607cd,
         type: 3}
@@ -12314,6 +12497,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ItemRack (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8119635472428319666, guid: 9587f4f9543ce2643b6be6b99b2607cd,
+        type: 3}
+      propertyPath: parentDisplayObject
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5951790978932180592, guid: 9587f4f9543ce2643b6be6b99b2607cd, type: 3}
@@ -12626,6 +12814,7 @@ Transform:
   - {fileID: 738486575}
   - {fileID: 1214080839}
   - {fileID: 1507951299}
+  - {fileID: 1599040960}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1948592549

@@ -10,12 +10,28 @@ public class BuildObject : NetworkBehaviour
     protected virtual void OnSell() {}
     protected virtual void OnPlace() {}
 
+    protected virtual void OnAwake() {}
+    protected virtual void OnStart() {}
+    protected virtual void OnOnNetworkSpawn() {}
 
-    private void Start()
+
+    public override void OnNetworkSpawn()
+    {
+        OnOnNetworkSpawn();
+    }
+
+    private void Awake()
+    {
+        OnAwake();
+    }
+
+    void Start()
     {
         if (buildBoundsRenderer == null) {
             Debug.LogWarning($"BuildObject \"{name}\" has no buildBoundsRenderer!");
         }
+
+        OnStart();
     }
 
 

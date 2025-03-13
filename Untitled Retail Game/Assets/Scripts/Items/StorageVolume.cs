@@ -1,14 +1,17 @@
+using System;
 using Unity.Netcode;
 using UnityEngine;
 
 public class StorageVolume : InteractableNetworkObject
 {
-    public enum StorageType { ITEM_RACK, CLOSED_FRIDGE, OPEN_FRIDGE, FREEZER, PRODUCE_BIN, WARMER }
 
+    public event EventHandler OnStoreItemChanged;
+    
     [Space]
     [Header("Item Storage Space")]
-    [SerializeField] private StorageType storageType;
+    public ProductDisplayObject parentDisplayObject;
     [SerializeField] private Transform displayOrigin;
+    [SerializeField] private StoreManager.StorageType storageType;
 
     [Space]
 
@@ -18,18 +21,25 @@ public class StorageVolume : InteractableNetworkObject
     private Transform[] itemDisplayPool;
 
     [Space]
-    [Header("Interaction")]
+
     [SerializeField] private AnimationCurve interactHeldCooldownCurve; // should probably make this static somewhere to save memory (rn every single volume has one of these in memory)
     private float interactHeldCooldownLeft;
 
     // private bool performanceTestForward;
 
 
+
+    #region Functionality
+
     public override void OnNetworkSpawn()
     {
         if (IsServer) {
             NetworkManager.Singleton.SceneManager.OnSynchronize += NetworkManager_OnSynchronize;
         }
+
+        StoreManager.Instance.Register(this);
+
+        
 
         itemAmount.OnValueChanged += UpdateVisualForItemAmountChange;
 
@@ -229,6 +239,8 @@ public class StorageVolume : InteractableNetworkObject
     {
         this.storeItemSO = storeItemSO;
 
+        OnStoreItemChanged?.Invoke(this, EventArgs.Empty);
+
         if (itemDisplayPool != null) {
             foreach (Transform itemDisplay in itemDisplayPool) {
                 Destroy(itemDisplay.gameObject);
@@ -246,11 +258,11 @@ public class StorageVolume : InteractableNetworkObject
     {
         if (itemDisplayPool != null) {
             foreach (Transform itemDisplay in itemDisplayPool) {
-                Destroy(itemDisplay.gameObject); // this can cause an error if the object is destroyed before the storage volume
+                if (itemDisplay == null) continue;
+                Destroy(itemDisplay.gameObject);
             }
         }
     }
-
 
     // private void FixedUpdate()
     // {
@@ -262,4 +274,21 @@ public class StorageVolume : InteractableNetworkObject
     //         if (itemAmount.Value == 0) performanceTestForward = true;
     //     }
     // }
+
+    #endregion
+
+
+
+
+
+    #region Getters
+
+    public StoreItemSO GetStoreItemSO() {
+        return storeItemSO;
+    }
+    public int GetItemAmount() {
+        return itemAmount.Value;
+    }
+
+    #endregion
 }
