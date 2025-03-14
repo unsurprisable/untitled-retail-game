@@ -21,7 +21,7 @@ public class ItemScannerItem : HoldableItem
     {
         if (storeItemSO != null && newItemPrice != itemPrice)
         {
-            SetItemPriceServerRpc(storeItemSO.Id, newItemPrice);
+            SetItemPriceServerRpc(storeItemSO.ID, newItemPrice);
         }
     }
 
@@ -43,16 +43,16 @@ public class ItemScannerItem : HoldableItem
         this.storeItemSO = storeItemSO;
         itemName.text = storeItemSO.name;
         stockPrice.text = "$" + storeItemSO.unitPrice.ToString("0.00");
-        itemPrice = GameManager.Instance.GetStoreItemPrice(storeItemSO);
+        itemPrice = EconomyManager.Instance.GetStoreItemPrice(storeItemSO);
         newItemPrice = itemPrice;
 
         PreviewNewItemPrice();
 
         GameInput.Instance.OnScroll += HandleScrollWheel;
-        GameManager.Instance.OnItemPriceChanged += GameManager_OnItemPriceChanged;
+        EconomyManager.Instance.OnItemPriceChanged += GameManager_OnItemPriceChanged;
     }
 
-    private void GameManager_OnItemPriceChanged(object sender, GameManager.OnItemPriceChangedEventArgs e)
+    private void GameManager_OnItemPriceChanged(object sender, EconomyManager.OnItemPriceChangedEventArgs e)
     {
         if (storeItemSO == e.storeitemSO) {
             itemPrice = e.newItemPrice;
@@ -71,13 +71,13 @@ public class ItemScannerItem : HoldableItem
         PreviewNewItemPrice();
         
         GameInput.Instance.OnScroll -= HandleScrollWheel;
-        GameManager.Instance.OnItemPriceChanged -= GameManager_OnItemPriceChanged;
+        EconomyManager.Instance.OnItemPriceChanged -= GameManager_OnItemPriceChanged;
     }
 
     [Rpc(SendTo.Server)]
     private void SetItemPriceServerRpc(int storeItemId, float newItemPrice)
     {
-        GameManager.Instance.SetStoreItemPriceRpc(storeItemId, newItemPrice);
+        EconomyManager.Instance.SetStoreItemPriceRpc(storeItemId, newItemPrice);
     }
 
     private void PreviewNewItemPrice()

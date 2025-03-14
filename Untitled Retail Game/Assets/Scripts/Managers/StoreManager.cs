@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -13,12 +14,19 @@ public class StoreManager : MonoBehaviour
 
     public enum StorageType { ITEM_RACK, CLOSED_FRIDGE, OPEN_FRIDGE, FREEZER, PRODUCE_BIN, WARMER }
 
+    public event EventHandler OnStoreOpenChanged;
+
     private Dictionary<StoreItemSO, int> storeItemData;
 
     // registered stations
     private List<StorageVolume> registeredStorageVolumes;
     // private List<...> registeredCheckouts;
     // private List<...> registeredInventoryStorages;
+
+    [Header("Store Properties")]
+    [SerializeField] private bool isOpen;
+
+
 
     public void Awake() {
         Instance = this;
@@ -52,12 +60,15 @@ public class StoreManager : MonoBehaviour
         return formattedDict.ToString();
     }
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.U)) {
-            RetrieveStoreItemData();
-            Debug.Log(FormatItemDataDictionary(storeItemData));
-        }
+    public void OpenStore() {
+        if (isOpen) return;
+        isOpen = false;
+        OnStoreOpenChanged?.Invoke(this, EventArgs.Empty);
+    }
+    public void CloseStore() {
+        if (!isOpen) return;
+        isOpen = false;
+        OnStoreOpenChanged?.Invoke(this, EventArgs.Empty);
     }
 
 }

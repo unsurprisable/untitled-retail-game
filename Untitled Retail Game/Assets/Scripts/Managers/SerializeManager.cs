@@ -30,7 +30,7 @@ public class SerializeManager : MonoBehaviour
 
 
 
-    public int GetBuildObjectID(BuildObjectSO buildObjectSO)
+    public int BuildObjectToID(BuildObjectSO buildObjectSO)
     {
         return buildToIdDict[buildObjectSO];
     }
@@ -42,7 +42,7 @@ public class SerializeManager : MonoBehaviour
 
 
 
-    public int GetStoreItemId(StoreItemSO storeItemSO)
+    public int StoreItemToID(StoreItemSO storeItemSO)
     {
         return itemToIdDict[storeItemSO];
     }
@@ -50,5 +50,15 @@ public class SerializeManager : MonoBehaviour
     public StoreItemSO GetStoreItemFromId(int id)
     {
         return storeItemList.list[id];
+    }
+
+
+
+    public BuildObjectListSO GetBuildObjectListSO() {
+        return buildObjectList;
+    }
+
+    public StoreItemListSO GetStoreItemListSO() {
+        return storeItemList;
     }
 }

@@ -4487,7 +4487,7 @@ GameObject:
   - component: {fileID: 738486577}
   - component: {fileID: 738486576}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: EconomyManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4521,7 +4521,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  storeItemList: {fileID: 11400000, guid: d9615e4111c1e5b4f930f063edee45d2, type: 2}
   initialStoreBalance: 1234567
 --- !u!114 &738486577
 MonoBehaviour:
@@ -10913,6 +10912,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11045f0ae01fd23499699b2424c795ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isOpen: 0
 --- !u!1 &1616653988
 GameObject:
   m_ObjectHideFlags: 0
@@ -12810,11 +12810,11 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1446791362}
+  - {fileID: 1599040960}
   - {fileID: 738486575}
+  - {fileID: 1446791362}
   - {fileID: 1214080839}
   - {fileID: 1507951299}
-  - {fileID: 1599040960}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1948592549

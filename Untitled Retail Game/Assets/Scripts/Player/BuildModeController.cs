@@ -41,7 +41,7 @@ public class BuildModeController : NetworkBehaviour
             if (MenuManager.Instance.IsInMenu()) return;
             if (buildObjectSO == null) return;
 
-            TryBuildServerRpc(buildObjectSO.Id, buildObjectPreview.transform.position, buildObjectPreview.transform.rotation);
+            TryBuildServerRpc(buildObjectSO.ID, buildObjectPreview.transform.position, buildObjectPreview.transform.rotation);
 
             Deactivate();
         };
@@ -73,7 +73,7 @@ public class BuildModeController : NetworkBehaviour
 
         // if host sent this request, just check locally; otherwise simulate the check on the host
         if ((rpcParams.Receive.SenderClientId == OwnerClientId && CanBuild()) || CanBuild(buildObjectSO, pos, rot)) {
-            GameManager.Instance.RemoveFromBalance(buildObjectSO.price);
+            EconomyManager.Instance.RemoveFromBalance(buildObjectSO.price);
             NetworkObject buildObject = NetworkManager.SpawnManager.InstantiateAndSpawn(buildObjectSO.prefab.GetComponent<NetworkObject>(), position: pos, rotation: rot);
 
             BuildClientRpc(buildObject.GetComponent<BuildObject>());
@@ -164,7 +164,7 @@ public class BuildModeController : NetworkBehaviour
 
     private bool CanBuild() {
         if (buildObjectSO == null) return false;
-        if (!GameManager.Instance.CanAfford(buildObjectSO.price)) return false;
+        if (!EconomyManager.Instance.CanAfford(buildObjectSO.price)) return false;
         if (!isSurfaced) return false;
 
         Collider[] overlappingBuildBounds = Physics.OverlapBox(buildObjectPreview.buildBounds.position, buildObjectPreview.buildBounds.localScale / 2, buildObjectPreview.buildBounds.rotation, buildCollisionLayerMask);
@@ -181,7 +181,7 @@ public class BuildModeController : NetworkBehaviour
     // therefore, this just simulates the build on the host's end but hides the actual object to not mess with anything
     private bool CanBuild(BuildObjectSO buildObjectSO, Vector3 pos, Quaternion rot) {
         if (buildObjectSO == null) return false;
-        if (!GameManager.Instance.CanAfford(buildObjectSO.price)) return false;
+        if (!EconomyManager.Instance.CanAfford(buildObjectSO.price)) return false;
         // missing isSurfaced check since it's kind of a hassle to implement in this context
 
         Debug.Log("simulated check");

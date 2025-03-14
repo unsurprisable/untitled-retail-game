@@ -16,14 +16,14 @@ public class ContainerItem : HoldableItem
             NetworkManager.Singleton.SceneManager.OnSynchronize += NetworkManager_OnSynchronize;
 
             if (storeItem != null) {
-                SetStoreItemSORpc(storeItem.Id, RpcTarget.ClientsAndHost);
+                SetStoreItemSORpc(storeItem.ID, RpcTarget.ClientsAndHost);
             }
         }
     }
 
     private void NetworkManager_OnSynchronize(ulong clientId)
     {
-        SetStoreItemSORpc(storeItem.Id, RpcTarget.Single(clientId, RpcTargetUse.Temp));
+        SetStoreItemSORpc(storeItem.ID, RpcTarget.Single(clientId, RpcTargetUse.Temp));
     }
 
     // make sure to set this instantly whenever instantiating a new container

@@ -56,7 +56,7 @@ public class StorageVolume : InteractableNetworkObject
     private void NetworkManager_OnSynchronize(ulong clientId)
     {
         if (storeItemSO == null) return;
-        SynchronizeItemDataRpc(storeItemSO.Id, RpcTarget.Single(clientId, RpcTargetUse.Temp));
+        SynchronizeItemDataRpc(storeItemSO.ID, RpcTarget.Single(clientId, RpcTargetUse.Temp));
     }
 
     [Rpc(SendTo.SpecifiedInParams)]

@@ -44,7 +44,7 @@ public class NukeItem : HoldableItem
     private void SellObjectServerRpc(NetworkBehaviourReference buildObjectReference)
     {
         if (buildObjectReference.TryGet(out BuildObject buildObject)) {
-            GameManager.Instance.AddToBalance(buildObject.buildObjectSO.price); // 100% sellback rate
+            EconomyManager.Instance.AddToBalance(buildObject.buildObjectSO.price); // 100% sellback rate
             SellObjectClientRpc(buildObjectReference);
             Destroy(buildObject.gameObject);
         }

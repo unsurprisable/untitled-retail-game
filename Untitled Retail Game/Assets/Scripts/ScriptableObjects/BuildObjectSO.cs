@@ -17,7 +17,7 @@ public class BuildObjectSO : ScriptableObject
     public BuildMenuUI.BuildCategory category;
 
 
-    public int Id => SerializeManager.Instance.GetBuildObjectID(this);
+    public int ID => SerializeManager.Instance.BuildObjectToID(this);
 
     public static BuildObjectSO FromId(int id) {
         return SerializeManager.Instance.GetBuildObjectFromId(id);

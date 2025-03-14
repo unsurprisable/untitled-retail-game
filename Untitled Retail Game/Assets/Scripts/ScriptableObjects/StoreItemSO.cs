@@ -39,7 +39,7 @@ public class StoreItemSO : ScriptableObject
     public int storageAmount;
 
 
-    public int Id => SerializeManager.Instance.GetStoreItemId(this);
+    public int ID => SerializeManager.Instance.StoreItemToID(this);
 
     public static StoreItemSO FromId(int id) {
         return SerializeManager.Instance.GetStoreItemFromId(id);

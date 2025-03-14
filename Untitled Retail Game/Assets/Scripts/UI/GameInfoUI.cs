@@ -13,11 +13,11 @@ public class GameInfoUI : MonoBehaviour
 
     private void Start()
     {
-        GameManager.Instance.OnBalanceChanged += (sender, args) => {
-            UpdateVisual(((GameManager)sender).GetBalance());
+        EconomyManager.Instance.OnBalanceChanged += (sender, args) => {
+            UpdateVisual(((EconomyManager)sender).GetBalance());
         };
         
-        UpdateVisual(GameManager.Instance.initialStoreBalance);
+        UpdateVisual(EconomyManager.Instance.initialStoreBalance);
     }
 
     private void UpdateVisual(float newBalance) {

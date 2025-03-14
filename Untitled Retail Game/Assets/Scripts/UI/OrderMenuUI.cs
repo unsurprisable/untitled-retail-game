@@ -44,20 +44,12 @@ public class OrderMenuUI : NetworkMenu
 
         currentOrder = new Dictionary<StoreItemSO, int>();
         activeProductButtons = new HashSet<GameObject>();
-        categoryDict = new Dictionary<ProductCategory, List<StoreItemSO>>();
-        foreach (StoreItemSO storeItemSO in GameManager.Instance.GetStoreItemSOList())
-        {
-            if (!categoryDict.ContainsKey(storeItemSO.category)) {
-                categoryDict[storeItemSO.category] = new List<StoreItemSO>();
-            }
-            categoryDict[storeItemSO.category].Add(storeItemSO);
-        }
 
         categoryButtons[0].GetComponent<Button>().onClick.AddListener(()=>{ ShowCategory(ProductCategory.BASIC_PRODUCTS); });
         categoryButtons[1].GetComponent<Button>().onClick.AddListener(()=>{ ShowCategory(ProductCategory.DAIRY_PRODUCTS); });
 
         placeOrderButton.onClick.AddListener(() => {
-            int[] orderItemSOArray = GameManager.Instance.ConvertStoreItemArrayToId(currentOrder.Keys.ToArray());
+            int[] orderItemSOArray = EconomyManager.Instance.ConvertStoreItemArrayToID(currentOrder.Keys.ToArray());
             int[] orderAmountArray = currentOrder.Values.ToArray();
             
             PlaceOrderServerRpc(orderTotalPrice, orderItemSOArray, orderAmountArray);
@@ -66,7 +58,16 @@ public class OrderMenuUI : NetworkMenu
 
     private void Start()
     {
-        GameManager.Instance.OnBalanceChanged += (sender, args) => {
+        categoryDict = new Dictionary<ProductCategory, List<StoreItemSO>>();
+        foreach (StoreItemSO storeItemSO in EconomyManager.Instance.GetStoreItemSOList())
+        {
+            if (!categoryDict.ContainsKey(storeItemSO.category)) {
+                categoryDict[storeItemSO.category] = new List<StoreItemSO>();
+            }
+            categoryDict[storeItemSO.category].Add(storeItemSO);
+        }
+        
+        EconomyManager.Instance.OnBalanceChanged += (sender, args) => {
             UpdateOrderButtonState();
         };
         UpdateOrderButtonState();
@@ -75,9 +76,9 @@ public class OrderMenuUI : NetworkMenu
     [Rpc(SendTo.Server)]
     private void PlaceOrderServerRpc(float orderTotalPrice, int[] orderItemSOArray, int[] orderAmountArray, RpcParams rpcParams = default)
     {
-        if (!GameManager.Instance.CanAfford(orderTotalPrice)) return;
+        if (!EconomyManager.Instance.CanAfford(orderTotalPrice)) return;
 
-        GameManager.Instance.RemoveFromBalance(orderTotalPrice);
+        EconomyManager.Instance.RemoveFromBalance(orderTotalPrice);
 
         for (int item = 0; item < orderItemSOArray.Length; item++)
         {
@@ -177,7 +178,7 @@ public class OrderMenuUI : NetworkMenu
 
     private void UpdateOrderButtonState()
     {
-        bool canOrder = queuedOrderCount != 0 && GameManager.Instance.CanAfford(orderTotalPrice);
+        bool canOrder = queuedOrderCount != 0 && EconomyManager.Instance.CanAfford(orderTotalPrice);
         placeOrderButton.gameObject.GetComponent<Image>().color = canOrder ? orderButtonEnabledColor : orderButtonDisabledColor;
         placeOrderButton.enabled = canOrder;
     }
