@@ -1,9 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Unity.Netcode;
 using UnityEngine;
 
-public class StoreManager : MonoBehaviour
+public class StoreManager : NetworkBehaviour
 {
     // POSSIBLE WARNING:
     // this whole class is just managed per-client since it works with a lot of unserializable types.
@@ -16,9 +18,8 @@ public class StoreManager : MonoBehaviour
 
     public event EventHandler OnStoreOpenChanged;
 
+    // [Header("Logistics")]
     private Dictionary<StoreItemSO, int> storeItemData;
-
-    // registered stations
     private List<StorageVolume> registeredStorageVolumes;
     // private List<...> registeredCheckouts;
     // private List<...> registeredInventoryStorages;
@@ -26,17 +27,49 @@ public class StoreManager : MonoBehaviour
     [Header("Store Properties")]
     [SerializeField] private bool isOpen;
 
+    [Space]
+    [Header("Customers")]
+    [SerializeField] private Transform storeSpawnPoint;
+    [SerializeField] private Transform customerPrefab;
+    [SerializeField] private float customerCooldown;
+    [SerializeField] private float customerCooldownLeft;
+    private HashSet<StoreItemSO> availableProducts;
 
 
     public void Awake() {
         Instance = this;
 
         registeredStorageVolumes = new List<StorageVolume>();
+        
+        availableProducts = new HashSet<StoreItemSO>();
+    }
+
+    void Start()
+    {
+        StartCoroutine(InitializeRegisteredData());
+
+        // temp until i figure out how this is actually gonna be determined
+        // (for now customers will just look for every item that exists in the game automatically)
+        foreach (StoreItemSO storeItemSO in SerializeManager.Instance.GetStoreItemListSO().list) {
+            availableProducts.Add(storeItemSO);
+        }
     }
 
     // StorageVolumes SHOULD be calling this when they're spawned on the network
     public void Register(StorageVolume storageVolume) {
         registeredStorageVolumes.Add(storageVolume);
+        // if (storageVolume.GetStoreItemSO() != null) {
+        //     availableProducts.Add(storageVolume.GetStoreItemSO());
+        // }
+        Debug.Log("Registered StorageVolume: " + storageVolume.name); 
+    }
+
+    // runs one frame AFTER start to make sure every scene object has registered itself by the time this runs
+    private IEnumerator InitializeRegisteredData() {
+        yield return null; // wait for one frame
+
+        RetrieveStoreItemData();
+        Debug.Log(FormatItemDataDictionary(storeItemData));
     }
 
     private void RetrieveStoreItemData() {
@@ -69,6 +102,16 @@ public class StoreManager : MonoBehaviour
         if (!isOpen) return;
         isOpen = false;
         OnStoreOpenChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+
+
+    void Update() {
+        customerCooldownLeft -= Time.deltaTime;
+        if (customerCooldownLeft <= 0) {
+            NetworkManager.SpawnManager.InstantiateAndSpawn(customerPrefab.GetComponent<NetworkObject>(), destroyWithScene: true, position: storeSpawnPoint.position);
+            customerCooldownLeft = customerCooldown;
+        }
     }
 
 }

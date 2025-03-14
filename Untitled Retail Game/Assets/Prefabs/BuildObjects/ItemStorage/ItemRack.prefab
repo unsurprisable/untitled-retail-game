@@ -240,6 +240,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+  buildObjectSO: {fileID: 11400000, guid: 553edb3437a210c4ab95ff82a04cab5e, type: 2}
   buildBoundsRenderer: {fileID: 5410517923810911191}
   storageVolumes:
   - {fileID: 1624779353890304090}
