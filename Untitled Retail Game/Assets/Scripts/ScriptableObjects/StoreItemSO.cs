@@ -44,4 +44,8 @@ public class StoreItemSO : ScriptableObject
     public static StoreItemSO FromId(int id) {
         return SerializeManager.Instance.GetStoreItemFromId(id);
     }
+
+    public override string ToString() {
+        return name;
+    }
 }

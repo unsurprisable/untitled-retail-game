@@ -6,10 +6,14 @@ public class StorageVolume : InteractableNetworkObject
 {
 
     public event EventHandler OnStoreItemChanged;
+    public event EventHandler<OnItemAmountChangedEventArgs> OnItemAmountChanged;
+    public class OnItemAmountChangedEventArgs {
+        public int previousAmount;
+        public int newAmount;
+    }
     
     [Space]
     [Header("Item Storage Space")]
-    public ProductDisplayObject parentDisplayObject;
     [SerializeField] private Transform displayOrigin;
     [SerializeField] private StoreManager.StorageType storageType;
 
@@ -37,11 +41,10 @@ public class StorageVolume : InteractableNetworkObject
             NetworkManager.Singleton.SceneManager.OnSynchronize += NetworkManager_OnSynchronize;
         }
 
-        StoreManager.Instance.Register(this);
+        // StoreManager.Instance.Register(this);
 
-        
 
-        itemAmount.OnValueChanged += UpdateVisualForItemAmountChange;
+        itemAmount.OnValueChanged += ItemAmount_OnValueChanged;
 
         if (IsServer && storeItemSO != null) {
             SetStoreItemSO(storeItemSO);
@@ -51,6 +54,16 @@ public class StorageVolume : InteractableNetworkObject
             // }
             itemAmount.Value = storeItemSO.storageAmount;
         }
+    }
+
+    private void ItemAmount_OnValueChanged(int previousValue, int newValue)
+    {
+        OnItemAmountChanged?.Invoke(this, new OnItemAmountChangedEventArgs {
+            previousAmount = previousValue,
+            newAmount = newValue,
+        });
+
+        UpdateVisualForItemAmountChange(previousValue, newValue);
     }
 
     private void NetworkManager_OnSynchronize(ulong clientId)

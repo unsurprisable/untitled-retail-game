@@ -20,7 +20,8 @@ public class StoreManager : NetworkBehaviour
 
     // [Header("Logistics")]
     private Dictionary<StoreItemSO, int> storeItemData;
-    private List<StorageVolume> registeredStorageVolumes;
+    private List<ProductDisplayObject> registeredDisplayObjects;
+    // private List<StorageVolume> registeredStorageVolumes;
     // private List<...> registeredCheckouts;
     // private List<...> registeredInventoryStorages;
 
@@ -33,15 +34,13 @@ public class StoreManager : NetworkBehaviour
     [SerializeField] private Transform customerPrefab;
     [SerializeField] private float customerCooldown;
     [SerializeField] private float customerCooldownLeft;
-    private HashSet<StoreItemSO> availableProducts;
 
 
     public void Awake() {
         Instance = this;
 
-        registeredStorageVolumes = new List<StorageVolume>();
-        
-        availableProducts = new HashSet<StoreItemSO>();
+        registeredDisplayObjects = new List<ProductDisplayObject>();
+        // registeredStorageVolumes = new List<StorageVolume>();
     }
 
     void Start()
@@ -50,18 +49,18 @@ public class StoreManager : NetworkBehaviour
 
         // temp until i figure out how this is actually gonna be determined
         // (for now customers will just look for every item that exists in the game automatically)
-        foreach (StoreItemSO storeItemSO in SerializeManager.Instance.GetStoreItemListSO().list) {
-            availableProducts.Add(storeItemSO);
-        }
     }
 
-    // StorageVolumes SHOULD be calling this when they're spawned on the network
     public void Register(StorageVolume storageVolume) {
-        registeredStorageVolumes.Add(storageVolume);
+        // registeredStorageVolumes.Add(storageVolume);
         // if (storageVolume.GetStoreItemSO() != null) {
         //     availableProducts.Add(storageVolume.GetStoreItemSO());
         // }
         Debug.Log("Registered StorageVolume: " + storageVolume.name); 
+    }
+    public void Register(ProductDisplayObject displayObject) {
+        registeredDisplayObjects.Add(displayObject);
+
     }
 
     // runs one frame AFTER start to make sure every scene object has registered itself by the time this runs
@@ -73,11 +72,13 @@ public class StoreManager : NetworkBehaviour
     }
 
     private void RetrieveStoreItemData() {
-        Dictionary<StoreItemSO, int> storeItemData = new Dictionary<StoreItemSO, int>();        
+        Dictionary<StoreItemSO, int> storeItemData = new Dictionary<StoreItemSO, int>();       
 
-        foreach (StorageVolume volume in registeredStorageVolumes) {
-            if (volume.GetStoreItemSO() == null) continue;
-            storeItemData[volume.GetStoreItemSO()] = storeItemData.GetValueOrDefault(volume.GetStoreItemSO(), 0) + volume.GetItemAmount();
+        foreach (ProductDisplayObject displayObject in registeredDisplayObjects) {
+            var itemDict = displayObject.GetStoreItemDictionary();
+            foreach (StoreItemSO storeItemSO in itemDict.Keys) {
+                storeItemData[storeItemSO] = storeItemData.GetValueOrDefault(storeItemSO, 0) + itemDict[storeItemSO];
+            }
         }
 
         this.storeItemData = storeItemData;
@@ -106,12 +107,24 @@ public class StoreManager : NetworkBehaviour
 
 
 
-    void Update() {
+    private void Update() {
         customerCooldownLeft -= Time.deltaTime;
         if (customerCooldownLeft <= 0) {
             NetworkManager.SpawnManager.InstantiateAndSpawn(customerPrefab.GetComponent<NetworkObject>(), destroyWithScene: true, position: storeSpawnPoint.position);
             customerCooldownLeft = customerCooldown;
         }
+    }
+
+
+    private HashSet<StoreItemSO> GetAvailableProducts() {
+        return new HashSet<StoreItemSO>(storeItemData.Keys);
+    }
+
+    public ProductDisplayObject SearchForItemInStore(StoreItemSO storeItemSO) {
+        // probably quicker overall than risking having to search the entire display object list when there's no product available
+        if (!GetAvailableProducts().Contains(storeItemSO)) return null;
+
+        return registeredDisplayObjects.Find(obj => obj.GetStoreItemAmount(storeItemSO) > 0);
     }
 
 }
