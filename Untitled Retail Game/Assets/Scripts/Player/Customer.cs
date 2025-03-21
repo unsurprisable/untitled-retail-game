@@ -166,6 +166,9 @@ public class Customer : NetworkBehaviour
             return;
         }
         
+        // transform.LookAt(targetSearchPosition);
+        rb.MoveRotation(Quaternion.LookRotation(targetDisplayObject.viewingArea.position - transform.position));
+
         targetSearchPosition = targetDisplayObject.viewingArea.transform;
         timeSpentSearching = 0f;
         startSearchPosition = transform.position;
@@ -173,6 +176,7 @@ public class Customer : NetworkBehaviour
     }
 
     private void StartLooting() {
+        rb.MoveRotation(targetSearchPosition.rotation);
         itemPickupTimeLeft = itemPickupTime;
         moveState = MoveState.LOOTING;
     }
