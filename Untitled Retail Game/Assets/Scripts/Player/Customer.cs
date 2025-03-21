@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -17,6 +18,8 @@ public class Customer : NetworkBehaviour
     [SerializeField] private Stack<StoreItemSO> shoppingList;
     [SerializeField] private Stack<StoreItemSO> cart;
     private ProductDisplayObject targetDisplayObject;
+    private Transform targetSearchPosition;
+    private int shoppingListLength;
 
     private Vector3 startSearchPosition;
     private float timeSpentSearching;
@@ -27,11 +30,22 @@ public class Customer : NetworkBehaviour
     [SerializeField] private MoveState moveState;
     [SerializeField] private ShoppingExperience experience;
 
+
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+        rb.detectCollisions = false;
+    }
+
     public override void OnNetworkSpawn() {
+
+        if (!IsServer) {
+            this.enabled = false;
+        }
+
         customerName = possibleNames[Random.Range(0, possibleNames.Length)];
         gameObject.name = $"Customer [{customerName}]";
         GetComponent<PlayerNametagDisplay>().SetNametag(customerName);
-        rb = GetComponent<Rigidbody>();
 
         // brain
 
@@ -39,6 +53,8 @@ public class Customer : NetworkBehaviour
         // (just wants 1 of each item)
         shoppingList = new Stack<StoreItemSO>(SerializeManager.Instance.GetStoreItemListSO().list);
         cart = new Stack<StoreItemSO>();
+        shoppingListLength = shoppingList.Count;
+        Debug.Log(shoppingListLength + " items");
         
         LookForNextItem();
     }
@@ -57,8 +73,8 @@ public class Customer : NetworkBehaviour
                 // rb.angularVelocity = Vector3.up * rotateAmount;
                 // rb.linearVelocity = transform.forward * wanderSpeed * Time.fixedDeltaTime;
 
-                if (targetDisplayObject == null) {
-                    Debug.LogWarning($"{customerName}: i don't know :( where :( im going -- (targetDisplayObject was null when starting search)");
+                if (targetSearchPosition == null) {
+                    Debug.LogWarning($"{customerName}: i don't know :( where :( im going -- (targetSearchPosition was null when starting search)");
                     Freeze();
                     return;
                 }
@@ -93,12 +109,12 @@ public class Customer : NetworkBehaviour
     private void Freeze() {
         moveState = MoveState.FROZEN;
         rb.isKinematic = true;
-        rb.detectCollisions = false;
+        transform.position = transform.position + Vector3.up * 5f;
     }
     private void Unfreeze() {
         moveState = MoveState.SEARCHING;
-        rb.isKinematic = true;
-        rb.detectCollisions = false;
+        rb.isKinematic = false;
+        transform.position = transform.position + Vector3.down * 5f;
     }
 
     private void TakeItem() {
@@ -108,6 +124,15 @@ public class Customer : NetworkBehaviour
             LookForNextItem();
         }
         */
+        StoreItemSO storeItemSO = shoppingList.Peek();
+        if (targetDisplayObject.GetStoreItemAmount(storeItemSO) <= 0) {
+            Debug.Log($"{customerName}: someone took my {storeItemSO.name} D:");
+            LookForNextItem(); // look for the item again (didn't .Pop() yet)
+            return;
+        }
+
+        targetDisplayObject.CustomerTakeItem(storeItemSO);
+        Debug.Log($"{customerName}: I got a {storeItemSO.name} :D");
         cart.Push(shoppingList.Pop());
         LookForNextItem();
     }
@@ -116,13 +141,12 @@ public class Customer : NetworkBehaviour
         if (shoppingList.Count == 0) {
             if (cart.Count == 0) {
                 experience = ShoppingExperience.HORRIBLE;
+            } else if (cart.Count == shoppingListLength) {
+                experience = ShoppingExperience.AMAZING;
             }
             LookForCheckout();
             return;
         }
-        // TODO
-        // StorageVolume nextVolume = StoreManager.Instance.SearchForItemInVolumes(shoppingList.Peek());
-        // targetDisplayObject = nextVolume.GetProductDisplayObject();
 
         targetDisplayObject = StoreManager.Instance.SearchForItemInStore(shoppingList.Peek());
         if (targetDisplayObject == null) {
@@ -132,24 +156,28 @@ public class Customer : NetworkBehaviour
             return;
         }
         
+        targetSearchPosition = targetDisplayObject.viewingArea.transform;
+        timeSpentSearching = 0f;
         startSearchPosition = transform.position;
         moveState = MoveState.SEARCHING;
     }
 
     private void StartLooting() {
         itemPickupTimeLeft = itemPickupTime;
-
         moveState = MoveState.LOOTING;
     }
 
     private void LookForCheckout() {
         Debug.Log($"{customerName}: i'm looking for a checkout now :) :)");
+        // no checkouts rn
+        LeaveStore();
     }
 
     private void LeaveStore() {
         string message = "i have no opinion on this shopping experience";
         switch (experience) {
             case ShoppingExperience.AMAZING:
+                message = "wow that was so fun and exciting! :D";
                 break;
             case ShoppingExperience.GOOD:
                 break;
@@ -160,5 +188,7 @@ public class Customer : NetworkBehaviour
                 break;
         }
         Debug.Log($"{customerName}: {message}");
+        // Freeze();
+        Destroy(gameObject);
     }
 }

@@ -148,6 +148,12 @@ public class StorageVolume : InteractableNetworkObject
         }
     }
 
+    public void CustomerRemoveItem() {
+        if (!IsServer) return;
+        
+        itemAmount.Value--;
+    }
+
     [Rpc(SendTo.Server)]
     private void AddItemServerRpc(NetworkBehaviourReference senderObject)
     {

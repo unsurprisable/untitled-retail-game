@@ -91,6 +91,9 @@ MonoBehaviour:
   - Gob
   - Rob
   wanderSpeed: 100
+  itemPickupTime: 1.5
+  moveState: 0
+  experience: 0
 --- !u!114 &4458895481284697633
 MonoBehaviour:
   m_ObjectHideFlags: 0
