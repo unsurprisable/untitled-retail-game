@@ -6,9 +6,9 @@ using UnityEngine;
 public class Customer : NetworkBehaviour
 {
     public enum MoveState { FROZEN, SEARCHING, LOOTING, IN_LINE, CHECKOUT }
-    public enum ShoppingExperience { AMAZING, GOOD, BAD, HORRIBLE }
+    public enum ShoppingExperience { AMAZING, GOOD, NEUTRAL, BAD, HORRIBLE }
 
-    [SerializeField] private string[] possibleNames;
+    private string[] possibleNames;
     private string customerName;
 
     private Rigidbody rb;
@@ -35,6 +35,19 @@ public class Customer : NetworkBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.detectCollisions = false;
+
+        possibleNames = new string[]{
+            "Bob", "Rob", "Tob", "Dob", "Sob", "Gob", "Nob", "Lob", "Mob", "Job",
+            "Cob", "Hob", "Pob", "Wob", "Zob", "Yob", "Vob", "Qob", "Xob", "Keb",
+            "Brob", "Snob", "Klob", "Blob", "Flob", "Glob", "Plob", "Slob", "Scrob",
+            "Drob", "Zlob", "Grubob", "Trob", "Glorbob", "Zoblob", "Knobob", "Vrob",
+            "Fribob", "Blorob", "Crubob", "Shlob", "Mlob", "Qlob", "Drobob", "Bzob",
+            "Frob", "Clob", "Gribob", "Trubob", "Slorb", "Vlob", "Snorb", "Blubob",
+            "Jrob", "Trobb", "Zorb", "Clobob", "Splob", "Wrob", "Glubob", "Drobobob",
+            "Skob", "Grob", "Krob", "Jlob", "Blorb", "Srob", "Qrob", "Krobob", "Trlob",
+            "Mrob", "Vrobob", "Snobob", "Grobb", "Plorb", "Wlob", "Dlob", "Nrob", "Hrob",
+            "Splorb", "Clobobob", "Florb", "Zrob", "Brorb", "Crorb", "Frobob"
+        };
     }
 
     public override void OnNetworkSpawn() {
@@ -54,7 +67,7 @@ public class Customer : NetworkBehaviour
         shoppingList = new Stack<StoreItemSO>(SerializeManager.Instance.GetStoreItemListSO().list);
         cart = new Stack<StoreItemSO>();
         shoppingListLength = shoppingList.Count;
-        Debug.Log(shoppingListLength + " items");
+        experience = ShoppingExperience.NEUTRAL;
         
         LookForNextItem();
     }
@@ -118,12 +131,6 @@ public class Customer : NetworkBehaviour
     }
 
     private void TakeItem() {
-        /* 
-        if (display object doesn't contain the item anymore) {
-            // look for another display object with the item
-            LookForNextItem();
-        }
-        */
         StoreItemSO storeItemSO = shoppingList.Peek();
         if (targetDisplayObject.GetStoreItemAmount(storeItemSO) <= 0) {
             Debug.Log($"{customerName}: someone took my {storeItemSO.name} D:");
@@ -141,7 +148,10 @@ public class Customer : NetworkBehaviour
         if (shoppingList.Count == 0) {
             if (cart.Count == 0) {
                 experience = ShoppingExperience.HORRIBLE;
+                LeaveStore();
+                return;
             } else if (cart.Count == shoppingListLength) {
+                Debug.Log($"{customerName}: Setting AMAZING experience. Cart count: {cart.Count}, Shopping list length: {shoppingListLength}");
                 experience = ShoppingExperience.AMAZING;
             }
             LookForCheckout();
@@ -177,14 +187,17 @@ public class Customer : NetworkBehaviour
         string message = "i have no opinion on this shopping experience";
         switch (experience) {
             case ShoppingExperience.AMAZING:
-                message = "wow that was so fun and exciting! :D";
+                message = "wow that was so fun and exciting! :D i found all of my items";
                 break;
             case ShoppingExperience.GOOD:
+                break;
+            case ShoppingExperience.NEUTRAL:
+                message = "not the best shopping experience but not the worst";
                 break;
             case ShoppingExperience.BAD:
                 break;
             case ShoppingExperience.HORRIBLE:
-                message = "i'm never coming back here again. and im filing a lawsuit. and im wishing you a very bad christmas. and im blowing up your house tomorrow.";
+                message = "i'm never coming back here again. and im wishing you a very bad christmas. and im blowing up your house tomorrow.";
                 break;
         }
         Debug.Log($"{customerName}: {message}");

@@ -124,7 +124,13 @@ public class StoreManager : NetworkBehaviour
         // probably quicker overall than risking having to search the entire display object list when there's no product available
         if (!GetAvailableProducts().Contains(storeItemSO)) return null;
 
-        return registeredDisplayObjects.Find(obj => obj.GetStoreItemAmount(storeItemSO) > 0);
+        // this could get very slow if the store is large; probably should cache this and then track changes w/ events to optimize
+        List<ProductDisplayObject> validDisplayObjects = registeredDisplayObjects.FindAll(obj => obj.GetStoreItemAmount(storeItemSO) > 0);
+        if (validDisplayObjects.Count == 0) {
+            return null;
+        } else {
+            return validDisplayObjects[UnityEngine.Random.Range(0, validDisplayObjects.Count)];
+        }
     }
 
 }
