@@ -140,7 +140,6 @@ public class OrderMenuUI : NetworkMenu
     public void AddItemToOrder(StoreItemSO storeItemSO)
     {
         if (queuedOrderCount == maxOrders) {
-            Debug.Log("Cannot add another order (order list is full)!");
             return;
         }
         if (!currentOrder.ContainsKey(storeItemSO)) {

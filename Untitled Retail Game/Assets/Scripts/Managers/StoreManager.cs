@@ -40,7 +40,6 @@ public class StoreManager : NetworkBehaviour
         Instance = this;
 
         registeredDisplayObjects = new List<ProductDisplayObject>();
-        // registeredStorageVolumes = new List<StorageVolume>();
     }
 
     void Start()
@@ -51,16 +50,11 @@ public class StoreManager : NetworkBehaviour
         // (for now customers will just look for every item that exists in the game automatically)
     }
 
-    public void Register(StorageVolume storageVolume) {
-        // registeredStorageVolumes.Add(storageVolume);
-        // if (storageVolume.GetStoreItemSO() != null) {
-        //     availableProducts.Add(storageVolume.GetStoreItemSO());
-        // }
-        Debug.Log("Registered StorageVolume: " + storageVolume.name); 
-    }
+    /// <summary>
+    /// Required for the store to recognize a ProductDisplayObject's product data
+    /// </summary>
     public void Register(ProductDisplayObject displayObject) {
         registeredDisplayObjects.Add(displayObject);
-
     }
 
     // runs one frame AFTER start to make sure every scene object has registered itself by the time this runs
@@ -71,6 +65,9 @@ public class StoreManager : NetworkBehaviour
         Debug.Log(FormatItemDataDictionary(storeItemData));
     }
 
+    /// <summary>
+    /// Generates a dictionary of every store item quantity by iterating through every registered display object.
+    /// </summary>
     private void RetrieveStoreItemData() {
         Dictionary<StoreItemSO, int> storeItemData = new Dictionary<StoreItemSO, int>();       
 
@@ -108,10 +105,12 @@ public class StoreManager : NetworkBehaviour
 
 
     private void Update() {
-        customerCooldownLeft -= Time.deltaTime;
-        if (customerCooldownLeft <= 0) {
-            NetworkManager.SpawnManager.InstantiateAndSpawn(customerPrefab.GetComponent<NetworkObject>(), destroyWithScene: true, position: storeSpawnPoint.position);
-            customerCooldownLeft = customerCooldown;
+        if (isOpen) {
+            customerCooldownLeft -= Time.deltaTime;
+            if (customerCooldownLeft <= 0) {
+                NetworkManager.SpawnManager.InstantiateAndSpawn(customerPrefab.GetComponent<NetworkObject>(), destroyWithScene: true, position: storeSpawnPoint.position);
+                customerCooldownLeft = customerCooldown;
+            }
         }
     }
 
